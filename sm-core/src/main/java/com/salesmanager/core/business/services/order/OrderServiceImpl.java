@@ -18,6 +18,7 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
+import com.salesmanager.core.business.services.tax.TaxServiceVtx;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
@@ -84,7 +85,7 @@ public class OrderServiceImpl  extends SalesManagerEntityServiceImpl<Long, Order
     private ProductService productService;
 
     @Inject
-    private TaxService taxService;
+    private TaxServiceVtx taxService;
 
     @Inject
     private CustomerService customerService;
