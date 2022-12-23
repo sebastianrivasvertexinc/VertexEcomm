@@ -116,7 +116,7 @@ public class TaxServiceVtxImpl
 		try {
 			accessToken = getAuthentication();
 			Date date = Calendar.getInstance().getTime();
-			DateFormat dateFormat = new SimpleDateFormat("yyyy-mm-dd");
+			DateFormat dateFormat = new SimpleDateFormat("YYYY-MM-dd");
 			String strDate = dateFormat.format(date);
 			calcRequest.setDocumentDate(strDate);
 			calcRequest.setSaleMessageType("INVOICE");
