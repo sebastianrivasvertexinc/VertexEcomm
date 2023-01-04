@@ -5,5 +5,5 @@ public class Customer{
     public Destination destination;
     public Destination administrativeDestination;
     public boolean isTaxExempt;
-    public ArrayList<Object> taxRegistrations;
+    public ArrayList<TaxRegistration> taxRegistrations;
 }

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.salesmanager.core.business.exception.ServiceException;
 import com.salesmanager.core.business.services.system.MerchantConfigurationService;
+import com.salesmanager.core.business.services.tax.taxamo.TaxamoVatValidate;
 import com.salesmanager.core.business.services.tax.vertex.*;
 import com.salesmanager.core.model.customer.Customer;
 import com.salesmanager.core.model.merchant.MerchantStore;
@@ -95,6 +96,7 @@ public class  TaxServiceVtxImpl
 
 		List<TaxItem> taxLines = new ArrayList<TaxItem>();
 		List<ShoppingCartItem> items = orderSummary.getProducts();
+		Boolean validVAT=false;
 		if(items==null) {
 			return taxLines;
 		}
@@ -116,7 +118,7 @@ public class  TaxServiceVtxImpl
 		try {
 			accessToken = getAuthentication();
 			Date date = Calendar.getInstance().getTime();
-			DateFormat dateFormat = new SimpleDateFormat("yyyy-mm-dd");
+			DateFormat dateFormat = new SimpleDateFormat("YYYY-MM-dd");
 			String strDate = dateFormat.format(date);
 			calcRequest.setDocumentDate(strDate);
 			calcRequest.setSaleMessageType("INVOICE");
@@ -136,12 +138,22 @@ public class  TaxServiceVtxImpl
 			if	(!StringUtils.isBlank(store.getStorepostalcode()))
 				physicalOrigin.postalCode=store.getStorepostalcode();
 //Removed Origin
-			seller.physicalOrigin=physicalOrigin;
+			//seller.physicalOrigin=physicalOrigin;
 			calcRequest.setSeller(seller);
 
 			com.salesmanager.core.business.services.tax.vertex.Customer cust = new com.salesmanager.core.business.services.tax.vertex.Customer();
 			CustomerCode custCode=new CustomerCode();
 			custCode.value	=customer.getEmailAddress();
+
+			cust.taxRegistrations=new ArrayList<TaxRegistration>();
+			TaxRegistration tr=new TaxRegistration();
+			tr.setTaxRegistrationNumber(customer.getBilling().getTelephone());
+			tr.setIsoCountryCode(customer.getBilling().getCountry().getIsoCode());
+			cust.taxRegistrations.add(tr)		;
+
+			if	(!StringUtils.isBlank(tr.getTaxRegistrationNumber()))
+			validVAT = doVatValidation(tr.getTaxRegistrationNumber());
+
 			cust.customerCode=custCode;
 			Destination destination= new Destination();
 			if	(!StringUtils.isBlank(customer.getBilling().getCity()))
@@ -241,13 +253,36 @@ public class  TaxServiceVtxImpl
 
 		TaxItem taxItem = new TaxItem();
 		taxItem.setItemPrice(BigDecimal.valueOf(vtxEngineCalculation.data.getTotalTax()));
-		taxItem.setLabel("Vertex Tax");
+		taxItem.setLabel("Vertex Tax"+" vat:"+validVAT.toString());
 
 		list.add(taxItem);
 
 
 		return list;
 
+	}
+
+	private Boolean doVatValidation(String taxRegistrationNumber) throws IOException {
+		Gson gson = new Gson();
+		OkHttpClient client = new OkHttpClient();
+		MediaType mediaType = MediaType.parse("application/json");
+		RequestBody body = RequestBody.create(mediaType, "");
+		Request request = new Request.Builder()
+				.url("https://services.taxamo.com/api/v2/tax/vat_numbers/"+taxRegistrationNumber+"/validate")
+				.get()
+				.addHeader("Content-Type", "application/json")
+				.addHeader("Private-Token", "priv_test_Z9CtlVqeXL_9wqWDXXHijiF30z2IW9G0PaOX3Cg-SX4")
+				.build();
+
+
+		Response response = client.newCall(request).execute();
+		TaxamoVatValidate taxamovatvalidate=new TaxamoVatValidate();
+		String jsonData = response.body().string();
+
+
+		taxamovatvalidate=gson.fromJson(jsonData,TaxamoVatValidate.class);
+		System.out.println(jsonData);
+		return taxamovatvalidate.getBuyer_tax_number_valid();
 	}
 
 	public static String getAuthentication() throws IOException {
@@ -260,7 +295,7 @@ public class  TaxServiceVtxImpl
 				.url("https://testsales.dev.ondemand.vertexinc.com/oseries-auth/oauth/token")
 				.method("POST", body)
 				.addHeader("Content-Type", "application/x-www-form-urlencoded")
-				.addHeader("Cookie", "AWSALB=QpcVkyqZre5K43HqaCzU9CdeXP2Y0KfXeCc8GRwBcKupBOm1RGI6g1Cz0v3wTqUzjo9coy3R+rth7u47ruTBl4TtRiXCHssXaSVGmqBU+VzTm7L1x5RgzLWUKwpW; AWSALBCORS=QpcVkyqZre5K43HqaCzU9CdeXP2Y0KfXeCc8GRwBcKupBOm1RGI6g1Cz0v3wTqUzjo9coy3R+rth7u47ruTBl4TtRiXCHssXaSVGmqBU+VzTm7L1x5RgzLWUKwpW")
+				//.addHeader("Cookie", "AWSALB=QpcVkyqZre5K43HqaCzU9CdeXP2Y0KfXeCc8GRwBcKupBOm1RGI6g1Cz0v3wTqUzjo9coy3R+rth7u47ruTBl4TtRiXCHssXaSVGmqBU+VzTm7L1x5RgzLWUKwpW; AWSALBCORS=QpcVkyqZre5K43HqaCzU9CdeXP2Y0KfXeCc8GRwBcKupBOm1RGI6g1Cz0v3wTqUzjo9coy3R+rth7u47ruTBl4TtRiXCHssXaSVGmqBU+VzTm7L1x5RgzLWUKwpW")
 				.build();
 		Response response = client.newCall(request).execute();
 
@@ -285,7 +320,7 @@ public class  TaxServiceVtxImpl
 				.method("POST", body)
 				.addHeader("Content-Type", "application/json")
 				.addHeader("Authorization", "Bearer "+accessToken)
-				.addHeader("Cookie", "AWSALB=zhyCTiPfQT9ch5ACVeOTe6zaCHq5RltzzA2AziKA1/dCikikWmNWkmdS3sE882W4ZQaF5aVEh8O1UkldnHnYu5kJMuhxuZIMaIYR50C3np6sWuXaq4ZR5KZAZUEY; AWSALBCORS=zhyCTiPfQT9ch5ACVeOTe6zaCHq5RltzzA2AziKA1/dCikikWmNWkmdS3sE882W4ZQaF5aVEh8O1UkldnHnYu5kJMuhxuZIMaIYR50C3np6sWuXaq4ZR5KZAZUEY")
+				//.addHeader("Cookie", "AWSALB=zhyCTiPfQT9ch5ACVeOTe6zaCHq5RltzzA2AziKA1/dCikikWmNWkmdS3sE882W4ZQaF5aVEh8O1UkldnHnYu5kJMuhxuZIMaIYR50C3np6sWuXaq4ZR5KZAZUEY; AWSALBCORS=zhyCTiPfQT9ch5ACVeOTe6zaCHq5RltzzA2AziKA1/dCikikWmNWkmdS3sE882W4ZQaF5aVEh8O1UkldnHnYu5kJMuhxuZIMaIYR50C3np6sWuXaq4ZR5KZAZUEY")
 				.build();
 		Response response = client.newCall(request).execute();;
 
