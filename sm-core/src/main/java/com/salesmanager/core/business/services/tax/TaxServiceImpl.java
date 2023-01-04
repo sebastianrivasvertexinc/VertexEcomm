@@ -80,6 +80,7 @@ public class TaxServiceImpl
 			configuration = new MerchantConfiguration();
 			configuration.setMerchantStore(store);
 			configuration.setKey(TAX_CONFIGURATION);
+
 		}
 		
 		String value = shippingConfiguration.toJSONString();

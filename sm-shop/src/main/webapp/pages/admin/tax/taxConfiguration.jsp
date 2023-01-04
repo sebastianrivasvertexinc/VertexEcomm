@@ -40,6 +40,61 @@
                         				</div>
 	                                	<span class="help-inline"><form:errors path="taxBasisCalculation" cssClass="error" /></span>
 	                        		</div>
+
+	                        		<div class="sm-ui-component">
+                                        <h3><s:message code="label.tax.vertextaxclass.title" text="Vertex Tax Engine" /></h3>
+                                        <br/>
+
+	                        		<div class="control-group">
+                                        <h4><label class="required"><s:message code="label.tax.vertexadminurl" text="Admin URL"/></label></h>
+                                            <div class="controls">
+                                                    <form:input cssClass="input-large" path="taxAdminURL" />
+                                            </div>
+                                    </div>
+                                    <div class="control-group">
+                                        <label class="required"><s:message code="label.tax.vertexadminclientid" text="Admin Client Id"/></label>
+                                            <div class="controls">
+                                                    <form:input cssClass="input-large" path="taxAdminClientId" />
+                                            </div>
+                                    </div>
+                                    <div class="control-group">
+                                        <label class="required"><s:message code="label.tax.vertexadminclientSecret" text="Admin Client Secret"/></label>
+                                            <div class="controls">
+                                                    <form:input cssClass="input-large" path="taxAdminClientSecret" />
+                                            </div>
+                                    </div>
+                                    <div class="control-group">
+                                                    <label class="required"><s:message code="label.tax.vertextaxcalcurl" text="Tax Calc URL"/></label>
+                                                        <div class="controls">
+                                                                <form:input cssClass="input-large" path="taxCalcURL" />
+                                                        </div>
+                                                </div>
+                                    <div class="control-group">
+                                        <label class="required"><s:message code="label.tax.vertexcalcclientid" text="Calc Client Id"/></label>
+                                            <div class="controls">
+                                                    <form:input cssClass="input-large" path="taxCalcClientId" />
+                                            </div>
+                                    </div>
+                                    <div class="control-group">
+                                        <label class="required"><s:message code="label.tax.vertexcalcclientsecret" text="Calc Client Secret"/></label>
+                                            <div class="controls">
+                                                    <form:input cssClass="input-large" path="taxCalcClientSecret" />
+                                            </div>
+                                    </div>
+                                    <div class="control-group">
+                                        <label class="required"><s:message code="label.tax.taxamovalidationurl" text="Taxamo Validation URL"/></label>
+                                            <div class="controls">
+                                                    <form:input cssClass="input-large" path="taxamoValidationURL" />
+
+                                            </div>
+                                    </div>
+                                    <div class="control-group">
+                                        <label class="required"><s:message code="label.tax.taxamoauthtoken" text="Taxamo Auth Token"/></label>
+                                            <div class="controls">
+                                                    <form:input cssClass="input-large" path="taxamoAuthToken" />
+
+                                            </div>
+                                    </div>
 	                        		
 							        <div class="form-actions">
 				                  		<div class="pull-right">
@@ -52,14 +107,6 @@
 
       					</div>
       					
-
-      			     
-      			     
-
-
-      			     
-      			     
-    
 
 
    					</div>

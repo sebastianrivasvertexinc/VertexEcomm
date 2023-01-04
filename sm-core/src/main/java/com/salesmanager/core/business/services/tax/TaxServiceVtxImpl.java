@@ -30,7 +30,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 @Service("taxServiceVtx")
-public class TaxServiceVtxImpl
+public class  TaxServiceVtxImpl
 		implements TaxServiceVtx {
 	
 	private final static String TAX_CONFIGURATION = "TAX_CONFIG";
