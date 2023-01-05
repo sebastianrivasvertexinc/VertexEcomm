@@ -145,9 +145,9 @@ public class  TaxServiceVtxImpl
 			CustomerCode custCode=new CustomerCode();
 			custCode.value	=customer.getEmailAddress();
 
-			cust.taxRegistrations=new ArrayList<TaxRegistration>();
-			TaxRegistration tr=new TaxRegistration();
-			tr.setTaxRegistrationNumber(customer.getBilling().getTelephone());
+			cust.taxRegistrations = new ArrayList<TaxRegistration>();
+			TaxRegistration tr = new TaxRegistration();
+			tr.setTaxRegistrationNumber(customer.getBilling().getVatNumber()); //modified to get VAT number from front page
 			tr.setIsoCountryCode(customer.getBilling().getCountry().getIsoCode());
 			cust.taxRegistrations.add(tr)		;
 

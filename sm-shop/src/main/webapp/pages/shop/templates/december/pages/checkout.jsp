@@ -715,6 +715,12 @@ function initPayment(paymentSelection) {
 											<span id="error-customer.billing.phone" class="error"></span>
 										</div>
 									</div>
+									<div class="col-md-6">
+									    <div class="checkout-form-list">
+                                            <label><s:message code="label.generic.vatnumber" text="VAT Number"/></label>
+                                            <form:input id="customer.billing.vatNumber" cssClass="" path="customer.billing.vatNumber"/>
+                                        </div>
+									</div>
 									<sec:authorize access="!hasRole('AUTH_CUSTOMER') and !fullyAuthenticated">
 									<div class="col-md-12">
 										<div class="checkout-form-list create-acc">	

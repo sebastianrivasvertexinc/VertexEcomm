@@ -49,6 +49,8 @@ public class Billing {
 	@Column (name ="LATITUDE", length=100)
 	private String latitude;
 
+	@Column (name ="VAT_NUMBER", length=20)
+	private String vatNumber;
 
 	@ManyToOne(fetch = FetchType.LAZY, targetEntity = Country.class)
 	@JoinColumn(name="BILLING_COUNTRY_ID", nullable=false)
@@ -156,6 +158,14 @@ public class Billing {
 
 	public void setLatitude(String latitude) {
 		this.latitude = latitude;
+	}
+
+	public String getVatNumber() {
+		return vatNumber;
+	}
+
+	public void setVatNumber(String vat) {
+		this.vatNumber = vat;
 	}
 	
 }

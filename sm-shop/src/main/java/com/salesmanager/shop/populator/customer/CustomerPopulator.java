@@ -117,6 +117,7 @@ public class CustomerPopulator extends
 				billing.setTelephone(sourceBilling.getPhone());
 				billing.setPostalCode(sourceBilling.getPostalCode());
 				billing.setState(sourceBilling.getStateProvince());
+				billing.setVatNumber(sourceBilling.getVatNumber());
 				Country billingCountry = null;
 				if(!StringUtils.isBlank(sourceBilling.getCountry())) {
 					billingCountry = countries.get(sourceBilling.getCountry());

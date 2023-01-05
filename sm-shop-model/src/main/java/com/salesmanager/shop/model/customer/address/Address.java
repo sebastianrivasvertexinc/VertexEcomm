@@ -43,6 +43,8 @@ public class Address extends AddressLocation implements Serializable {
 	
 	private String latitude;
 	private String longitude;
+
+	private String vatNumber;
 	
 	@ApiModelProperty(notes = "Customer billing or shipping state / province (2 letter code CA, ON...)")
 	private String zone;//code
@@ -69,6 +71,14 @@ public class Address extends AddressLocation implements Serializable {
 
 	public void setCompany(String company) {
 		this.company = company;
+	}
+
+	public String getVatNumber() {
+		return vatNumber;
+	}
+
+	public void setVatNumber(String vat) {
+		this.vatNumber = vat;
 	}
 
 	public String getAddress() {
