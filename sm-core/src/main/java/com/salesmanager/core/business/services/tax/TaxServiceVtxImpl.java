@@ -18,6 +18,7 @@ import com.salesmanager.core.model.system.MerchantConfiguration;
 import com.salesmanager.core.model.tax.TaxConfiguration;
 import com.salesmanager.core.model.tax.TaxItem;
 import com.salesmanager.core.model.tax.taxrate.TaxRate;
+import com.salesmanager.core.business.services.tax.TaxService;
 import com.squareup.okhttp.*;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
@@ -152,8 +153,13 @@ public class  TaxServiceVtxImpl
 			cust.taxRegistrations.add(tr)		;
 
 			if	(!StringUtils.isBlank(tr.getTaxRegistrationNumber()))
-			validVAT = doVatValidation(tr.getTaxRegistrationNumber());
+			try {
+				validVAT = doVatValidation(tr.getTaxRegistrationNumber(), store);
+			}
+			catch (Exception e)
+			{
 
+			}
 			cust.customerCode=custCode;
 			Destination destination= new Destination();
 			if	(!StringUtils.isBlank(customer.getBilling().getCity()))
@@ -253,7 +259,7 @@ public class  TaxServiceVtxImpl
 
 		TaxItem taxItem = new TaxItem();
 		taxItem.setItemPrice(BigDecimal.valueOf(vtxEngineCalculation.data.getTotalTax()));
-		taxItem.setLabel("Vertex Tax"+" vat:"+validVAT.toString());
+		taxItem.setLabel("Vertex Tax"+" vat:"+ validVAT.toString());
 
 		list.add(taxItem);
 
@@ -262,16 +268,29 @@ public class  TaxServiceVtxImpl
 
 	}
 
-	private Boolean doVatValidation(String taxRegistrationNumber) throws IOException {
+	@Inject
+	private TaxService taxService = null;
+	private Boolean doVatValidation(String taxRegistrationNumber, MerchantStore store) throws Exception {
+
+		//Getting the Private Token from the TaxConfiguration object
+
+		TaxConfiguration taxConfiguration = taxService.getTaxConfiguration(store);
+		if(taxConfiguration == null) {
+
+			throw new Exception();
+
+		}
+
+
 		Gson gson = new Gson();
 		OkHttpClient client = new OkHttpClient();
 		MediaType mediaType = MediaType.parse("application/json");
 		RequestBody body = RequestBody.create(mediaType, "");
 		Request request = new Request.Builder()
-				.url("https://services.taxamo.com/api/v2/tax/vat_numbers/"+taxRegistrationNumber+"/validate")
+				.url(taxConfiguration.taxamoValidationURL + "/tax/vat_numbers/"+taxRegistrationNumber+"/validate")
 				.get()
 				.addHeader("Content-Type", "application/json")
-				.addHeader("Private-Token", "priv_test_Z9CtlVqeXL_9wqWDXXHijiF30z2IW9G0PaOX3Cg-SX4")
+				.addHeader("Private-Token", taxConfiguration.taxamoAuthToken)
 				.build();
 
 
