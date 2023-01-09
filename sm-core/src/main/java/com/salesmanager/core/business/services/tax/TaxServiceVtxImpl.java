@@ -37,7 +37,12 @@ public class  TaxServiceVtxImpl
 	
 	private final static String TAX_CONFIGURATION = "TAX_CONFIG";
 	private final static String DEFAULT_TAX_CLASS = "DEFAULT";
-	
+
+	private String client_Id = "";
+	private String client_secret = "";
+	private String calc_url = "";
+	private String taxamoValidationURL  = "";
+	private String taxamoAuthToken = "";
 	@Inject
 	private MerchantConfigurationService merchantConfigurationService;
 	
@@ -64,6 +69,8 @@ public class  TaxServiceVtxImpl
 				throw new ServiceException("Cannot parse json string " + value);
 			}
 		}
+
+
 		return taxConfiguration;
 	}
 	
@@ -94,6 +101,18 @@ public class  TaxServiceVtxImpl
 			return null;
 		}
 
+		//set all the config information
+		TaxConfiguration taxConfiguration = taxService.getTaxConfiguration(store);
+		if(taxConfiguration == null) {
+		throw new ServiceException("error getting taxConfig in Vertex Tax Calculation");
+		}
+
+		this.client_Id = taxConfiguration.getTaxCalcClientId();
+		this.client_secret = taxConfiguration.getTaxCalcClientSecret();
+		this.calc_url = taxConfiguration.getTaxCalcURL();
+		this.taxamoValidationURL = taxConfiguration.getTaxamoValidationURL();
+		this.taxamoAuthToken = taxConfiguration.getTaxamoAuthToken();
+
 
 		List<TaxItem> taxLines = new ArrayList<TaxItem>();
 		List<ShoppingCartItem> items = orderSummary.getProducts();
@@ -117,7 +136,7 @@ public class  TaxServiceVtxImpl
 		VtxTaxCalcReq calcRequest=new VtxTaxCalcReq();
 		String 	accessToken = "";
 		try {
-			accessToken = getAuthentication();
+			accessToken = getAuthentication(this.client_Id, this.client_secret);
 			Date date = Calendar.getInstance().getTime();
 			DateFormat dateFormat = new SimpleDateFormat("YYYY-MM-dd");
 			String strDate = dateFormat.format(date);
@@ -217,7 +236,7 @@ public class  TaxServiceVtxImpl
 
 			calcRequest.setLineItems(itemsVtx);
 
-			vtxEngineCalculation=this.doCalculation(calcRequest,accessToken);
+			vtxEngineCalculation=this.doCalculation(calcRequest,accessToken, this.calc_url);
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
@@ -272,14 +291,7 @@ public class  TaxServiceVtxImpl
 	private TaxService taxService = null;
 	private Boolean doVatValidation(String taxRegistrationNumber, MerchantStore store) throws Exception {
 
-		//Getting the Private Token from the TaxConfiguration object
 
-		TaxConfiguration taxConfiguration = taxService.getTaxConfiguration(store);
-		if(taxConfiguration == null) {
-
-			throw new Exception();
-
-		}
 
 
 		Gson gson = new Gson();
@@ -287,10 +299,10 @@ public class  TaxServiceVtxImpl
 		MediaType mediaType = MediaType.parse("application/json");
 		RequestBody body = RequestBody.create(mediaType, "");
 		Request request = new Request.Builder()
-				.url(taxConfiguration.taxamoValidationURL + "/tax/vat_numbers/"+taxRegistrationNumber+"/validate")
+				.url(this.taxamoValidationURL + "/tax/vat_numbers/"+taxRegistrationNumber+"/validate")
 				.get()
 				.addHeader("Content-Type", "application/json")
-				.addHeader("Private-Token", taxConfiguration.taxamoAuthToken)
+				.addHeader("Private-Token", this.taxamoAuthToken)
 				.build();
 
 
@@ -304,12 +316,13 @@ public class  TaxServiceVtxImpl
 		return taxamovatvalidate.getBuyer_tax_number_valid();
 	}
 
-	public static String getAuthentication() throws IOException {
-
+	public static String getAuthentication(String client_Id, String client_secret) throws IOException {
 
 		OkHttpClient client = new OkHttpClient();
 		MediaType mediaType = MediaType.parse("application/x-www-form-urlencoded");
-		RequestBody body = RequestBody.create(mediaType, "client_id=c373bb21e059.vertexinc.com&client_secret=9482b013198cb7dc16e6b58cd783a22bea42feb142358dfb05efc28435664100&grant_type=client_credentials");
+		//RequestBody body = RequestBody.create(mediaType, "client_id=c373bb21e059.vertexinc.com&client_secret=9482b013198cb7dc16e6b58cd783a22bea42feb142358dfb05efc28435664100&grant_type=client_credentials");
+		RequestBody body = RequestBody.create(mediaType, "client_id=" + client_Id + "&client_secret=" + client_secret +"&grant_type=client_credentials");
+
 		Request request = new Request.Builder()
 				.url("https://testsales.dev.ondemand.vertexinc.com/oseries-auth/oauth/token")
 				.method("POST", body)
@@ -326,7 +339,7 @@ public class  TaxServiceVtxImpl
 
 	}
 
-	public static VtxTaxCalc doCalculation(VtxTaxCalcReq calcRequest, String accessToken) throws IOException {
+	public static VtxTaxCalc doCalculation(VtxTaxCalcReq calcRequest, String accessToken, String calc_url) throws IOException {
 		Gson gson = new Gson();
 		OkHttpClient client = new OkHttpClient();
 		MediaType mediaType = MediaType.parse("application/json");
@@ -335,7 +348,7 @@ public class  TaxServiceVtxImpl
 		RequestBody body = RequestBody.create(mediaType, jsonDataReq);
 
 		Request request = new Request.Builder()
-				.url("https://testsales.dev.ondemand.vertexinc.com/vertex-ws/v2/supplies")
+				.url(calc_url + "/vertex-ws/v2/supplies")
 				.method("POST", body)
 				.addHeader("Content-Type", "application/json")
 				.addHeader("Authorization", "Bearer "+accessToken)
