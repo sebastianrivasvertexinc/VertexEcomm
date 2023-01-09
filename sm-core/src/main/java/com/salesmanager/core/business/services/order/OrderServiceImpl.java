@@ -169,7 +169,7 @@ public class OrderServiceImpl  extends SalesManagerEntityServiceImpl<Long, Order
         }
 
         order.setCustomerId(customer.getId());
-        this.create(order);
+        this.create(order); //This is where 100 is being set
 
     	if(transaction!=null) {
     		transaction.setOrder(order);
@@ -195,8 +195,14 @@ public class OrderServiceImpl  extends SalesManagerEntityServiceImpl<Long, Order
     	LOGGER.debug( "Update inventory" );
         Set<OrderProduct> products = order.getOrderProducts();
         for(OrderProduct orderProduct : products) {
+            int itemcheck = 0;
             orderProduct.getProductQuantity();
-            Product p = productService.getById(orderProduct.getId());
+
+            //Product p = productService.getById((8L));
+            // fixing bug /issue with ProductId being mapped to ProductOrder - will do checks in place here to avoid error
+            // check and see if the actual product is the same as the order no, then update p
+            Product p = productService.getById(items.get(itemcheck).getProductId());
+
             if(p == null)
                 throw new ServiceException(ServiceException.EXCEPTION_INVENTORY_MISMATCH);
             for(ProductAvailability availability : p.getAvailabilities()) {
@@ -209,6 +215,7 @@ public class OrderServiceImpl  extends SalesManagerEntityServiceImpl<Long, Order
                 availability.setProductQuantity(qty);
             }
             productService.update(p);
+            itemcheck++; //increment for item check
         }
 
 
