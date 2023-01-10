@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
+import com.salesmanager.core.business.repositories.customer.CustomerRepository;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.Validate;
 import org.apache.commons.lang3.StringUtils;
@@ -147,7 +148,12 @@ public class ShoppingOrderController extends AbstractController {
 	
 	@Inject
 	private OrderProductDownloadService orderProdctDownloadService;
-	
+	private final CustomerRepository customerRepository;
+
+	public ShoppingOrderController(CustomerRepository customerRepository) {
+		this.customerRepository = customerRepository;
+	}
+
 	@SuppressWarnings("unused")
 	@RequestMapping("/checkout.html")
 	public String displayCheckout(@CookieValue("cart") String cookie, Model model, HttpServletRequest request, HttpServletResponse response, Locale locale) throws Exception {
@@ -557,7 +563,15 @@ public class ShoppingOrderController extends AbstractController {
 					if(modelCustomer.getDefaultLanguage() == null) {
 						modelCustomer.setDefaultLanguage(languageService.toLanguage(locale));
 					}
-			        customerService.saveOrUpdate( modelCustomer );
+					//Check if customer exists first, if not write to DB other
+					if(customerFacade.checkIfUserExists(customer.getEmailAddress(), store))
+					{
+						Customer id = customerFacade.getCustomerByUserName(customer.getEmailAddress(),store);
+						modelCustomer.setId(id.getId());
+					}
+					else {
+						customerService.saveOrUpdate(modelCustomer);
+					}
 				} else {//use existing customer
 					LOGGER.info("Populate customer model");
 					modelCustomer = customerFacade.populateCustomerModel(authCustomer, customer, store, language);
