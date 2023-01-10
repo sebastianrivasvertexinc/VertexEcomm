@@ -9,6 +9,7 @@ import com.salesmanager.core.business.services.reference.country.CountryService;
 import com.salesmanager.core.business.services.reference.zone.ZoneService;
 import com.salesmanager.core.business.services.shipping.ShippingService;
 import com.salesmanager.core.business.services.shoppingcart.ShoppingCartService;
+import com.salesmanager.core.model.customer.Customer;
 import com.salesmanager.core.model.merchant.MerchantStore;
 import com.salesmanager.core.model.order.Order;
 import com.salesmanager.core.model.order.orderproduct.OrderProductDownload;
@@ -119,7 +120,9 @@ public class ShoppingOrderConfirmationController extends AbstractController {
 			LOGGER.warn("Order id [" + orderId + "] does not exist");
 			throw new Exception("Order id [" + orderId + "] does not exist");
 		}
-		
+
+		//check if customerId is null because of duplicate customer
+
 		if(order.getMerchant().getId().intValue()!=store.getId().intValue()) {
 			LOGGER.warn("Store id [" + store.getId() + "] differs from order.store.id [" + order.getMerchant().getId() + "]");
 			return new StringBuilder().append("redirect:").append(Constants.SHOP_URI).toString();

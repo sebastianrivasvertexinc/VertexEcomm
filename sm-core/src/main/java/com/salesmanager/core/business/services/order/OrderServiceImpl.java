@@ -193,9 +193,10 @@ public class OrderServiceImpl  extends SalesManagerEntityServiceImpl<Long, Order
          * decrement inventory
          */
     	LOGGER.debug( "Update inventory" );
+        int itemcheck = 0;
         Set<OrderProduct> products = order.getOrderProducts();
         for(OrderProduct orderProduct : products) {
-            int itemcheck = 0;
+
             orderProduct.getProductQuantity();
 
             //Product p = productService.getById((8L));
