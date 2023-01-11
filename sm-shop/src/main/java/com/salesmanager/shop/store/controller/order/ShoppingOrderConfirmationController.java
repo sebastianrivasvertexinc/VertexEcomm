@@ -148,6 +148,9 @@ public class ShoppingOrderConfirmationController extends AbstractController {
         String[] orderEmailParams = {order.getCustomerEmailAddress()};
         String orderEmailMessage = messages.getMessage("label.checkout.email", orderEmailParams, locale);
 		model.addAttribute("orderemail", orderEmailMessage);
+
+		String eInvoice = order.getShippingModuleCode();
+		model.addAttribute("ordereInvoice", eInvoice);
 		
 		ReadableOrder readableOrder = orderFacade.getReadableOrder(orderId, store, language);
 		

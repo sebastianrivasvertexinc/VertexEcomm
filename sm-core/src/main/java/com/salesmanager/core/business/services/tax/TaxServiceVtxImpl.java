@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.salesmanager.core.business.exception.ServiceException;
 import com.salesmanager.core.business.services.system.MerchantConfigurationService;
-import com.salesmanager.core.business.services.tax.taxamo.TaxamoVatValidate;
+import com.salesmanager.core.business.services.tax.taxamo.VatValidate;
 import com.salesmanager.core.business.services.tax.vertex.*;
 import com.salesmanager.core.model.customer.Customer;
 import com.salesmanager.core.model.merchant.MerchantStore;
@@ -315,11 +315,11 @@ public class  TaxServiceVtxImpl
 
 
 		Response response = client.newCall(request).execute();
-		TaxamoVatValidate taxamovatvalidate=new TaxamoVatValidate();
+		VatValidate taxamovatvalidate=new VatValidate();
 		String jsonData = response.body().string();
 
 
-		taxamovatvalidate=gson.fromJson(jsonData,TaxamoVatValidate.class);
+		taxamovatvalidate=gson.fromJson(jsonData,VatValidate.class);
 		System.out.println(jsonData);
 		return taxamovatvalidate.getBuyer_tax_number_valid();
 	}

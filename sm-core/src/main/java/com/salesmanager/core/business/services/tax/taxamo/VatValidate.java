@@ -2,7 +2,7 @@ package com.salesmanager.core.business.services.tax.taxamo;
 
 import com.salesmanager.core.business.services.tax.taxamo.Invoice_address;
 
-public class TaxamoVatValidate {
+public class VatValidate {
 
     Invoice_address Invoice_addressObject;
     private String buyer_tax_number;

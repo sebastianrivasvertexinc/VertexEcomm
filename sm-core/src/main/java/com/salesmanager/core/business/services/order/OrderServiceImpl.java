@@ -1,6 +1,7 @@
 package com.salesmanager.core.business.services.order;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.Instant;
@@ -18,7 +19,12 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
+import com.google.gson.Gson;
 import com.salesmanager.core.business.services.tax.TaxServiceVtx;
+import com.salesmanager.core.business.services.tax.taxamo.*;
+import com.salesmanager.core.business.services.tax.vertex.VtxTaxCalc;
+import com.salesmanager.core.business.services.tax.vertex.VtxTaxCalcReq;
+import com.squareup.okhttp.*;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
@@ -219,8 +225,9 @@ public class OrderServiceImpl  extends SalesManagerEntityServiceImpl<Long, Order
             itemcheck++; //increment for item check
         }
 
-
-
+        String urlInvoice=createInvoice(order,customer,items);//TAXAMO
+        System.out.println(urlInvoice);
+       order.setShippingModuleCode(urlInvoice);
     	return order;
     }
 
@@ -685,6 +692,67 @@ public class OrderServiceImpl  extends SalesManagerEntityServiceImpl<Long, Order
 		return returnOrders;
 	}
 
+    @Override
+    public String createInvoice(Order order, Customer customer, List<ShoppingCartItem> items) {
+        Gson gson = new Gson();
+        TaxamoRequest taxamoRequest=new TaxamoRequest();
+        OkHttpClient client = new OkHttpClient();
+        MediaType mediaType = MediaType.parse("application/json");
+        //RequestBody body = RequestBody.create(mediaType, "{\n    \"saleMessageType\": \"QUOTATION\",\n    \"seller\": {\n        \"company\": \"COMPANY\"\n    },\n    \"lineItems\": [\n        {\n            \"seller\": {\n                \"physicalOrigin\": {\n                    \"streetAddress1\": \"2301 Renaissance \",\n                    \"city\": \"King Of Prussia\",\n                    \"mainDivision\": \"PA\",\n                    \"postalCode\": \"19406\",\n                    \"country\": \"UNITED STATES\"\n                }\n            },\n            \"customer\": {\n                \"destination\": {\n                    \"streetAddress1\": \"428 N Beverly Dr\",\n                    \"city\": \"Beverly Hills\",\n                    \"mainDivision\": \"CA\",\n                    \"postalCode\": \"90210\",\n                    \"country\": \"UNITED STATES\"\n                }\n            },\n            \"product\": {\n                \"productClass\": \"CLOTHING\",\n                \"value\": \"CLOTHING\"\n            },\n            \"extendedPrice\": 100,\n            \"lineItemNumber\": 1\n        }\n    ],\n    \"documentDate\": \"2021-12-01\",\n    \"transactionType\": \"SALE\"\n}");
+
+        taxamoRequest.setPrivate_token("priv_test_Z9CtlVqeXL_9wqWDXXHijiF30z2IW9G0PaOX3Cg-SX4");
+        TransactionRequest trans =new TransactionRequest();
+        trans.setForce_country_code(order.getBilling().getCountry().getIsoCode());
+        trans.setBuyer_name(order.getBilling().getFirstName()+" "+order.getBilling().getLastName());
+        trans.setBuyer_email(order.getCustomerEmailAddress());
+        trans.setStatus("C");
+        trans.setCurrency_code(order.getCurrency().getCode());
+        trans.setBuyer_tax_number("VAT1");//TODO
+      //  trans.setBuyer_ip(order.getIpAddress());
+
+        Invoice_address invAddress =new Invoice_address();
+        invAddress.setCountry(order.getBilling().getCountry().getIsoCode());
+        invAddress.setCity(order.getBilling().getCity());
+        invAddress.setPostal_code(order.getBilling().getPostalCode());
+        trans.setInvoice_address(invAddress);
+
+        ArrayList<Transaction_line> transaction_lines= new  ArrayList<Transaction_line>();
+        Transaction_line tLine= new Transaction_line();
+        for (ShoppingCartItem item :items) {
+            tLine.setDescription(item.getProduct().getProductDescription().getDescription());
+            tLine.setAmount(item.getItemPrice());
+            tLine.setInformative("true");//TODO
+            tLine.setCustom_id("1");//TODO
+            transaction_lines.add(tLine);
+        }
+        trans.transaction_lines=transaction_lines;
+        taxamoRequest.setTransaction(trans);
+        String jsonDataReq=gson.toJson(taxamoRequest, TaxamoRequest.class);
+        RequestBody body = RequestBody.create(mediaType, jsonDataReq);
+
+        Request request = new Request.Builder()
+                .url("https://services.taxamo.com/api/v2/transactions")
+                .method("POST", body)
+                .addHeader("Content-Type", "application/json")
+                .build();
+        Response response = null;
+        try {
+            response = client.newCall(request).execute();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        TaxamoResponse taxamoResponse=new TaxamoResponse();
+        String jsonData = null;
+        try {
+            jsonData = response.body().string();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        taxamoResponse=gson.fromJson(jsonData,TaxamoResponse.class);
+        return taxamoResponse.getTransaction().getInvoice_image_url();//TODO
+    }
 
 
 }
