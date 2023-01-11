@@ -722,6 +722,7 @@ public class OrderServiceImpl  extends SalesManagerEntityServiceImpl<Long, Order
             tLine.setDescription(item.getProduct().getProductDescription().getDescription());
             tLine.setAmount(item.getItemPrice());
             tLine.setInformative("true");//TODO
+            tLine.setTax_rate(5f);//TODO
             tLine.setCustom_id("1");//TODO
             transaction_lines.add(tLine);
         }
