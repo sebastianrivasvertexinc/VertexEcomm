@@ -87,7 +87,9 @@ var useDistanceWindow = <c:out value="${shippingMetaData.useDistanceModule}"/>;
 
 $(document).ready(function() {
 	
-	
+    //Hiding VAT if USA
+    $("#vatNumberCheck").css('visibility', 'hidden');
+	$("#vatCheck").css('visibility', 'hidden');
 	//logic for initialyzing the form, needs to be maintained
 	
 	//form displaying shipping address
@@ -407,8 +409,13 @@ function bindActions() {
 			shippingQuotes(shippingQuotesUrl,useDistanceWindow);
 		}
      });
-    
-	
+
+    $("input[id=customerBillingVatNumber]").on('blur input', function() {
+        if (!$('#shipToDeliveryAddress').is(':checked')) {
+            shippingQuotes(shippingQuotesUrl,useDistanceWindow);
+        }
+     });
+
      $("input[id=deliveryPostalCode]").on('blur input', function() {
 		if ($('#shipToDeliveryAddress').is(':checked')) {
 			shippingQuotes(shippingQuotesUrl,useDistanceWindow);
@@ -715,10 +722,12 @@ function initPayment(paymentSelection) {
 											<span id="error-customer.billing.phone" class="error"></span>
 										</div>
 									</div>
-									<div class="col-md-6">
+									<div class="col-md-6" id="vatNumberCheck">
 									    <div class="checkout-form-list">
-                                            <label><s:message code="label.generic.vatnumber" text="VAT Number"/></label>
-                                            <form:input id="customer.billing.vatNumber" cssClass="" path="customer.billing.vatNumber"/>
+                                            <label><s:message code="label.generic.vatnumber" text="VAT Number"/>
+                                            <i class="fa fa-check" id="vatCheck"></i></label>
+                                            <form:input id="customerBillingVatNumber" cssClass="" path="customer.billing.vatNumber"/>
+
                                         </div>
 									</div>
 									<sec:authorize access="!hasRole('AUTH_CUSTOMER') and !fullyAuthenticated">
