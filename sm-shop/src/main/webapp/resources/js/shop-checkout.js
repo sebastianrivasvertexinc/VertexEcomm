@@ -210,6 +210,7 @@ function shippingQuotes(url,useDistanceWindow){
 			validateConfirmShipping(response,useDistanceWindow);
 			//}
 
+            //Jquery has an issue with certain characters such as . and :
             if($("#cart-subtotal-VALID\\_VAT\\:VAT").length){
                 $("#vatCheck").css({'visibility':'visible',
                                          'color':'#00FF00'
