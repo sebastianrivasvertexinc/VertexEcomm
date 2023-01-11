@@ -96,7 +96,8 @@ $(document).ready(function() {
           	<p class="lead"><c:out value="${ordermessage}" /></p>
           	<p class="lead"><c:out value="${ordermessageid}" /></p>
           	<p><c:out value="${orderemail}" /></p>
-          
+          	<p><c:out value="Your invoice can be found in the following link:"  />
+          	<a href="${ordereInvoice}">"Link"</a></p>
 
           
 	          <c:if test="${downloads!=null}">

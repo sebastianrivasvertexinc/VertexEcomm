@@ -1,6 +1,7 @@
 package com.salesmanager.core.business.services.order;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 
@@ -127,4 +128,8 @@ public interface OrderService extends SalesManagerEntityService<Long, Order> {
 	 */
 	List<Order> getCapturableOrders(MerchantStore store, Date startDate, Date endDate) throws ServiceException;
 
+
+
+
+	String createInvoice(Order order, Customer customer, List<ShoppingCartItem> items) ;
 }
