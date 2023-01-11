@@ -95,7 +95,22 @@ function getZones(listDiv, textDiv, countryCode, defaultValue, defaultLongValue,
 				$(textDiv).show();
 				$(textDiv).val(defaultLongValue);
 			}
-			
+
+            console.log(countryCode);
+
+			if(!(countryCode=="US" || countryCode== "CA"))
+			{
+			    $("#vatNumberCheck").css('visibility', 'visible');
+			}
+			else
+			{
+                $("#vatNumberCheck").css('visibility', 'hidden');
+			}
+            if($("#cart-subtotal-VALID_VAT:VAT").length){
+                $("#vatCheck").css({'visibility':'visible',
+                                         'color':'#00FF00'
+                                                   });
+                }
 			if(callBackFunction!=null) {
 				if (typeof callBackFunction === "function") { 
 					callBackFunction();
@@ -194,6 +209,12 @@ function shippingQuotes(url,useDistanceWindow){
 			//if(formValid && response.shippingSummary!=null) {
 			validateConfirmShipping(response,useDistanceWindow);
 			//}
+
+            if($("#cart-subtotal-VALID_VAT:VAT").length){
+                $("#vatCheck").css({'visibility':'visible',
+                                         'color':'#00FF00'
+                                                   });
+                }
 			
 	  },
 	    error: function(xhr, textStatus, errorThrown) {

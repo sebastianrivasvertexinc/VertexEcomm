@@ -231,7 +231,6 @@ public class OrderServiceImpl  extends SalesManagerEntityServiceImpl<Long, Order
         Map<String,OrderTotal> otherPricesTotals = new HashMap<String,OrderTotal>();
 
         ShippingConfiguration shippingConfiguration = null;
-
         BigDecimal grandTotal = new BigDecimal(0);
         grandTotal.setScale(2, RoundingMode.HALF_UP);
 
@@ -401,6 +400,7 @@ public class OrderServiceImpl  extends SalesManagerEntityServiceImpl<Long, Order
 
         totalSummary.setTotal(grandTotal);
         totalSummary.setTotals(orderTotals);
+
         return totalSummary;
 
     }

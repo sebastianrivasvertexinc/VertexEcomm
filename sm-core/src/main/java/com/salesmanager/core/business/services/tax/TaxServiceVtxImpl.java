@@ -278,8 +278,16 @@ public class  TaxServiceVtxImpl
 
 		TaxItem taxItem = new TaxItem();
 		taxItem.setItemPrice(BigDecimal.valueOf(vtxEngineCalculation.data.getTotalTax()));
-		taxItem.setLabel("Vertex Tax"+" vat:"+ validVAT.toString());
 
+		// This works for US and Rest of World apart from CA - here we'll need the decision to charge GST / HST based on getCountry and Province
+		if(validVAT && !Objects.equals(customer.getBilling().getCountry().getIsoCode(), "US") && !Objects.equals(customer.getBilling().getCountry().getIsoCode(), "CA") ) {
+			taxItem.setLabel("VALID_VAT:VAT");
+		} else if (!validVAT && !Objects.equals(customer.getBilling().getCountry().getIsoCode(), "US") && !Objects.equals(customer.getBilling().getCountry().getIsoCode(), "CA")) {
+			taxItem.setLabel("INVALID_VAT:VAT");
+		} else if (!validVAT && Objects.equals(customer.getBilling().getCountry().getIsoCode(), "US") || Objects.equals(customer.getBilling().getCountry().getIsoCode(), "CA"))
+		{
+			taxItem.setLabel("TAX");
+		}
 		list.add(taxItem);
 
 
