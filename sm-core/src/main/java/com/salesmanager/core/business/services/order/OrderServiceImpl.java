@@ -392,14 +392,24 @@ public class OrderServiceImpl  extends SalesManagerEntityServiceImpl<Long, Order
                 taxLine.setValue(tax.getItemPrice());
 
                 totalTaxes = totalTaxes.add(tax.getItemPrice());
+                totalTaxes = tax.getItemPrice();//last item has the total from vertex
                 orderTotals.add(taxLine);
-                //grandTotal=grandTotal.add(tax.getItemPrice());
-
+                grandTotal=grandTotal.add(tax.getItemPrice());
+                totalSummary.setTaxTotal(tax.getItemPrice());
                 taxCount ++;
 
             }
-            grandTotal = grandTotal.add(totalTaxes);
+           /* grandTotal = grandTotal.add(totalTaxes);
             totalSummary.setTaxTotal(totalTaxes);
+            OrderTotal totalTax= new OrderTotal();
+            totalTax.setModule(Constants.OT_TAX_MODULE_CODE);
+            totalTax.setOrderTotalType(OrderTotalType.TAX);
+            totalTax.setOrderTotalCode("Total Tax");
+            totalTax.setSortOrder(taxCount);
+            totalTax.setTitle(Constants.OT_TAX_MODULE_CODE);
+            totalTax.setText("Total Tax");
+            totalTax.setValue(totalTaxes);
+            orderTotals.add(totalTax);*/
         }
 
         // grand total
@@ -721,7 +731,11 @@ public class OrderServiceImpl  extends SalesManagerEntityServiceImpl<Long, Order
         trans.setBuyer_email(order.getCustomerEmailAddress());
         trans.setStatus("C");
         trans.setCurrency_code(order.getCurrency().getCode());
-        trans.setBuyer_tax_number("VAT1");//TODO
+        if(order.getBilling().getVatNumber() != null) {
+            trans.setBuyer_tax_number(order.getBilling().getVatNumber());//DJR - Fixed
+        }else {
+            trans.setBuyer_tax_number("n/a");//DJR - Fixed logic
+        }
       //  trans.setBuyer_ip(order.getIpAddress());
 
         Invoice_address invAddress =new Invoice_address();
@@ -733,7 +747,7 @@ public class OrderServiceImpl  extends SalesManagerEntityServiceImpl<Long, Order
         ArrayList<Transaction_line> transaction_lines= new  ArrayList<Transaction_line>();
         Transaction_line tLine= new Transaction_line();
         for (ShoppingCartItem item :items) {
-            tLine.setDescription(item.getProduct().getProductDescription().getDescription());
+            tLine.setDescription(item.getProduct().getProductDescription().getName()); //fixed name without <p>
             tLine.setAmount(item.getItemPrice());
             tLine.setInformative("true");//TODO
             tLine.setTax_rate(5f);//TODO
