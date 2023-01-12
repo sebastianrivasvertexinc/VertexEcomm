@@ -162,6 +162,21 @@ $(document).ready(function() {
 		//populate zones
 		getZones('#billingStateList','#billingStateProvince',$(this).val(),'<c:out value="${order.customer.billing.zone}" />', '<c:out value="${order.customer.billing.zone}" />', '${requestScope.LANGUAGE.code}', countryListChanged);
 		setCountrySettings('billing',$(this).val());
+		var countryVAT = $(".billing-country-list").val();
+		checkVat(countryVAT);
+    })
+
+    //when the Company name changes
+    $("#customer\\.billing\\.company").change(function() {
+    var countryVAT = $(".billing-country-list").val();
+        checkVat(countryVAT);
+    })
+    //When the Company VAT number changes
+    $("#customerBillingVatNumber").change(function() {
+        //populate zones
+        var countryVAT = $(".billing-country-list").val();
+        getZones('#billingStateList','#billingStateProvince',countryVAT,'<c:out value="${order.customer.billing.zone}" />', '<c:out value="${order.customer.billing.zone}" />', '${requestScope.LANGUAGE.code}', countryListChanged);
+        checkVat(countryVAT);
     })
     
     //when the list of country changes in the shipping section
@@ -267,6 +282,9 @@ function isFormValid() {
 		$('#submitOrder').prop('disabled', false);
 	}
 
+            //recheck form VAT
+        var countryVAT = $(".billing-country-list").val();
+        checkVat(countryVAT);
 	
 	return valid;
 }
@@ -413,6 +431,8 @@ function bindActions() {
     $("input[id=customerBillingVatNumber]").on('blur input', function() {
         if (!$('#shipToDeliveryAddress').is(':checked')) {
             shippingQuotes(shippingQuotesUrl,useDistanceWindow);
+            checkVat($(".billing-country-list").val());
+            isFormValid();
         }
      });
 

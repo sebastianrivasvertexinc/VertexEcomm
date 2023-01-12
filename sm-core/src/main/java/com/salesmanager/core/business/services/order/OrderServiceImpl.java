@@ -16,15 +16,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
-
 import javax.inject.Inject;
-
 import com.google.gson.Gson;
 import com.salesmanager.core.business.services.tax.TaxServiceVtx;
 import com.salesmanager.core.business.services.tax.taxamo.*;
 import com.salesmanager.core.business.services.tax.vertex.VtxTaxCalc;
 import com.salesmanager.core.business.services.tax.vertex.VtxTaxCalcReq;
+import com.salesmanager.core.model.tax.TaxConfiguration;
 import com.squareup.okhttp.*;
+import jdk.nashorn.internal.ir.annotations.Ignore;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
@@ -76,6 +76,12 @@ import com.salesmanager.core.model.tax.TaxItem;
 @Service("orderService")
 public class OrderServiceImpl  extends SalesManagerEntityServiceImpl<Long, Order> implements OrderService {
 
+    private String client_Id = "";
+    private String client_secret = "";
+    private String calc_url = "";
+    private String taxamoValidationURL  = "";
+    private String taxamoAuthToken = "";
+    private MerchantStore _store = new MerchantStore();
     private static final Logger LOGGER = LoggerFactory.getLogger(OrderServiceImpl.class);
 
     @Inject
@@ -134,6 +140,8 @@ public class OrderServiceImpl  extends SalesManagerEntityServiceImpl<Long, Order
 
 	private Order process(Order order, Customer customer, List<ShoppingCartItem> items, OrderTotalSummary summary, Payment payment, Transaction transaction, MerchantStore store) throws ServiceException {
 
+        //setting store info for use with other methods
+        this._store = store;
 
     	Validate.notNull(order, "Order cannot be null");
     	Validate.notNull(customer, "Customer cannot be null (even if anonymous order)");
@@ -225,7 +233,7 @@ public class OrderServiceImpl  extends SalesManagerEntityServiceImpl<Long, Order
             itemcheck++; //increment for item check
         }
 
-        String urlInvoice=createInvoice(order,customer,items);//TAXAMO
+        String urlInvoice=createInvoice(order,customer,items);// Taxamo info, updated to send store info for URL's
         System.out.println(urlInvoice);
        order.setShippingModuleCode(urlInvoice);
     	return order;
@@ -494,12 +502,12 @@ public class OrderServiceImpl  extends SalesManagerEntityServiceImpl<Long, Order
      * <p>Method will be used to calculate Shopping cart total as well will update price for each
      * line items.
      * </p>
-     * @param shoppingCart
-     * @param customer
-     * @param store
-     * @param language
+     * @param shoppingCart Shopping cart
+     * @param customer customer
+     * @param store store
+     * @param language language
      * @return {@link OrderTotalSummary}
-     * @throws ServiceException
+     * @throws ServiceException Service Exception
      *
      */
     @Override
@@ -703,14 +711,20 @@ public class OrderServiceImpl  extends SalesManagerEntityServiceImpl<Long, Order
 	}
 
     @Override
-    public String createInvoice(Order order, Customer customer, List<ShoppingCartItem> items) {
+    public String createInvoice(Order order, Customer customer, List<ShoppingCartItem> items){
+        // Don't want to throw exception back since we're overriding createInvoice, so ignore exception
+        try {
+            GetConfigData(_store);
+        } catch (ServiceException ignore){
+            LOGGER.warn("GetConfigData from store failed...expect an Exception error");
+        }
+
         Gson gson = new Gson();
         TaxamoRequest taxamoRequest=new TaxamoRequest();
         OkHttpClient client = new OkHttpClient();
         MediaType mediaType = MediaType.parse("application/json");
         //RequestBody body = RequestBody.create(mediaType, "{\n    \"saleMessageType\": \"QUOTATION\",\n    \"seller\": {\n        \"company\": \"COMPANY\"\n    },\n    \"lineItems\": [\n        {\n            \"seller\": {\n                \"physicalOrigin\": {\n                    \"streetAddress1\": \"2301 Renaissance \",\n                    \"city\": \"King Of Prussia\",\n                    \"mainDivision\": \"PA\",\n                    \"postalCode\": \"19406\",\n                    \"country\": \"UNITED STATES\"\n                }\n            },\n            \"customer\": {\n                \"destination\": {\n                    \"streetAddress1\": \"428 N Beverly Dr\",\n                    \"city\": \"Beverly Hills\",\n                    \"mainDivision\": \"CA\",\n                    \"postalCode\": \"90210\",\n                    \"country\": \"UNITED STATES\"\n                }\n            },\n            \"product\": {\n                \"productClass\": \"CLOTHING\",\n                \"value\": \"CLOTHING\"\n            },\n            \"extendedPrice\": 100,\n            \"lineItemNumber\": 1\n        }\n    ],\n    \"documentDate\": \"2021-12-01\",\n    \"transactionType\": \"SALE\"\n}");
-
-        taxamoRequest.setPrivate_token("priv_test_Z9CtlVqeXL_9wqWDXXHijiF30z2IW9G0PaOX3Cg-SX4");
+        taxamoRequest.setPrivate_token(taxamoAuthToken);
         TransactionRequest trans =new TransactionRequest();
         trans.setForce_country_code(order.getBilling().getCountry().getIsoCode());
         trans.setBuyer_name(order.getBilling().getFirstName()+" "+order.getBilling().getLastName());
@@ -746,7 +760,7 @@ public class OrderServiceImpl  extends SalesManagerEntityServiceImpl<Long, Order
         RequestBody body = RequestBody.create(mediaType, jsonDataReq);
 
         Request request = new Request.Builder()
-                .url("https://services.taxamo.com/api/v2/transactions")
+                .url(taxamoValidationURL + "/transactions")
                 .method("POST", body)
                 .addHeader("Content-Type", "application/json")
                 .build();
@@ -757,7 +771,7 @@ public class OrderServiceImpl  extends SalesManagerEntityServiceImpl<Long, Order
             throw new RuntimeException(e);
         }
 
-        TaxamoResponse taxamoResponse=new TaxamoResponse();
+        TaxamoResponse taxamoResponse= new TaxamoResponse();
         String jsonData = null;
         try {
             jsonData = response.body().string();
@@ -767,6 +781,22 @@ public class OrderServiceImpl  extends SalesManagerEntityServiceImpl<Long, Order
 
         taxamoResponse=gson.fromJson(jsonData,TaxamoResponse.class);
         return taxamoResponse.getTransaction().getInvoice_image_url();//TODO
+    }
+
+    private void GetConfigData(MerchantStore store) throws ServiceException {
+
+
+        LOGGER.info("getting Tax Config data for OrderServiceImpl....");
+        TaxConfiguration taxConfiguration = taxService.getTaxConfiguration(store);
+        if (taxConfiguration == null) {
+            throw new ServiceException("error getting taxConfig in Vertex Tax Calculation");
+        }
+        LOGGER.info("setting Tax Config data for OrderServiceImpl....");
+        this.client_Id = taxConfiguration.getTaxCalcClientId();
+        this.client_secret = taxConfiguration.getTaxCalcClientSecret();
+        this.calc_url = taxConfiguration.getTaxCalcURL();
+        this.taxamoValidationURL = taxConfiguration.getTaxamoValidationURL();
+        this.taxamoAuthToken = taxConfiguration.getTaxamoAuthToken();
     }
 
 
