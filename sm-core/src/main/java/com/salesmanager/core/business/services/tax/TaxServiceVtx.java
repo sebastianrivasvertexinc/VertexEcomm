@@ -43,4 +43,5 @@ public interface TaxServiceVtx {
 	List<TaxItem> calculateTax(OrderSummary orderSummary, Customer customer,
 			MerchantStore store, Language language) throws ServiceException;
 
+
 }
