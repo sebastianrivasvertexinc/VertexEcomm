@@ -1,6 +1,6 @@
 package com.salesmanager.core.business.services.tax.vertex;
 
-public class Taxis{
+public class VtxTaxItem {
     public double calculatedTax;
     public CalculationRuleId calculationRuleId;
 

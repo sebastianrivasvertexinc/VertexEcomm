@@ -384,14 +384,24 @@ public class OrderServiceImpl  extends SalesManagerEntityServiceImpl<Long, Order
                 taxLine.setValue(tax.getItemPrice());
 
                 totalTaxes = totalTaxes.add(tax.getItemPrice());
+                totalTaxes = tax.getItemPrice();//last item has the total from vertex
                 orderTotals.add(taxLine);
-                //grandTotal=grandTotal.add(tax.getItemPrice());
-
+                grandTotal=grandTotal.add(tax.getItemPrice());
+                totalSummary.setTaxTotal(tax.getItemPrice());
                 taxCount ++;
 
             }
-            grandTotal = grandTotal.add(totalTaxes);
+           /* grandTotal = grandTotal.add(totalTaxes);
             totalSummary.setTaxTotal(totalTaxes);
+            OrderTotal totalTax= new OrderTotal();
+            totalTax.setModule(Constants.OT_TAX_MODULE_CODE);
+            totalTax.setOrderTotalType(OrderTotalType.TAX);
+            totalTax.setOrderTotalCode("Total Tax");
+            totalTax.setSortOrder(taxCount);
+            totalTax.setTitle(Constants.OT_TAX_MODULE_CODE);
+            totalTax.setText("Total Tax");
+            totalTax.setValue(totalTaxes);
+            orderTotals.add(totalTax);*/
         }
 
         // grand total
