@@ -96,21 +96,7 @@ function getZones(listDiv, textDiv, countryCode, defaultValue, defaultLongValue,
 				$(textDiv).val(defaultLongValue);
 			}
 
-            console.log(countryCode);
 
-			if((!(countryCode=="US" || countryCode== "CA")) && $(('#customer\\.billing\\.company')!=""))
-			{
-			    $("#vatNumberCheck").css('visibility', 'visible');
-			}
-			else
-			{
-                $("#vatNumberCheck").css('visibility', 'hidden');
-			}
-            if($("#cart-subtotal-VALID\\_VAT\\:VAT").length){
-                $("#vatCheck").css({'visibility':'visible',
-                                         'color':'#00FF00'
-                                                   });
-                }
 			if(callBackFunction!=null) {
 				if (typeof callBackFunction === "function") { 
 					callBackFunction();
@@ -210,12 +196,7 @@ function shippingQuotes(url,useDistanceWindow){
 			validateConfirmShipping(response,useDistanceWindow);
 			//}
 
-            //Jquery has an issue with certain characters such as . and :
-            if($("#cart-subtotal-VALID\\_VAT\\:VAT").length){
-                $("#vatCheck").css({'visibility':'visible',
-                                         'color':'#00FF00'
-                                                   });
-               }
+
 			
 	  },
 	    error: function(xhr, textStatus, errorThrown) {
@@ -431,4 +412,36 @@ function setPaymentModule(module) {
 	
 	//TODO set the TAB to the payment type
 	
+}
+
+function checkVat(countryCode){
+
+            //Jquery has an issue with certain characters such as . and :
+            //This will do the green check if VAT number is valid or not
+            //console.log(countryCode);
+
+            var getCompany = $("#customer\\.billing\\.company").val();
+
+            if((!(countryCode=="US" || countryCode== "CA")) && (getCompany !=""))
+            {
+                $("#vatNumberCheck").css('visibility', 'visible');
+            }
+            else
+            {
+                $("#vatNumberCheck").css('visibility', 'hidden');
+            }
+
+            if($("#cart-subtotal-VALID\\_VAT\\:VAT").length){
+                $("#vatCheck").css({'visibility':'visible',
+                                         'color':'#00FF00'});
+
+                // add logic to correct text in Order Summary Total
+                }
+
+            if($("#cart-subtotal-INVALID\\_VAT\\:VAT").length){
+                               $("#vatCheck").css({'visibility':'hidden',
+                                                        'color':'#00FF00'});
+
+                }
+
 }
