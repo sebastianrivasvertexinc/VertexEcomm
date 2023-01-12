@@ -18,6 +18,7 @@ import com.salesmanager.core.model.system.MerchantConfiguration;
 import com.salesmanager.core.model.tax.TaxConfiguration;
 import com.salesmanager.core.model.tax.TaxItem;
 import com.salesmanager.core.model.tax.taxrate.TaxRate;
+import com.salesmanager.core.business.services.tax.TaxService;
 import com.squareup.okhttp.*;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
@@ -203,8 +204,8 @@ public class  TaxServiceVtxImpl
 				itVtx.quantity=new Quantity();
 				itVtx.quantity.value=it.getQuantity();
 				itVtx.product=new Product();
-				itVtx.product.value= it.getProduct().getProductDescription().getName();
-				itVtx.product.productClass=it.getProduct().getProductDescription().getName();
+				itVtx.product.value= it.getProduct().getId().toString();
+				itVtx.product.productClass=it.getProduct().getTaxClass().getCode();
 				itemsVtx.add(itVtx);
 
 			}
@@ -253,7 +254,7 @@ public class  TaxServiceVtxImpl
 
 
 
-		List<TaxItem> taxItems = new ArrayList<TaxItem>();
+	//	List<TaxItem> taxItems = new ArrayList<TaxItem>();
 
 		//put items in a map by tax class id
 
@@ -264,57 +265,30 @@ public class  TaxServiceVtxImpl
 
 			int quantity = (int) itemVtx.quantity.value;
 
-			for(VtxTaxItem vtxTax : itemVtx.taxes) {
+			for(Taxis taxes : itemVtx.taxes) {
+
 				TaxItem t = new TaxItem();
-				t.setItemPrice(BigDecimal.valueOf(vtxTax.calculatedTax));
-				//t.setLabel(vtxTax.jurisdiction.value+itemVtx.product.value);
-				TaxRate taxrate=new TaxRate();
-				taxrate.setTaxRate(new BigDecimal(vtxTax.getEffectiveRate()));
-				taxrate.setStateProvince(vtxTax.jurisdiction.value);
-				taxrate.setCode(vtxTax.taxType);
-				t.setTaxRate(taxrate);
-				t.setLabel("	"+vtxTax.imposition.value+" in the "+ vtxTax.jurisdiction.jurisdictionType +" of " +vtxTax.jurisdiction.value+"("+BigDecimal.valueOf(vtxTax.getEffectiveRate()).multiply(BigDecimal.valueOf(100))+"%)");
 
-				if(validVAT && !Objects.equals(customer.getBilling().getCountry().getIsoCode(), "US") && !Objects.equals(customer.getBilling().getCountry().getIsoCode(), "CA") ) {
-					t.setLabel(t.getLabel()+"| VAT is Valid");
-				} else if (!validVAT && !Objects.equals(customer.getBilling().getCountry().getIsoCode(), "US") && !Objects.equals(customer.getBilling().getCountry().getIsoCode(), "CA")) {
-					t.setLabel(t.getLabel()+"| VAT is Invalid");
-				}
+				t.setItemPrice(BigDecimal.valueOf(taxes.calculatedTax));
+				t.setLabel(taxes.jurisdiction.value+itemVtx.product.value);
+				//list.add(t);
 
-				list.add(t);
 			}
-			//Item Tax
-			TaxItem t = new TaxItem();
-			t.setItemPrice(itemVtx.totalTax);
-			TaxRate taxrate=new TaxRate();
-			if (itemVtx.extendedPrice.compareTo(BigDecimal.ZERO)>0)
-				taxrate.setTaxRate(itemVtx.totalTax.divide(itemVtx.extendedPrice));
-			else
-				taxrate.setTaxRate(BigDecimal.ZERO);
-
-			t.setTaxRate(taxrate);
-			t.setLabel(itemVtx.product.value+" line Item Tax("+taxrate.getTaxRate().multiply(BigDecimal.valueOf(100))+"%)");
-			list.add(t);
-
 		}
-		//Total Tax
-		TaxItem t = new TaxItem();
-		t.setItemPrice(BigDecimal.valueOf(vtxEngineCalculation.data.getTotalTax()));
-		TaxRate taxrate=new TaxRate();
-		if (vtxEngineCalculation.data.getTotal()>0)
-			taxrate.setTaxRate(BigDecimal.valueOf(vtxEngineCalculation.data.getTotalTax()/(vtxEngineCalculation.data.getTotal())));
-		else
-			taxrate.setTaxRate(BigDecimal.ZERO);
 
-		t.setTaxRate(taxrate);
-		t.setLabel("TotalTax ("+taxrate.getTaxRate().multiply(BigDecimal.valueOf(100))+"%)");
-		list.add(t);
-	/*	TaxItem taxItem = new TaxItem();
+		TaxItem taxItem = new TaxItem();
 		taxItem.setItemPrice(BigDecimal.valueOf(vtxEngineCalculation.data.getTotalTax()));
 
 		// This works for US and Rest of World apart from CA - here we'll need the decision to charge GST / HST based on getCountry and Province
-
-		list.add(taxItem);*/
+		if(validVAT && !Objects.equals(customer.getBilling().getCountry().getIsoCode(), "US") && !Objects.equals(customer.getBilling().getCountry().getIsoCode(), "CA") ) {
+			taxItem.setLabel("VALID_VAT:VAT");
+		} else if (!validVAT && !Objects.equals(customer.getBilling().getCountry().getIsoCode(), "US") && !Objects.equals(customer.getBilling().getCountry().getIsoCode(), "CA")) {
+			taxItem.setLabel("INVALID_VAT:VAT");
+		} else if (!validVAT && Objects.equals(customer.getBilling().getCountry().getIsoCode(), "US") || Objects.equals(customer.getBilling().getCountry().getIsoCode(), "CA"))
+		{
+			taxItem.setLabel("TAX");
+		}
+		list.add(taxItem);
 
 
 		return list;
