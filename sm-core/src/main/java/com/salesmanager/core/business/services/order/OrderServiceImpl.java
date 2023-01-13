@@ -22,8 +22,10 @@ import javax.inject.Inject;
 import com.google.gson.Gson;
 import com.salesmanager.core.business.services.tax.TaxServiceVtx;
 import com.salesmanager.core.business.services.tax.taxamo.*;
+import com.salesmanager.core.business.services.tax.vertex.LineItem;
 import com.salesmanager.core.business.services.tax.vertex.VtxTaxCalc;
 import com.salesmanager.core.business.services.tax.vertex.VtxTaxCalcReq;
+import com.salesmanager.core.business.services.tax.vertex.VtxTaxItem;
 import com.squareup.okhttp.*;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -367,8 +369,55 @@ public class OrderServiceImpl  extends SalesManagerEntityServiceImpl<Long, Order
         }
 
         //tax
-        List<TaxItem> taxes = taxService.calculateTax(summary, customer, store, language);
-        if(taxes!=null && taxes.size()>0) {
+        //List<TaxItem> taxes = taxService.calculateTax(summary, customer, store, language);
+        ArrayList<LineItem> vtxLineItems= taxService.calculateTax(summary, customer, store, language);
+        if (vtxLineItems!=null && !vtxLineItems.isEmpty()) {
+            int taxCount = 200;
+            BigDecimal totalTaxes = new BigDecimal(0);
+            for (LineItem vtxItem : vtxLineItems) {
+
+                    if (vtxItem.taxes!=null || ! vtxItem.taxes.isEmpty()) {
+                        for (VtxTaxItem vtxItemtax : vtxItem.taxes) {
+                            OrderTotal taxLine = new OrderTotal();
+                            taxLine.setModule(Constants.OT_TAX_MODULE_CODE);
+                            taxLine.setOrderTotalType(OrderTotalType.TAX);
+                            taxLine.setTitle(Constants.OT_TAX_MODULE_CODE);
+                            taxLine.setText(vtxItemtax.imposition.value + vtxItemtax.jurisdiction.jurisdictionType + vtxItemtax.jurisdiction.value);
+                            taxLine.setSortOrder(taxCount);
+                            taxCount++;
+                            taxLine.setOrderTotalCode((vtxItemtax.imposition.value + " in the " + vtxItemtax.jurisdiction.jurisdictionType + " of " + vtxItemtax.jurisdiction.value + "(" + BigDecimal.valueOf(vtxItemtax.getEffectiveRate()).multiply(BigDecimal.valueOf(100)) + "%)"));
+                            taxLine.setValue(BigDecimal.valueOf(vtxItemtax.calculatedTax));
+                            orderTotals.add(taxLine);
+                        }
+                }
+
+                OrderTotal taxLine = new OrderTotal();
+                taxLine.setModule(Constants.OT_TAX_MODULE_CODE);
+                taxLine.setOrderTotalType(OrderTotalType.TAX);
+                taxLine.setTitle(Constants.OT_TAX_MODULE_CODE);
+                taxLine.setText(vtxItem.product.value);
+                taxLine.setSortOrder(taxCount);
+                taxCount++;
+                taxLine.setOrderTotalCode((vtxItem.product.value + " Total line Tax"));
+                taxLine.setValue(vtxItem.totalTax);
+                orderTotals.add(taxLine);
+                grandTotal = grandTotal.add(vtxItem.totalTax);
+                totalTaxes= totalTaxes.add(vtxItem.totalTax);
+                totalSummary.setTaxTotal(vtxItem.totalTax);
+            }
+            OrderTotal taxLine = new OrderTotal();
+            taxLine.setModule(Constants.OT_TAX_MODULE_CODE);
+            taxLine.setOrderTotalType(OrderTotalType.TAX);
+            taxLine.setTitle(Constants.OT_TAX_MODULE_CODE);
+            taxLine.setText("Total Tax");
+            taxLine.setSortOrder(taxCount);
+            taxCount++;
+            taxLine.setOrderTotalCode("Total Tax");
+            taxLine.setValue(totalTaxes);
+            orderTotals.add(taxLine);
+
+        }
+    /*    if(taxes!=null && taxes.size()>0) {
         	BigDecimal totalTaxes = new BigDecimal(0);
         	totalTaxes.setScale(2, RoundingMode.HALF_UP);
             int taxCount = 200;
@@ -390,7 +439,7 @@ public class OrderServiceImpl  extends SalesManagerEntityServiceImpl<Long, Order
                 totalSummary.setTaxTotal(tax.getItemPrice());
                 taxCount ++;
 
-            }
+            }*/
            /* grandTotal = grandTotal.add(totalTaxes);
             totalSummary.setTaxTotal(totalTaxes);
             OrderTotal totalTax= new OrderTotal();
@@ -401,9 +450,9 @@ public class OrderServiceImpl  extends SalesManagerEntityServiceImpl<Long, Order
             totalTax.setTitle(Constants.OT_TAX_MODULE_CODE);
             totalTax.setText("Total Tax");
             totalTax.setValue(totalTaxes);
-            orderTotals.add(totalTax);*/
+            orderTotals.add(totalTax);
         }
-
+*/
         // grand total
         OrderTotal orderTotal = new OrderTotal();
         orderTotal.setModule(Constants.OT_TOTAL_MODULE_CODE);

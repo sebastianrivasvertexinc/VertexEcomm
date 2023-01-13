@@ -17,7 +17,6 @@ import com.salesmanager.core.model.shoppingcart.ShoppingCartItem;
 import com.salesmanager.core.model.system.MerchantConfiguration;
 import com.salesmanager.core.model.tax.TaxConfiguration;
 import com.salesmanager.core.model.tax.TaxItem;
-import com.salesmanager.core.model.tax.taxrate.TaxRate;
 import com.squareup.okhttp.*;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
@@ -93,7 +92,7 @@ public class  TaxServiceVtxImpl
 
 
 	@Override
-	public List<TaxItem> calculateTax(OrderSummary orderSummary, Customer customer, MerchantStore store, Language language) throws ServiceException {
+	public ArrayList<LineItem> calculateTax(OrderSummary orderSummary, Customer customer, MerchantStore store, Language language) throws ServiceException {
 
 
 		if(customer==null) {
@@ -113,11 +112,11 @@ public class  TaxServiceVtxImpl
 		this.taxamoAuthToken = taxConfiguration.getTaxamoAuthToken();
 
 
-		List<TaxItem> taxLines = new ArrayList<TaxItem>();
+		//List<TaxItem> taxLines = new ArrayList<TaxItem>();
 		List<ShoppingCartItem> items = orderSummary.getProducts();
 		Boolean validVAT=false;
 		if(items==null) {
-			return taxLines;
+			return null;
 		}
 
 
@@ -130,7 +129,7 @@ public class  TaxServiceVtxImpl
 			return null;
 		}
 //vtx begin
-		List<TaxItem> list = new ArrayList<TaxItem>();
+		//List<TaxItem> list = new ArrayList<TaxItem>();
 		VtxTaxCalc vtxEngineCalculation=new VtxTaxCalc();
 		VtxTaxCalcReq calcRequest=new VtxTaxCalcReq();
 		String 	accessToken = "";
@@ -256,8 +255,9 @@ public class  TaxServiceVtxImpl
 		List<TaxItem> taxItems = new ArrayList<TaxItem>();
 
 		//put items in a map by tax class id
-
-		for(LineItem itemVtx : vtxEngineCalculation.data.getlineItems()) {
+		//int itenCont=0;
+		return vtxEngineCalculation.data.getlineItems();
+		/*for(LineItem itemVtx : vtxEngineCalculation.data.getlineItems()) {
 
 
 			BigDecimal itemPrice = itemVtx.extendedPrice;
@@ -280,8 +280,8 @@ public class  TaxServiceVtxImpl
 				} else if (!validVAT && !Objects.equals(customer.getBilling().getCountry().getIsoCode(), "US") && !Objects.equals(customer.getBilling().getCountry().getIsoCode(), "CA")) {
 					t.setLabel(t.getLabel()+"| VAT is Invalid");
 				}
-
-				list.add(t);
+				//orderSummary.getProducts().get(itenCont).get//TODO set prodcut tax
+				//list.add(t);
 			}
 			//Item Tax
 			TaxItem t = new TaxItem();
@@ -294,6 +294,7 @@ public class  TaxServiceVtxImpl
 
 			t.setTaxRate(taxrate);
 			t.setLabel(itemVtx.product.value+" line Item Tax("+taxrate.getTaxRate().multiply(BigDecimal.valueOf(100))+"%)");
+
 			list.add(t);
 
 		}
@@ -314,10 +315,10 @@ public class  TaxServiceVtxImpl
 
 		// This works for US and Rest of World apart from CA - here we'll need the decision to charge GST / HST based on getCountry and Province
 
-		list.add(taxItem);*/
+		list.add(taxItem);
 
 
-		return list;
+		return orderSummary;*/
 
 	}
 
