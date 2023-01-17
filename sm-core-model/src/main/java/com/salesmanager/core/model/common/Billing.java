@@ -52,6 +52,9 @@ public class Billing {
 	@Column (name ="VAT_NUMBER", length=20)
 	private String vatNumber;
 
+	@Column (name ="VAT_VALID", length=2)
+	private boolean isVatValid;
+
 	@ManyToOne(fetch = FetchType.LAZY, targetEntity = Country.class)
 	@JoinColumn(name="BILLING_COUNTRY_ID", nullable=false)
 	private Country country;
@@ -166,6 +169,14 @@ public class Billing {
 
 	public void setVatNumber(String vat) {
 		this.vatNumber = vat;
+	}
+
+	public boolean getIsVatValid() {
+		return this.isVatValid;
+	}
+
+	public void setIsVatValid(boolean vat) {
+		this.isVatValid = vat;
 	}
 	
 }

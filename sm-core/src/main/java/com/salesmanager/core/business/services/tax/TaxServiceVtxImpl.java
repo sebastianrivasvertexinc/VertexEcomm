@@ -172,10 +172,11 @@ public class  TaxServiceVtxImpl
 			if	(!StringUtils.isBlank(tr.getTaxRegistrationNumber()))
 			try {
 				validVAT = doVatValidation(tr.getTaxRegistrationNumber(), store);
+				customer.getBilling().setIsVatValid(validVAT); //setting VAT is true or false and storing
 			}
 			catch (Exception e)
 			{
-
+				//If it fails on Service dont worry about error yet...
 			}
 			cust.customerCode=custCode;
 			Destination destination= new Destination();
@@ -325,8 +326,6 @@ public class  TaxServiceVtxImpl
 	@Inject
 	private TaxService taxService = null;
 	private Boolean doVatValidation(String taxRegistrationNumber, MerchantStore store) throws Exception {
-
-
 
 
 		Gson gson = new Gson();

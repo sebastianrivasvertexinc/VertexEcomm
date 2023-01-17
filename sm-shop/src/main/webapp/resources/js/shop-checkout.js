@@ -190,6 +190,7 @@ function shippingQuotes(url,useDistanceWindow){
 			} 
 			$('#summaryRows').append(subTotalsRendered);
 			$('#totalRow').html(totalRendred);
+			$('#comments').html(response.comments); //added this to update the notes field
 			formValid = isFormValid();
 			
 			//if(formValid && response.shippingSummary!=null) {

@@ -20,6 +20,7 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
+import com.salesmanager.core.model.order.*;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.Validate;
 import org.apache.commons.lang3.StringUtils;
@@ -56,11 +57,6 @@ import com.salesmanager.core.model.common.Billing;
 import com.salesmanager.core.model.common.Delivery;
 import com.salesmanager.core.model.customer.Customer;
 import com.salesmanager.core.model.merchant.MerchantStore;
-import com.salesmanager.core.model.order.Order;
-import com.salesmanager.core.model.order.OrderCriteria;
-import com.salesmanager.core.model.order.OrderList;
-import com.salesmanager.core.model.order.OrderSummary;
-import com.salesmanager.core.model.order.OrderTotalSummary;
 import com.salesmanager.core.model.order.attributes.OrderAttribute;
 import com.salesmanager.core.model.order.orderproduct.OrderProduct;
 import com.salesmanager.core.model.order.orderstatus.OrderStatus;
@@ -102,7 +98,6 @@ import com.salesmanager.shop.populator.order.transaction.ReadableTransactionPopu
 import com.salesmanager.shop.store.api.exception.ResourceNotFoundException;
 import com.salesmanager.shop.store.api.exception.ServiceRuntimeException;
 import com.salesmanager.shop.store.controller.customer.facade.CustomerFacade;
-import com.salesmanager.shop.store.controller.order.facade.OrderFacade;
 import com.salesmanager.shop.store.controller.shoppingCart.facade.ShoppingCartFacade;
 import com.salesmanager.shop.utils.DateUtil;
 import com.salesmanager.shop.utils.EmailTemplatesUtils;
@@ -197,6 +192,29 @@ public class OrderFacadeImpl implements OrderFacade {
 
 		Customer customer = customerFacade.getCustomerModel(order.getCustomer(), store, language);
 		OrderTotalSummary summary = calculateOrderTotal(store, customer, order, language);
+
+		// Cleaning up UI before sending back to front page
+		StringBuilder taxdetail = new StringBuilder();
+		ArrayList<com.salesmanager.core.model.order.OrderTotal> totals = new ArrayList<>();
+		for(com.salesmanager.core.model.order.OrderTotal items: summary.getTotals())
+		{
+			int i = 0; //iterator for array index
+			if(items.getTitle().toString() == "tax")
+			{
+				taxdetail.append(items.getOrderTotalCode().toString() + " - " + items.getValue().toString());
+				taxdetail.append(System.lineSeparator());
+			}
+
+			if(items.getTitle().toString() != "tax")
+			{
+				totals.add(items); //adding none tax titled items from list
+			}
+
+		}
+
+		summary.setTotals(totals); //getting rid of additional lineitems and summing with Totals
+		order.setComments(taxdetail.toString());
+
 		this.setOrderTotals(order, summary);
 		return summary;
 	}
@@ -206,7 +224,6 @@ public class OrderFacadeImpl implements OrderFacade {
 			com.salesmanager.shop.model.order.v0.PersistableOrder order, Language language) throws Exception {
 
 		List<PersistableOrderProduct> orderProducts = order.getOrderProductItems();
-
 		ShoppingCartItemPopulator populator = new ShoppingCartItemPopulator();
 		populator.setProductAttributeService(productAttributeService);
 		populator.setProductService(productService);

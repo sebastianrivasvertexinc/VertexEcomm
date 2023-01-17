@@ -30,7 +30,7 @@ Templates definition
  <!-- subtotals template -->
 <script type="text/html" id="subTotalsTemplate">
 		{{#subTotals}}
-			<tr id="cart-subtotal-{{code}}" class="cart-subtotal subt"> 									
+			<tr id="cart-subtotal-{{text}}" class="cart-subtotal subt">
 				<td class="order-total-label">{{#discounted}}<s:message code="label.generic.rebate" text="Rebate" />&nbsp;-&nbsp;{{text}}{{/discounted}}{{^discounted}}{{title}}{{/discounted}}</td> 
 				<td class="order-total-label"><strong>{{#discounted}}<font color="red">-{{total}}</font>{{/discounted}}{{^discounted}}{{total}}{{/discounted}}</strong></td> 
 			</tr>
@@ -878,23 +878,23 @@ function initPayment(paymentSelection) {
 										</tbody>
 										<tfoot>
 											<!-- subtotals -->
-											<c:forEach items="${order.orderTotalSummary.totals}" var="total">
-												<c:if test="${total.orderTotalCode!='order.total.total'}">
-												<tr id="cart-subtotal-${total.orderTotalCode}" class="cart-subtotal subt"> 
-														<td class="order-total-label">
-														<c:choose>
-																<c:when test="${total.orderTotalCode=='order.total.discount'}">
-																<s:message code="label.generic.rebate" text="Rebate"/>&nbsp;-&nbsp;<s:message code="${total.text}" text="${total.text}"/>
-																</c:when>
-																<c:otherwise>
-																	<s:message code="${total.orderTotalCode}" text="${total.orderTotalCode}"/>
-																</c:otherwise>
-														</c:choose>
-														</td> 
-														<td><strong><c:choose><c:when test="${total.orderTotalCode=='order.total.discount'}"><font color="red">- <sm:monetary value="${total.value}" /></span></c:when><c:otherwise><sm:monetary value="${total.value}" /></c:otherwise></c:choose></strong></td> 
-												</tr> 
-												</c:if>
-											</c:forEach>
+                                        <c:forEach items="${order.orderTotalSummary.totals}" var="total">
+                                            <c:if test="${total.orderTotalCode!='order.total.total'}">
+                                            <tr id="cart-subtotal-${total.text}" class="cart-subtotal subt">
+                                                    <td class="order-total-label">
+                                                    <c:choose>
+                                                            <c:when test="${total.orderTotalCode=='order.total.discount'}">
+                                                            <s:message code="label.generic.rebate" text="Rebate"/>&nbsp;-&nbsp;<s:message code="${total.text}" text="${total.text}"/>
+                                                            </c:when>
+                                                            <c:otherwise>
+                                                                <s:message code="${total.orderTotalCode}" text="${total.orderTotalCode}"/>
+                                                            </c:otherwise>
+                                                    </c:choose>
+                                                    </td>
+                                                    <td><strong><c:choose><c:when test="${total.orderTotalCode=='order.total.discount'}"><font color="red">- <sm:monetary value="${total.value}" /></span></c:when><c:otherwise><sm:monetary value="${total.value}" /></c:otherwise></c:choose></strong></td>
+                                            </tr>
+                                            </c:if>
+                                        </c:forEach>
 											
 											<!-- Shipping box THIS IS ALL BROKEN -->
 											<c:if test="${shippingQuote!=null}">

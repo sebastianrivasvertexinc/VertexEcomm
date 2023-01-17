@@ -1189,6 +1189,7 @@ public class ShoppingOrderController extends AbstractController {
 			order.setShoppingCartItems(items);
 			order.setCartCode(cart.getShoppingCartCode());
 
+
 			
 			OrderTotalSummary orderTotalSummary = orderFacade.calculateOrderTotal(store, order, language);
 			super.setSessionAttribute(Constants.ORDER_SUMMARY, orderTotalSummary, request);
@@ -1218,7 +1219,9 @@ public class ShoppingOrderController extends AbstractController {
 			LOGGER.error("Error while getting shipping quotes",e);
 			readableOrder.setErrorMessage(messages.getMessage("message.error", locale));
 		}
-		
+
+		// Hack as there is an error that occurs with readable grandtotal that causes a null object....should add
+		readableOrder.setComments(order.getComments());
 		return readableOrder;
 	}
 

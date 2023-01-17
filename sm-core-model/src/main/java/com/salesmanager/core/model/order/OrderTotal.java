@@ -39,7 +39,7 @@ public class OrderTotal extends SalesManagerEntity<Long, OrderTotal> {
 	private Long id;
 	
 	@Column (name ="CODE", nullable=false)
-	private String orderTotalCode;//SHIPPING, TAX
+	private String orderTotalCode; //SHIPPING, TAX
 	
 	@Column (name ="TITLE", nullable=true)
 	private String title;
