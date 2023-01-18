@@ -14,6 +14,8 @@ import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 import com.salesmanager.core.business.repositories.customer.CustomerRepository;
+import com.salesmanager.shop.model.customer.ReadableBilling;
+import com.salesmanager.shop.model.customer.address.Address;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.Validate;
 import org.apache.commons.lang3.StringUtils;
@@ -267,6 +269,14 @@ public class ShoppingOrderController extends AbstractController {
 					if(anonymousCustomer.getBilling().getPostalCode()!=null) {
 						billing.setPostalCode(anonymousCustomer.getBilling().getPostalCode());
 					}
+					if(anonymousCustomer.getBilling().getVatNumber()!=null) {
+						billing.setVatNumber(anonymousCustomer.getBilling().getVatNumber());
+					}
+					if(anonymousCustomer.getBilling().getIsVatValid()!=null) {
+						billing.setIsVatValid(anonymousCustomer.getBilling().getIsVatValid());
+					}
+
+
 					customer.setBilling(billing);
 				}
 	     }
@@ -1220,8 +1230,12 @@ public class ShoppingOrderController extends AbstractController {
 			readableOrder.setErrorMessage(messages.getMessage("message.error", locale));
 		}
 
-		// Hack as there is an error that occurs with readable grandtotal that causes a null object....should add
+		// updating readableOrder with the new comments from Tax fields
 		readableOrder.setComments(order.getComments());
+		// updating readableOrder with complete customer details
+		 Address address = order.getCustomer().getBilling();
+		ReadableBilling rb = new ReadableBilling().populate(order, address);
+		readableOrder.setBilling(rb);
 		return readableOrder;
 	}
 

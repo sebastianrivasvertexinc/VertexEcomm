@@ -410,11 +410,44 @@ public class OrderServiceImpl  extends SalesManagerEntityServiceImpl<Long, Order
             OrderTotal taxLine = new OrderTotal();
             taxLine.setModule(Constants.OT_TAX_MODULE_CODE);
             taxLine.setOrderTotalType(OrderTotalType.TAX);
-            taxLine.setTitle("Total"+Constants.OT_TAX_MODULE_CODE);
-            taxLine.setText("Total Tax");
+
+
+            String country = customer.getBilling().getCountry().getIsoCode().toString(); //test
+            Object tester = customer.getAttributes();
+
+            if(country.equals("US")){
+                taxLine.setTitle("Total"+Constants.OT_TAX_MODULE_CODE);
+                taxLine.setText("Tax");
+                taxLine.setOrderTotalCode("TAX");
+            }
+            else if(country.equals("CA"))
+            {
+                taxLine.setTitle("Total"+Constants.OT_TAX_MODULE_CODE);
+                taxLine.setText("GST/HST");
+                taxLine.setOrderTotalCode("GST/HST");
+            }
+            else
+            {
+
+                if(customer.getBilling().getIsVatValid() == "true")
+                {
+                    taxLine.setTitle("VAT_VALID");
+                    taxLine.setText("VAT_VALID");
+                }
+
+                else {
+                    taxLine.setTitle("VAT_INVALID");
+                    taxLine.setText("VAT_INVALID");
+                }
+
+
+                taxLine.setOrderTotalCode("VAT TOTAL");
+            }
+
+
             taxLine.setSortOrder(taxCount);
             taxCount++;
-            taxLine.setOrderTotalCode("Total Tax");
+
             taxLine.setValue(totalTaxes);
             orderTotals.add(taxLine);
 

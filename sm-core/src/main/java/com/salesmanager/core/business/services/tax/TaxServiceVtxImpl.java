@@ -172,7 +172,7 @@ public class  TaxServiceVtxImpl
 			if	(!StringUtils.isBlank(tr.getTaxRegistrationNumber()))
 			try {
 				validVAT = doVatValidation(tr.getTaxRegistrationNumber(), store);
-				customer.getBilling().setIsVatValid(validVAT); //setting VAT is true or false and storing
+				customer.getBilling().setIsVatValid(String.valueOf(validVAT)); //setting VAT is true or false and storing
 			}
 			catch (Exception e)
 			{

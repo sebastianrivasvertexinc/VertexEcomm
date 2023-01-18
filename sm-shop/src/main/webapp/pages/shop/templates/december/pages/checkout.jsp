@@ -746,7 +746,7 @@ function initPayment(paymentSelection) {
 									    <div class="checkout-form-list">
                                             <label><s:message code="label.generic.vatnumber" text="VAT Number"/>
                                             <i class="fa fa-check" id="vatCheck"></i></label>
-                                            <form:input id="customerBillingVatNumber" cssClass="" path="customer.billing.vatNumber"/>
+                                            <form:input id="customerBillingVatNumber" cssClass="" path="customer.billing.vatNumber" />
 
                                         </div>
 									</div>

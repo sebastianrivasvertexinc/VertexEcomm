@@ -432,16 +432,19 @@ function checkVat(countryCode){
                 $("#vatNumberCheck").css('visibility', 'hidden');
             }
 
-            if($("#cart-subtotal-VALID\\_VAT\\:VAT").length){
+            if($("#cart-subtotal-VAT\\_VALID").length){
                 $("#vatCheck").css({'visibility':'visible',
                                          'color':'#00FF00'});
-
+                $("#customerBillingVatNumber").css({'visibility':'visible',
+                                              'background-color':'#DFF0D8'});
                 // add logic to correct text in Order Summary Total
                 }
 
-            if($("#cart-subtotal-INVALID\\_VAT\\:VAT").length){
-                               $("#vatCheck").css({'visibility':'hidden',
-                                                        'color':'#00FF00'});
+            if($("#cart-subtotal-VAT\\_INVALID").length){
+                $("#vatCheck").css({'visibility':'hidden',
+                                         'color':'#00FF00'});
+                $("#customerBillingVatNumber").css({'visibility':'visible',
+                                              'background-color':'#F2DEDE'});
 
                 }
 

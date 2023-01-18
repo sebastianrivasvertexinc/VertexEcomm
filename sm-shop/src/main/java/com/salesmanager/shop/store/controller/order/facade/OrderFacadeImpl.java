@@ -1,6 +1,8 @@
 package com.salesmanager.shop.store.controller.order.facade;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -193,6 +195,7 @@ public class OrderFacadeImpl implements OrderFacade {
 		Customer customer = customerFacade.getCustomerModel(order.getCustomer(), store, language);
 		OrderTotalSummary summary = calculateOrderTotal(store, customer, order, language);
 
+
 		// Cleaning up UI before sending back to front page
 		StringBuilder taxdetail = new StringBuilder();
 		ArrayList<com.salesmanager.core.model.order.OrderTotal> totals = new ArrayList<>();
@@ -201,7 +204,13 @@ public class OrderFacadeImpl implements OrderFacade {
 			int i = 0; //iterator for array index
 			if(items.getTitle().toString() == "tax")
 			{
-				taxdetail.append(items.getOrderTotalCode().toString() + " - " + items.getValue().toString());
+				//force 2 decimal places
+
+				DecimalFormat df = new DecimalFormat("0.00");
+				Double txformatted = new Double(String.valueOf(items.getValue()));
+				df.format(txformatted);
+
+				taxdetail.append(items.getOrderTotalCode().toString() + " - " +  df.format(txformatted));
 				taxdetail.append(System.lineSeparator());
 			}
 
@@ -213,7 +222,15 @@ public class OrderFacadeImpl implements OrderFacade {
 		}
 
 		summary.setTotals(totals); //getting rid of additional lineitems and summing with Totals
-		order.setComments(taxdetail.toString());
+		order.setComments(taxdetail.toString()); //setting order comments for the UI (overriding the null)
+
+		//Update Object that returns to front page
+		PersistableCustomer updateCustomerInfo = order.getCustomer();
+		Address add = updateCustomerInfo.getBilling();
+		add.setVatNumber(customer.getBilling().getVatNumber());
+		add.setIsVatValid(customer.getBilling().getIsVatValid());
+		updateCustomerInfo.setBilling(add);
+		order.setCustomer(updateCustomerInfo);
 
 		this.setOrderTotals(order, summary);
 		return summary;
@@ -662,6 +679,7 @@ public class OrderFacadeImpl implements OrderFacade {
 			delivery.setState(billing.getState());
 			delivery.setCountry(billing.getCountry());
 			delivery.setZone(billing.getZone());
+
 		} else {
 			delivery = customer.getDelivery();
 		}
@@ -1525,6 +1543,8 @@ public class OrderFacadeImpl implements OrderFacade {
         target.setPostalCode(source.getPostalCode());
         target.setTelephone(source.getPhone());
         target.setAddress(source.getAddress());
+		target.setVatNumber(source.getVatNumber());
+		target.setIsVatValid(source.getIsVatValid());
         if(source.getCountry()!=null) {
         	target.setCountry(countryService.getByCode(source.getCountry()));
         }
