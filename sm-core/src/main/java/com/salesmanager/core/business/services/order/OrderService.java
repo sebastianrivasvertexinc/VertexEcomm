@@ -2,11 +2,13 @@ package com.salesmanager.core.business.services.order;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 import com.salesmanager.core.business.exception.ServiceException;
 import com.salesmanager.core.business.services.common.generic.SalesManagerEntityService;
+import com.salesmanager.core.business.services.tax.vertex.LineItem;
 import com.salesmanager.core.model.customer.Customer;
 import com.salesmanager.core.model.merchant.MerchantStore;
 import com.salesmanager.core.model.order.Order;
@@ -131,5 +133,5 @@ public interface OrderService extends SalesManagerEntityService<Long, Order> {
 
 
 
-	String createInvoice(Order order, Customer customer, List<ShoppingCartItem> items) ;
+	String createInvoice(Order order, Customer customer,  ArrayList<LineItem>  items, MerchantStore store);
 }

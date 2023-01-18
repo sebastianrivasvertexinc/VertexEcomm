@@ -4,7 +4,9 @@ import com.salesmanager.core.business.exception.ServiceException;
 import com.salesmanager.core.business.services.tax.vertex.LineItem;
 import com.salesmanager.core.model.customer.Customer;
 import com.salesmanager.core.model.merchant.MerchantStore;
+import com.salesmanager.core.model.order.Order;
 import com.salesmanager.core.model.order.OrderSummary;
+import com.salesmanager.core.model.order.OrderTotalSummary;
 import com.salesmanager.core.model.reference.language.Language;
 import com.salesmanager.core.model.tax.TaxConfiguration;
 
@@ -37,11 +39,12 @@ public interface TaxServiceVtx {
 	 * @param orderSummary
 	 * @param customer
 	 * @param store
-	 * @param locale
+	 * @param local
 	 * @return
 	 * @throws ServiceException
 	 */
 	ArrayList<LineItem> calculateTax(OrderSummary orderSummary, Customer customer,
 									 MerchantStore store, Language language) throws ServiceException;
 
+	ArrayList<LineItem> commitTax(Order order, Customer customer, MerchantStore store, OrderTotalSummary summary) throws ServiceException;
 }

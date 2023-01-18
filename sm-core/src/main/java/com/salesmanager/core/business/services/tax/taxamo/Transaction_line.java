@@ -1,5 +1,6 @@
 package com.salesmanager.core.business.services.tax.taxamo;
 
+import com.salesmanager.core.business.services.tax.vertex.Quantity;
 import com.salesmanager.core.model.shoppingcart.ShoppingCartItem;
 
 import java.math.BigDecimal;
@@ -8,7 +9,8 @@ public class Transaction_line {
     private String description;
     private BigDecimal amount;
     private String informative;
-    private float tax_rate;
+    private double tax_rate;
+    private double quantity;
     private String custom_id;
 
 
@@ -22,11 +24,15 @@ public class Transaction_line {
         return amount;
     }
 
+    public double getQuantity() {
+        return quantity;
+    }
+
     public String getInformative() {
         return informative;
     }
 
-    public float getTax_rate() {
+    public double getTax_rate() {
         return tax_rate;
     }
 
@@ -48,11 +54,13 @@ public class Transaction_line {
         this.informative = informative;
     }
 
-    public void setTax_rate(float tax_rate) {
+    public void setTax_rate(double tax_rate) {
         this.tax_rate = tax_rate;
     }
 
     public void setCustom_id(String custom_id) {
         this.custom_id = custom_id;
     }
+
+    public void setQuantity(double quantity) {this.quantity = quantity;}
 }

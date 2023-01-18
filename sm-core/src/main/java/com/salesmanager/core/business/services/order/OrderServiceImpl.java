@@ -15,12 +15,10 @@ import com.google.gson.Gson;
 import com.salesmanager.core.business.services.tax.TaxServiceVtx;
 import com.salesmanager.core.business.services.tax.taxamo.*;
 import com.salesmanager.core.business.services.tax.vertex.LineItem;
-import com.salesmanager.core.business.services.tax.vertex.VtxTaxCalc;
-import com.salesmanager.core.business.services.tax.vertex.VtxTaxCalcReq;
 import com.salesmanager.core.business.services.tax.vertex.VtxTaxItem;
 import com.salesmanager.core.model.tax.TaxConfiguration;
 import com.squareup.okhttp.*;
-import jdk.nashorn.internal.ir.annotations.Ignore;
+
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
@@ -40,7 +38,6 @@ import com.salesmanager.core.business.services.payments.PaymentService;
 import com.salesmanager.core.business.services.payments.TransactionService;
 import com.salesmanager.core.business.services.shipping.ShippingService;
 import com.salesmanager.core.business.services.shoppingcart.ShoppingCartService;
-import com.salesmanager.core.business.services.tax.TaxService;
 import com.salesmanager.core.model.catalog.product.Product;
 import com.salesmanager.core.model.catalog.product.availability.ProductAvailability;
 import com.salesmanager.core.model.catalog.product.price.FinalPrice;
@@ -67,7 +64,6 @@ import com.salesmanager.core.model.reference.language.Language;
 import com.salesmanager.core.model.shipping.ShippingConfiguration;
 import com.salesmanager.core.model.shoppingcart.ShoppingCart;
 import com.salesmanager.core.model.shoppingcart.ShoppingCartItem;
-import com.salesmanager.core.model.tax.TaxItem;
 
 @Service("orderService")
 public class OrderServiceImpl  extends SalesManagerEntityServiceImpl<Long, Order> implements OrderService {
@@ -229,7 +225,11 @@ public class OrderServiceImpl  extends SalesManagerEntityServiceImpl<Long, Order
             itemcheck++; //increment for item check
         }
 
-        String urlInvoice=createInvoice(order,customer,items);// Taxamo info, updated to send store info for URL's
+
+        //Do an invoice call to vertex
+        ArrayList<LineItem> vtxLineItems= taxService.commitTax(order, customer, store,summary);
+
+        String urlInvoice=createInvoice(order,customer,vtxLineItems,store);// Taxamo info, updated to send store info for URL's
         System.out.println(urlInvoice);
        order.setShippingModuleCode(urlInvoice);
     	return order;
@@ -391,6 +391,7 @@ public class OrderServiceImpl  extends SalesManagerEntityServiceImpl<Long, Order
                 grandTotal = grandTotal.add(vtxItem.totalTax);
                 totalTaxes= totalTaxes.add(vtxItem.totalTax);
                 totalSummary.setTaxTotal(vtxItem.totalTax);
+
 
                     if (vtxItem.taxes!=null || ! vtxItem.taxes.isEmpty()) {
                         for (VtxTaxItem vtxItemtax : vtxItem.taxes) {
@@ -787,11 +788,10 @@ public class OrderServiceImpl  extends SalesManagerEntityServiceImpl<Long, Order
 		return returnOrders;
 	}
 
-    @Override
-    public String createInvoice(Order order, Customer customer, List<ShoppingCartItem> items){
+    public String createInvoice(Order order, Customer customer, ArrayList<LineItem> items, MerchantStore store){
         // Don't want to throw exception back since we're overriding createInvoice, so ignore exception
         try {
-            GetConfigData(_store);
+            GetConfigData(store);
         } catch (ServiceException ignore){
             LOGGER.warn("GetConfigData from store failed...expect an Exception error");
         }
@@ -822,13 +822,20 @@ public class OrderServiceImpl  extends SalesManagerEntityServiceImpl<Long, Order
         trans.setInvoice_address(invAddress);
 
         ArrayList<Transaction_line> transaction_lines= new  ArrayList<Transaction_line>();
-        Transaction_line tLine= new Transaction_line();
-        for (ShoppingCartItem item :items) {
-            tLine.setDescription(item.getProduct().getProductDescription().getName()); //fixed name without <p>
-            tLine.setAmount(item.getItemPrice());
+        Integer cont=0;
+        for (LineItem itemProduct :items) {
+            Transaction_line tLine= new Transaction_line();
+            cont++;
+            tLine.setDescription(itemProduct.product.value);
+            tLine.setQuantity( itemProduct.quantity.value);
+            tLine.setAmount(itemProduct.extendedPrice);
+            double rate=0;
+            for (VtxTaxItem tax :itemProduct.getTaxes()){
+                rate+=tax.getEffectiveRate();
+            }
+            tLine.setTax_rate(rate*100);
             tLine.setInformative("true");//TODO
-            tLine.setTax_rate(5f);//TODO
-            tLine.setCustom_id("1");//TODO
+            tLine.setCustom_id(cont.toString());//TODO
             transaction_lines.add(tLine);
         }
         trans.transaction_lines=transaction_lines;
