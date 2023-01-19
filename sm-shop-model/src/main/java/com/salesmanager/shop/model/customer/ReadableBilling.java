@@ -20,6 +20,7 @@ public class ReadableBilling extends BillingEntity {
 			address.setEmail(source.getCustomer().getEmailAddress());
 			address.setCity(source.getCustomer().getBilling().getCity());
 			address.setAddress(source.getCustomer().getBilling().getAddress());
+			address.setStateProvince(source.getCustomer().getBilling().getStateProvince());
 			address.setCompany(source.getCustomer().getBilling().getCompany());
 			address.setFirstName(source.getCustomer().getBilling().getFirstName());
 			address.setLastName(source.getCustomer().getBilling().getLastName());

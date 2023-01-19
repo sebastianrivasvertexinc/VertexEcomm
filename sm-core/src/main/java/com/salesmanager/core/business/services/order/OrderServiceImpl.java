@@ -813,14 +813,20 @@ public class OrderServiceImpl  extends SalesManagerEntityServiceImpl<Long, Order
         }else {
             trans.setBuyer_tax_number("n/a");//DJR - Fixed logic
         }
-      //  trans.setBuyer_ip(order.getIpAddress());
+        trans.setBuyer_ip(order.getIpAddress());
 
         Invoice_address invAddress =new Invoice_address();
         invAddress.setCountry(order.getBilling().getCountry().getIsoCode());
         invAddress.setCity(order.getBilling().getCity());
         invAddress.setPostal_code(order.getBilling().getPostalCode());
+        invAddress.setFreeform_address(order.getBilling().getAddress()+" "+ order.getBilling().getCity() + " " + order.getBilling().getPostalCode()+ " " + order.getBilling().getCountry().getIsoCode());
+        if((invAddress.getCountry().equals("US")) || (invAddress.getCountry().equals("CA")))
+        {
+          invAddress.setRegion(order.getBilling().getZone().getCode());
+        }
         trans.setInvoice_address(invAddress);
-
+        //Setting Billing Country Code
+        trans.setBilling_country_code(order.getBilling().getCountry().getIsoCode());
         ArrayList<Transaction_line> transaction_lines= new  ArrayList<Transaction_line>();
         Integer cont=0;
         for (LineItem itemProduct :items) {
@@ -839,6 +845,7 @@ public class OrderServiceImpl  extends SalesManagerEntityServiceImpl<Long, Order
             transaction_lines.add(tLine);
         }
         trans.transaction_lines=transaction_lines;
+
         taxamoRequest.setTransaction(trans);
         String jsonDataReq=gson.toJson(taxamoRequest, TaxamoRequest.class);
         RequestBody body = RequestBody.create(mediaType, jsonDataReq);
