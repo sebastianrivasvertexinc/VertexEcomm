@@ -822,7 +822,7 @@ public class OrderServiceImpl  extends SalesManagerEntityServiceImpl<Long, Order
         invAddress.setFreeform_address(order.getBilling().getAddress()+" "+ order.getBilling().getCity() + " " + order.getBilling().getPostalCode()+ " " + order.getBilling().getCountry().getIsoCode());
         if((invAddress.getCountry().equals("US")) || (invAddress.getCountry().equals("CA")))
         {
-          invAddress.setRegion(order.getBilling().getZone().getCode());
+          invAddress.setRegion(order.getBilling().getCountry().getIsoCode());//SR fix
         }
         trans.setInvoice_address(invAddress);
         //Setting Billing Country Code

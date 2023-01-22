@@ -39,7 +39,7 @@ public interface TaxServiceVtx {
 	 * @param orderSummary
 	 * @param customer
 	 * @param store
-	 * @param local
+	 * @param language
 	 * @return
 	 * @throws ServiceException
 	 */
@@ -47,4 +47,7 @@ public interface TaxServiceVtx {
 									 MerchantStore store, Language language) throws ServiceException;
 
 	ArrayList<LineItem> commitTax(Order order, Customer customer, MerchantStore store, OrderTotalSummary summary) throws ServiceException;
+
+
+
 }
