@@ -183,6 +183,8 @@ public class  TaxServiceVtxImpl
 				//If it fails on Service dont worry about error yet...
 			}
 			cust.customerCode=custCode;
+			if (validVAT==Boolean.TRUE)//TODO need to make sure this logic is valid for US
+				cust.isTaxExempt= true;
 			Destination destination= new Destination();
 			if	(!StringUtils.isBlank(customer.getBilling().getCity()))
 				destination.city=customer.getBilling().getCity();
