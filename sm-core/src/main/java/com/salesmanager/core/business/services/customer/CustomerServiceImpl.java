@@ -153,7 +153,7 @@ public class CustomerServiceImpl extends SalesManagerEntityServiceImpl<Long, Cus
 		MediaType mediaType = MediaType.parse("application/x-www-form-urlencoded");
 		RequestBody body = RequestBody.create(mediaType, "client_id=" + client_Id + "&client_secret=" + client_secret +"&grant_type=client_credentials&scope=calc-rest-api");
 		Request request = new Request.Builder()
-				.url("https://auth.vertexsmb.com/identity/connect/token")
+				.url("https://auth.vertexsmb.com/identity/connect/token")//TODO: david add this to tha admin console as "Vertex Autentication URL"
 				.method("POST", body)
 				.addHeader("Content-Type", "application/x-www-form-urlencoded")
 				.build();

@@ -20,7 +20,6 @@ import com.salesmanager.core.model.shipping.ShippingSummary;
 import com.salesmanager.core.model.shoppingcart.ShoppingCartItem;
 import com.salesmanager.core.model.system.MerchantConfiguration;
 import com.salesmanager.core.model.tax.TaxConfiguration;
-import com.salesmanager.core.model.tax.TaxItem;
 import com.squareup.okhttp.*;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
@@ -96,7 +95,7 @@ public class  TaxServiceVtxImpl
 
 
 	@Override
-	public ArrayList<LineItem> calculateTax(OrderSummary orderSummary, Customer customer, MerchantStore store, Language language) throws ServiceException {
+	public VtxTaxCalc calculateTax(OrderSummary orderSummary, Customer customer, MerchantStore store, Language language) throws ServiceException {
 
 
 		if(customer==null) {
@@ -167,21 +166,25 @@ public class  TaxServiceVtxImpl
 			CustomerCode custCode=new CustomerCode();
 			custCode.value	=customer.getEmailAddress();
 
-			cust.taxRegistrations = new ArrayList<TaxRegistration>();
-			TaxRegistration tr = new TaxRegistration();
-			tr.setTaxRegistrationNumber(customer.getBilling().getVatNumber()); //modified to get VAT number from front page
-			tr.setIsoCountryCode(customer.getBilling().getCountry().getIsoCode());
-			cust.taxRegistrations.add(tr)		;
-
-			if	(!StringUtils.isBlank(tr.getTaxRegistrationNumber()))
+			if	(!StringUtils.isBlank(customer.getBilling().getVatNumber()))
 			try {
-				validVAT = doVatValidation(tr.getTaxRegistrationNumber(), store);
+				validVAT = doVatValidation(customer.getBilling().getVatNumber(), store);
 				customer.getBilling().setIsVatValid(String.valueOf(validVAT)); //setting VAT is true or false and storing
 			}
 			catch (Exception e)
 			{
 				//If it fails on Service dont worry about error yet...
 			}
+
+
+
+			cust.taxRegistrations = new ArrayList<TaxRegistration>();
+			TaxRegistration tr = new TaxRegistration();
+			if (validVAT){ // only set when VAT is valid.
+				tr.setTaxRegistrationNumber(customer.getBilling().getVatNumber()); //modified to get VAT number from front page
+				tr.setIsoCountryCode(customer.getBilling().getCountry().getIsoCode());
+			}
+			cust.taxRegistrations.add(tr)		;
 			cust.customerCode=custCode;
 			if (validVAT==Boolean.TRUE)//TODO need to make sure this logic is valid for US
 				cust.isTaxExempt= true;
@@ -250,10 +253,10 @@ public class  TaxServiceVtxImpl
 		if (vtxEngineCalculation==null || vtxEngineCalculation.data==null || vtxEngineCalculation.data.getlineItems()==null || vtxEngineCalculation.data.getlineItems().isEmpty()){
 			return null;
 		}
-		List<TaxItem> taxItems = new ArrayList<TaxItem>();
+		//List<TaxItem> taxItems = new ArrayList<TaxItem>();
 		//put items in a map by tax class id
 		//int itenCont=0;
-		return vtxEngineCalculation.data.getlineItems();
+		return vtxEngineCalculation;
 
 
 	}
@@ -318,21 +321,25 @@ public class  TaxServiceVtxImpl
 			CustomerCode custCode=new CustomerCode();
 			custCode.value	=customer.getEmailAddress();
 
-			cust.taxRegistrations = new ArrayList<TaxRegistration>();
-			TaxRegistration tr = new TaxRegistration();
-			tr.setTaxRegistrationNumber(customer.getBilling().getVatNumber()); //modified to get VAT number from front page
-			tr.setIsoCountryCode(customer.getBilling().getCountry().getIsoCode());
-			cust.taxRegistrations.add(tr)		;
 
-			if	(!StringUtils.isBlank(tr.getTaxRegistrationNumber()))
+
+			if	(!StringUtils.isBlank(customer.getBilling().getVatNumber())) // perform VAT ID Validation if it is not valid do not add it to the registration.
 				try {
-					validVAT = doVatValidation(tr.getTaxRegistrationNumber(), store);
+					validVAT = doVatValidation(customer.getBilling().getVatNumber(), store);
 					customer.getBilling().setIsVatValid(String.valueOf(validVAT)); //setting VAT is true or false and storing
 				}
 				catch (Exception e)
 				{
 					//If it fails on Service dont worry about error yet...
 				}
+
+			cust.taxRegistrations = new ArrayList<TaxRegistration>();
+			TaxRegistration tr = new TaxRegistration();
+			if(validVAT){
+				tr.setTaxRegistrationNumber(customer.getBilling().getVatNumber()); //modified to get VAT number from front page
+				tr.setIsoCountryCode(customer.getBilling().getCountry().getIsoCode());
+			}
+			cust.taxRegistrations.add(tr)		;
 			cust.customerCode=custCode;
 			Destination destination= new Destination();
 			if	(!StringUtils.isBlank(customer.getBilling().getCity()))
@@ -425,10 +432,9 @@ public class  TaxServiceVtxImpl
 
 		OkHttpClient client = new OkHttpClient();
 		MediaType mediaType = MediaType.parse("application/x-www-form-urlencoded");
-		RequestBody body = RequestBody.create(mediaType, "client_id=" + client_Id + "&client_secret=" + client_secret +"&grant_type=client_credentials");
-
+		RequestBody body = RequestBody.create(mediaType, "client_id=" + client_Id + "&client_secret=" + client_secret +"&grant_type=client_credentials&scope=calc-rest-api");
 		Request request = new Request.Builder()
-				.url("https://testsales.dev.ondemand.vertexinc.com/oseries-auth/oauth/token")
+				.url("https://auth.vertexsmb.com/identity/connect/token")//TODO: david add this to tha admin console as "Vertex Autentication URL"
 				.method("POST", body)
 				.addHeader("Content-Type", "application/x-www-form-urlencoded")
 				.build();
@@ -449,7 +455,7 @@ public class  TaxServiceVtxImpl
 		RequestBody body = RequestBody.create(mediaType, jsonDataReq);
 
 		Request request = new Request.Builder()
-				.url(calc_url + "/vertex-ws/v2/supplies")
+				.url(calc_url )
 				.method("POST", body)
 				.addHeader("Content-Type", "application/json")
 				.addHeader("Authorization", "Bearer "+accessToken)

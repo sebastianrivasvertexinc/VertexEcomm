@@ -15,6 +15,8 @@ import com.google.gson.Gson;
 import com.salesmanager.core.business.services.tax.TaxServiceVtx;
 import com.salesmanager.core.business.services.tax.taxamo.*;
 import com.salesmanager.core.business.services.tax.vertex.LineItem;
+import com.salesmanager.core.business.services.tax.vertex.VtxTaxCalc;
+import com.salesmanager.core.business.services.tax.vertex.VtxTaxCalcReq;
 import com.salesmanager.core.business.services.tax.vertex.VtxTaxItem;
 import com.salesmanager.core.model.tax.TaxConfiguration;
 import com.squareup.okhttp.*;
@@ -371,7 +373,12 @@ public class OrderServiceImpl  extends SalesManagerEntityServiceImpl<Long, Order
 
         //tax
         //List<TaxItem> taxes = taxService.calculateTax(summary, customer, store, language);
-        ArrayList<LineItem> vtxLineItems= taxService.calculateTax(summary, customer, store, language);
+        VtxTaxCalc vtxTaxCalc= taxService.calculateTax(summary, customer, store, language);
+
+        ArrayList<LineItem> vtxLineItems=null;
+        if ((vtxTaxCalc!=null) &&(vtxTaxCalc.data!=null))
+            vtxLineItems=vtxTaxCalc.data.getlineItems();
+
         if (vtxLineItems!=null && !vtxLineItems.isEmpty()) {
             int taxCount = 200;
             BigDecimal totalTaxes = new BigDecimal(0);
@@ -389,23 +396,29 @@ public class OrderServiceImpl  extends SalesManagerEntityServiceImpl<Long, Order
                 taxLine.setValue(vtxItem.totalTax);
                 orderTotals.add(taxLine);
                 grandTotal = grandTotal.add(vtxItem.totalTax);
-                totalTaxes= totalTaxes.add(vtxItem.totalTax);
+                // totalTaxes= totalTaxes.add(vtxItem.totalTax);
                 totalSummary.setTaxTotal(vtxItem.totalTax);
 
 
-                    if (vtxItem.taxes!=null || ! vtxItem.taxes.isEmpty()) {
-                        for (VtxTaxItem vtxItemtax : vtxItem.taxes) {
-                            taxLine = new OrderTotal();
-                            taxLine.setModule(Constants.OT_TAX_MODULE_CODE);
-                            taxLine.setOrderTotalType(OrderTotalType.TAX);
-                            taxLine.setTitle(Constants.OT_TAX_MODULE_CODE);
-                            taxLine.setText(Constants.OT_TAX_MODULE_CODE + "-" + taxCount);
-                            taxLine.setSortOrder(taxCount);
-                            taxCount++;
-                            taxLine.setOrderTotalCode((vtxItemtax.imposition.value + " in the " + vtxItemtax.jurisdiction.jurisdictionType + " of " + vtxItemtax.jurisdiction.value + "(" + BigDecimal.valueOf(vtxItemtax.getEffectiveRate()).multiply(BigDecimal.valueOf(100)) + "%)"));
-                            taxLine.setValue(BigDecimal.valueOf(vtxItemtax.calculatedTax));
-                            orderTotals.add(taxLine);
-                        }
+                if (vtxItem.taxes != null || !vtxItem.taxes.isEmpty()) {
+                    for (VtxTaxItem vtxItemtax : vtxItem.taxes) {
+                        taxLine = new OrderTotal();
+                        taxLine.setModule(Constants.OT_TAX_MODULE_CODE);
+                        taxLine.setOrderTotalType(OrderTotalType.TAX);
+                        taxLine.setTitle(Constants.OT_TAX_MODULE_CODE);
+                        taxLine.setText(Constants.OT_TAX_MODULE_CODE + "-" + taxCount);
+                        taxLine.setSortOrder(taxCount);
+                        taxCount++;
+                        taxLine.setOrderTotalCode((vtxItemtax.imposition.value + " in the " + vtxItemtax.jurisdiction.jurisdictionType + " of " + vtxItemtax.jurisdiction.value + "(" + BigDecimal.valueOf(vtxItemtax.getEffectiveRate()).multiply(BigDecimal.valueOf(100)) + "%)"));
+
+                       // Gson gson = new Gson();
+                     //   taxLine.setOrderTotalCode(gson.toJson(vtxTaxCalc, VtxTaxCalc.class));
+
+                        taxLine.setValue(BigDecimal.valueOf(vtxItemtax.calculatedTax));
+                        orderTotals.add(taxLine);
+                    }
+
+
                 }
             }
             OrderTotal taxLine = new OrderTotal();
@@ -416,27 +429,20 @@ public class OrderServiceImpl  extends SalesManagerEntityServiceImpl<Long, Order
             String country = customer.getBilling().getCountry().getIsoCode().toString(); //test
             Object tester = customer.getAttributes();
 
-            if(country.equals("US")){
-                taxLine.setTitle("Total"+Constants.OT_TAX_MODULE_CODE);
+            if (country.equals("US")) {
+                taxLine.setTitle("Total" + Constants.OT_TAX_MODULE_CODE);
                 taxLine.setText("Tax");
                 taxLine.setOrderTotalCode("TAX");
-            }
-            else if(country.equals("CA"))
-            {
-                taxLine.setTitle("Total"+Constants.OT_TAX_MODULE_CODE);
+            } else if (country.equals("CA")) {
+                taxLine.setTitle("Total" + Constants.OT_TAX_MODULE_CODE);
                 taxLine.setText("GST/HST");
                 taxLine.setOrderTotalCode("GST/HST");
-            }
-            else
-            {
+            } else {
 
-                if(customer.getBilling().getIsVatValid() == "true")
-                {
+                if (customer.getBilling().getIsVatValid() == "true") {
                     taxLine.setTitle("VAT_VALID");
                     taxLine.setText("VAT_VALID");
-                }
-
-                else {
+                } else {
                     taxLine.setTitle("VAT_INVALID");
                     taxLine.setText("VAT_INVALID");
                 }
@@ -448,62 +454,24 @@ public class OrderServiceImpl  extends SalesManagerEntityServiceImpl<Long, Order
 
             taxLine.setSortOrder(taxCount);
             taxCount++;
-
-            taxLine.setValue(totalTaxes);
+            taxLine.setValue(BigDecimal.valueOf(vtxTaxCalc.data.getTotalTax()));
             orderTotals.add(taxLine);
 
 
+            // grand total
+            OrderTotal orderTotal = new OrderTotal();
+            orderTotal.setModule(Constants.OT_TOTAL_MODULE_CODE);
+            orderTotal.setOrderTotalType(OrderTotalType.TOTAL);
+            orderTotal.setOrderTotalCode("order.total.total");
+            orderTotal.setTitle(Constants.OT_TOTAL_MODULE_CODE);
+            //orderTotal.setText("order.total.total");
+            orderTotal.setSortOrder(500);
+            orderTotal.setValue(BigDecimal.valueOf(vtxTaxCalc.data.getTotal()));
+            orderTotals.add(orderTotal);
 
+            totalSummary.setTotal(grandTotal);
+            totalSummary.setTotals(orderTotals);
         }
-    /*    if(taxes!=null && taxes.size()>0) {
-        	BigDecimal totalTaxes = new BigDecimal(0);
-        	totalTaxes.setScale(2, RoundingMode.HALF_UP);
-            int taxCount = 200;
-            for(TaxItem tax : taxes) {
-
-                OrderTotal taxLine = new OrderTotal();
-                taxLine.setModule(Constants.OT_TAX_MODULE_CODE);
-                taxLine.setOrderTotalType(OrderTotalType.TAX);
-                taxLine.setOrderTotalCode(tax.getLabel());
-                taxLine.setSortOrder(taxCount);
-                taxLine.setTitle(Constants.OT_TAX_MODULE_CODE);
-                taxLine.setText(tax.getLabel());
-                taxLine.setValue(tax.getItemPrice());
-
-                totalTaxes = totalTaxes.add(tax.getItemPrice());
-                totalTaxes = tax.getItemPrice();//last item has the total from vertex
-                orderTotals.add(taxLine);
-                grandTotal=grandTotal.add(tax.getItemPrice());
-                totalSummary.setTaxTotal(tax.getItemPrice());
-                taxCount ++;
-
-            }*/
-           /* grandTotal = grandTotal.add(totalTaxes);
-            totalSummary.setTaxTotal(totalTaxes);
-            OrderTotal totalTax= new OrderTotal();
-            totalTax.setModule(Constants.OT_TAX_MODULE_CODE);
-            totalTax.setOrderTotalType(OrderTotalType.TAX);
-            totalTax.setOrderTotalCode("Total Tax");
-            totalTax.setSortOrder(taxCount);
-            totalTax.setTitle(Constants.OT_TAX_MODULE_CODE);
-            totalTax.setText("Total Tax");
-            totalTax.setValue(totalTaxes);
-            orderTotals.add(totalTax);
-        }
-*/
-        // grand total
-        OrderTotal orderTotal = new OrderTotal();
-        orderTotal.setModule(Constants.OT_TOTAL_MODULE_CODE);
-        orderTotal.setOrderTotalType(OrderTotalType.TOTAL);
-        orderTotal.setOrderTotalCode("order.total.total");
-        orderTotal.setTitle(Constants.OT_TOTAL_MODULE_CODE);
-        //orderTotal.setText("order.total.total");
-        orderTotal.setSortOrder(500);
-        orderTotal.setValue(grandTotal);
-        orderTotals.add(orderTotal);
-
-        totalSummary.setTotal(grandTotal);
-        totalSummary.setTotals(orderTotals);
         return totalSummary;
 
     }
