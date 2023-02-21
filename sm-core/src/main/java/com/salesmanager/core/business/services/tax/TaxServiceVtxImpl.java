@@ -212,7 +212,7 @@ public class  TaxServiceVtxImpl
 				itVtx.quantity=new Quantity();
 				itVtx.quantity.value=it.getQuantity();
 				itVtx.product=new Product();
-				itVtx.product.value= it.getProduct().getProductDescription().getName();
+				itVtx.product.value= it.getProduct().getSku();
 				itVtx.product.productClass=it.getProduct().getProductDescription().getName();
 				itemsVtx.add(itVtx);
 
@@ -365,8 +365,8 @@ public class  TaxServiceVtxImpl
 				itVtx.quantity=new Quantity();
 				itVtx.quantity.value=it.getProductQuantity();
 				itVtx.product=new Product();
-				itVtx.product.value= it.getProductName();
-				itVtx.product.productClass=it.getSku();
+				itVtx.product.value= it.getSku();
+				itVtx.product.productClass=it.getProductName();
 				itemsVtx.add(itVtx);
 
 			}
