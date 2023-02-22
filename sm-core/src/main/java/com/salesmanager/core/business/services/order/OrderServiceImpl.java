@@ -392,7 +392,7 @@ public class OrderServiceImpl  extends SalesManagerEntityServiceImpl<Long, Order
                 taxLine.setText(vtxItem.product.value);
                 taxLine.setSortOrder(taxCount);
                 taxCount++;
-                taxLine.setOrderTotalCode((vtxItem.product.value + " - TOTAL ITEM TAX"));
+                taxLine.setOrderTotalCode((vtxItem.product.productClass+"("+vtxItem.product.value + ") - TOTAL ITEM TAX"));
                 taxLine.setValue(vtxItem.totalTax);
                 orderTotals.add(taxLine);
                 grandTotal = grandTotal.add(vtxItem.totalTax);
@@ -800,9 +800,9 @@ public class OrderServiceImpl  extends SalesManagerEntityServiceImpl<Long, Order
         for (LineItem itemProduct :items) {
             Transaction_line tLine= new Transaction_line();
             cont++;
-            tLine.setDescription(itemProduct.product.value);
+            tLine.setDescription(itemProduct.product.productClass+"("+itemProduct.product.value+")");
             tLine.setQuantity( itemProduct.quantity.value);
-            tLine.setAmount(itemProduct.extendedPrice);
+            tLine.setAmount((itemProduct.extendedPrice).multiply(new BigDecimal(itemProduct.quantity.value)));
             double rate=0;
             for (VtxTaxItem tax :itemProduct.getTaxes()){
                 rate+=tax.getEffectiveRate();
