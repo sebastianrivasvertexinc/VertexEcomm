@@ -409,6 +409,7 @@ public class OrderServiceImpl  extends SalesManagerEntityServiceImpl<Long, Order
                         taxLine.setText(Constants.OT_TAX_MODULE_CODE + "-" + taxCount);
                         taxLine.setSortOrder(taxCount);
                         taxCount++;
+                        if(vtxItemtax.imposition!=null)
                         taxLine.setOrderTotalCode((vtxItemtax.imposition.value + " in the " + vtxItemtax.jurisdiction.jurisdictionType + " of " + vtxItemtax.jurisdiction.value + "(" + BigDecimal.valueOf(vtxItemtax.getEffectiveRate()).multiply(BigDecimal.valueOf(100)) + "%)"));
 
                        // Gson gson = new Gson();

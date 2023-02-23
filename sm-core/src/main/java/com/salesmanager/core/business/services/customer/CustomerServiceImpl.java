@@ -229,11 +229,11 @@ public class CustomerServiceImpl extends SalesManagerEntityServiceImpl<Long, Cus
 		taxAreaLookupReq.setAsOfDate(strDate);
 		AddressCleansingResp resp=new AddressCleansingResp();
 		try {
-			token=getAuthentication("bc525a9fce454a039a0346c258ecfed1","5bfdc36e670b4e0986e0d79ddae063eb");//TODO
+			token=getAuthentication("adff60ffbf2446ba939e710724403578","517afb367d17461887301fb4b228ae3a");//TODO David need to use UI clliet ID and Secret
 
 			resp=doAddressCleansing(taxAreaLookupReq,
 					token,
-					"https://calcconnect.vertexsmb.com");//TODO
+					"https://calcconnect.vertexsmb.com");//TODO David need to use URL from the UI
 		} catch (IOException e) {
 			return delivery;
 		}
