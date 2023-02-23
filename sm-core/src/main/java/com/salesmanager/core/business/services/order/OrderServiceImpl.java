@@ -402,21 +402,23 @@ public class OrderServiceImpl  extends SalesManagerEntityServiceImpl<Long, Order
 
                 if (vtxItem.taxes != null || !vtxItem.taxes.isEmpty()) {
                     for (VtxTaxItem vtxItemtax : vtxItem.taxes) {
-                        taxLine = new OrderTotal();
-                        taxLine.setModule(Constants.OT_TAX_MODULE_CODE);
-                        taxLine.setOrderTotalType(OrderTotalType.TAX);
-                        taxLine.setTitle(Constants.OT_TAX_MODULE_CODE);
-                        taxLine.setText(Constants.OT_TAX_MODULE_CODE + "-" + taxCount);
-                        taxLine.setSortOrder(taxCount);
-                        taxCount++;
-                        if(vtxItemtax.imposition!=null)
-                        taxLine.setOrderTotalCode((vtxItemtax.imposition.value + " in the " + vtxItemtax.jurisdiction.jurisdictionType + " of " + vtxItemtax.jurisdiction.value + "(" + BigDecimal.valueOf(vtxItemtax.getEffectiveRate()).multiply(BigDecimal.valueOf(100)) + "%)"));
+                        if(vtxItemtax.imposition!=null){
+                            taxLine = new OrderTotal();
+                            taxLine.setModule(Constants.OT_TAX_MODULE_CODE);
+                            taxLine.setOrderTotalType(OrderTotalType.TAX);
+                            taxLine.setTitle(Constants.OT_TAX_MODULE_CODE);
+                            taxLine.setText(Constants.OT_TAX_MODULE_CODE + "-" + taxCount);
+                            taxLine.setSortOrder(taxCount);
+                            taxCount++;
 
-                       // Gson gson = new Gson();
-                     //   taxLine.setOrderTotalCode(gson.toJson(vtxTaxCalc, VtxTaxCalc.class));
+                            taxLine.setOrderTotalCode((vtxItemtax.imposition.value + " in the " + vtxItemtax.jurisdiction.jurisdictionType + " of " + vtxItemtax.jurisdiction.value + "(" + BigDecimal.valueOf(vtxItemtax.getEffectiveRate()).multiply(BigDecimal.valueOf(100)) + "%)"));
 
-                        taxLine.setValue(BigDecimal.valueOf(vtxItemtax.calculatedTax));
-                        orderTotals.add(taxLine);
+                           // Gson gson = new Gson();
+                         //   taxLine.setOrderTotalCode(gson.toJson(vtxTaxCalc, VtxTaxCalc.class));
+
+                            taxLine.setValue(BigDecimal.valueOf(vtxItemtax.calculatedTax));
+                            orderTotals.add(taxLine);
+                        }
                     }
 
 
