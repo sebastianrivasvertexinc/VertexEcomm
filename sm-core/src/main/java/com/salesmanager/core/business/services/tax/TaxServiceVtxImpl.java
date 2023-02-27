@@ -158,8 +158,8 @@ public class  TaxServiceVtxImpl
 				physicalOrigin.country= store.getCountry().getIsoCode();
 			if	(!StringUtils.isBlank(store.getStorepostalcode()))
 				physicalOrigin.postalCode=store.getStorepostalcode();
-//Removed Origin
-			//seller.physicalOrigin=physicalOrigin;
+
+			seller.physicalOrigin=physicalOrigin;//TODO, need to find a way to allow this value to be an option from the UI
 			calcRequest.setSeller(seller);
 
 			com.salesmanager.core.business.services.tax.vertex.Customer cust = new com.salesmanager.core.business.services.tax.vertex.Customer();
@@ -178,16 +178,10 @@ public class  TaxServiceVtxImpl
 
 
 
-			cust.taxRegistrations = new ArrayList<TaxRegistration>();
-			TaxRegistration tr = new TaxRegistration();
-			if (validVAT){ // only set when VAT is valid.
-				tr.setTaxRegistrationNumber(customer.getBilling().getVatNumber()); //modified to get VAT number from front page
-				tr.setIsoCountryCode(customer.getBilling().getCountry().getIsoCode());
-			}
-			cust.taxRegistrations.add(tr)		;
+
 			cust.customerCode=custCode;
-			if (validVAT==Boolean.TRUE)//TODO need to make sure this logic is valid for US
-				cust.isTaxExempt= true;
+		/*	if (validVAT==Boolean.TRUE)//TODO need to make sure this logic is valid for US
+				cust.isTaxExempt= true;*/
 			Destination destination= new Destination();
 			if	(!StringUtils.isBlank(customer.getBilling().getCity()))
 				destination.city=customer.getBilling().getCity();
@@ -200,6 +194,16 @@ public class  TaxServiceVtxImpl
 			if 	(!StringUtils.isBlank(customer.getBilling().getPostalCode()))
 				destination.postalCode=customer.getBilling().getPostalCode();
 			cust.destination=destination;
+
+			cust.taxRegistrations = new ArrayList<TaxRegistration>();
+			TaxRegistration tr = new TaxRegistration();
+			if (validVAT){ // only set when VAT is valid.
+				tr.setTaxRegistrationNumber(customer.getBilling().getVatNumber()); //modified to get VAT number from front page
+				tr.setIsoCountryCode(customer.getBilling().getCountry().getIsoCode());
+				cust.customerCode.isBusinessIndicator=true;
+			}
+			cust.taxRegistrations.add(tr)		;
+
 			calcRequest.setCustomer(cust);
 
 			ArrayList<LineItem> itemsVtx=new ArrayList<LineItem>();
@@ -315,8 +319,8 @@ public class  TaxServiceVtxImpl
 				physicalOrigin.country= store.getCountry().getIsoCode();
 			if	(!StringUtils.isBlank(store.getStorepostalcode()))
 				physicalOrigin.postalCode=store.getStorepostalcode();
-			//Removed Origin //TODO
-			//seller.physicalOrigin=physicalOrigin;
+
+			seller.physicalOrigin=physicalOrigin;
 			calcRequest.setSeller(seller);
 
 			com.salesmanager.core.business.services.tax.vertex.Customer cust = new com.salesmanager.core.business.services.tax.vertex.Customer();
@@ -335,13 +339,8 @@ public class  TaxServiceVtxImpl
 					//If it fails on Service dont worry about error yet...
 				}
 
-			cust.taxRegistrations = new ArrayList<TaxRegistration>();
-			TaxRegistration tr = new TaxRegistration();
-			if(validVAT){
-				tr.setTaxRegistrationNumber(customer.getBilling().getVatNumber()); //modified to get VAT number from front page
-				tr.setIsoCountryCode(customer.getBilling().getCountry().getIsoCode());
-			}
-			cust.taxRegistrations.add(tr)		;
+
+
 			cust.customerCode=custCode;
 			Destination destination= new Destination();
 			if	(!StringUtils.isBlank(customer.getBilling().getCity()))
@@ -355,6 +354,15 @@ public class  TaxServiceVtxImpl
 			if 	(!StringUtils.isBlank(customer.getBilling().getPostalCode()))
 				destination.postalCode=customer.getBilling().getPostalCode();
 			cust.destination=destination;
+
+			cust.taxRegistrations = new ArrayList<TaxRegistration>();
+			TaxRegistration tr = new TaxRegistration();
+			if(validVAT){
+				tr.setTaxRegistrationNumber(customer.getBilling().getVatNumber()); //modified to get VAT number from front page
+				tr.setIsoCountryCode(customer.getBilling().getCountry().getIsoCode());
+				cust.customerCode.isBusinessIndicator=true;
+			}
+			cust.taxRegistrations.add(tr)		;
 			calcRequest.setCustomer(cust);
 
 			ArrayList<LineItem> itemsVtx=new ArrayList<LineItem>();
