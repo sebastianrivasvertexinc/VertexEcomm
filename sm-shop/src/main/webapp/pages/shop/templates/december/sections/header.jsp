@@ -19,7 +19,7 @@ response.setDateHeader ("Expires", -1);
 <script src="<c:url value="/resources/js/hogan.js" />"></script>
 <script src="<c:url value="/resources/templates/december/js/bloodhound.min.js" />"></script>
 <script src="<c:url value="/resources/templates/december/js/typeahead.bundle.min.js" />"></script>
-
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
 
 <!-- Customer account menu logged in customer will display in customerAccount placeholder -->
 <script type="text/html" id="customerLoggedInAccountTemplate">

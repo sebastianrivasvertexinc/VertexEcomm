@@ -1,14 +1,17 @@
 package com.salesmanager.core.business.services.tax;
 
 import com.salesmanager.core.business.exception.ServiceException;
+import com.salesmanager.core.business.services.tax.vertex.LineItem;
+import com.salesmanager.core.business.services.tax.vertex.VtxTaxCalc;
 import com.salesmanager.core.model.customer.Customer;
 import com.salesmanager.core.model.merchant.MerchantStore;
+import com.salesmanager.core.model.order.Order;
 import com.salesmanager.core.model.order.OrderSummary;
+import com.salesmanager.core.model.order.OrderTotalSummary;
 import com.salesmanager.core.model.reference.language.Language;
 import com.salesmanager.core.model.tax.TaxConfiguration;
-import com.salesmanager.core.model.tax.TaxItem;
 
-import java.util.List;
+import java.util.ArrayList;
 
 
 public interface TaxServiceVtx {
@@ -33,15 +36,19 @@ public interface TaxServiceVtx {
 
 	/**
 	 * Calculates tax over an OrderSummary
+	 *
 	 * @param orderSummary
 	 * @param customer
 	 * @param store
-	 * @param locale
+	 * @param language
 	 * @return
 	 * @throws ServiceException
 	 */
-	List<TaxItem> calculateTax(OrderSummary orderSummary, Customer customer,
-			MerchantStore store, Language language) throws ServiceException;
+	VtxTaxCalc calculateTax(OrderSummary orderSummary, Customer customer,
+							MerchantStore store, Language language) throws ServiceException;
+
+	ArrayList<LineItem> commitTax(Order order, Customer customer, MerchantStore store, OrderTotalSummary summary) throws ServiceException;
+
 
 
 }

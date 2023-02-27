@@ -8,23 +8,19 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 import javax.inject.Inject;
 import com.google.gson.Gson;
 import com.salesmanager.core.business.services.tax.TaxServiceVtx;
 import com.salesmanager.core.business.services.tax.taxamo.*;
+import com.salesmanager.core.business.services.tax.vertex.LineItem;
 import com.salesmanager.core.business.services.tax.vertex.VtxTaxCalc;
 import com.salesmanager.core.business.services.tax.vertex.VtxTaxCalcReq;
+import com.salesmanager.core.business.services.tax.vertex.VtxTaxItem;
 import com.salesmanager.core.model.tax.TaxConfiguration;
 import com.squareup.okhttp.*;
-import jdk.nashorn.internal.ir.annotations.Ignore;
+
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
@@ -44,7 +40,6 @@ import com.salesmanager.core.business.services.payments.PaymentService;
 import com.salesmanager.core.business.services.payments.TransactionService;
 import com.salesmanager.core.business.services.shipping.ShippingService;
 import com.salesmanager.core.business.services.shoppingcart.ShoppingCartService;
-import com.salesmanager.core.business.services.tax.TaxService;
 import com.salesmanager.core.model.catalog.product.Product;
 import com.salesmanager.core.model.catalog.product.availability.ProductAvailability;
 import com.salesmanager.core.model.catalog.product.price.FinalPrice;
@@ -71,7 +66,6 @@ import com.salesmanager.core.model.reference.language.Language;
 import com.salesmanager.core.model.shipping.ShippingConfiguration;
 import com.salesmanager.core.model.shoppingcart.ShoppingCart;
 import com.salesmanager.core.model.shoppingcart.ShoppingCartItem;
-import com.salesmanager.core.model.tax.TaxItem;
 
 @Service("orderService")
 public class OrderServiceImpl  extends SalesManagerEntityServiceImpl<Long, Order> implements OrderService {
@@ -233,7 +227,11 @@ public class OrderServiceImpl  extends SalesManagerEntityServiceImpl<Long, Order
             itemcheck++; //increment for item check
         }
 
-        String urlInvoice=createInvoice(order,customer,items);// Taxamo info, updated to send store info for URL's
+
+        //Do an invoice call to vertex
+        ArrayList<LineItem> vtxLineItems= taxService.commitTax(order, customer, store,summary);
+
+        String urlInvoice=createInvoice(order,customer,vtxLineItems,store);// Taxamo info, updated to send store info for URL's
         System.out.println(urlInvoice);
        order.setShippingModuleCode(urlInvoice);
     	return order;
@@ -345,7 +343,6 @@ public class OrderServiceImpl  extends SalesManagerEntityServiceImpl<Long, Order
 	            shippingSubTotal.setOrderTotalCode("order.total.shipping");
 	            shippingSubTotal.setTitle(Constants.OT_SHIPPING_MODULE_CODE);
 	            shippingSubTotal.setSortOrder(100);
-
 	            orderTotals.add(shippingSubTotal);
 
             if(!summary.getShippingSummary().isFreeShipping()) {
@@ -375,47 +372,106 @@ public class OrderServiceImpl  extends SalesManagerEntityServiceImpl<Long, Order
         }
 
         //tax
-        List<TaxItem> taxes = taxService.calculateTax(summary, customer, store, language);
-        if(taxes!=null && taxes.size()>0) {
-        	BigDecimal totalTaxes = new BigDecimal(0);
-        	totalTaxes.setScale(2, RoundingMode.HALF_UP);
-            int taxCount = 200;
-            for(TaxItem tax : taxes) {
+        //List<TaxItem> taxes = taxService.calculateTax(summary, customer, store, language);
+        VtxTaxCalc vtxTaxCalc= taxService.calculateTax(summary, customer, store, language);
 
+        ArrayList<LineItem> vtxLineItems=null;
+        if ((vtxTaxCalc!=null) &&(vtxTaxCalc.data!=null))
+            vtxLineItems=vtxTaxCalc.data.getlineItems();
+
+        if (vtxLineItems!=null && !vtxLineItems.isEmpty()) {
+            int taxCount = 200;
+            BigDecimal totalTaxes = new BigDecimal(0);
+            for (LineItem vtxItem : vtxLineItems) {
+
+                // Ordering of Product First, then Tax line items
                 OrderTotal taxLine = new OrderTotal();
                 taxLine.setModule(Constants.OT_TAX_MODULE_CODE);
                 taxLine.setOrderTotalType(OrderTotalType.TAX);
-                taxLine.setOrderTotalCode(tax.getLabel());
-                taxLine.setSortOrder(taxCount);
                 taxLine.setTitle(Constants.OT_TAX_MODULE_CODE);
-                taxLine.setText(tax.getLabel());
-                taxLine.setValue(tax.getItemPrice());
-
-                totalTaxes = totalTaxes.add(tax.getItemPrice());
+                taxLine.setText(vtxItem.product.value);
+                taxLine.setSortOrder(taxCount);
+                taxCount++;
+                taxLine.setOrderTotalCode((vtxItem.product.value + " - TOTAL ITEM TAX"));
+                taxLine.setValue(vtxItem.totalTax);
                 orderTotals.add(taxLine);
-                //grandTotal=grandTotal.add(tax.getItemPrice());
+                grandTotal = grandTotal.add(vtxItem.totalTax);
+                // totalTaxes= totalTaxes.add(vtxItem.totalTax);
+                totalSummary.setTaxTotal(vtxItem.totalTax);
 
-                taxCount ++;
 
+                if (vtxItem.taxes != null || !vtxItem.taxes.isEmpty()) {
+                    for (VtxTaxItem vtxItemtax : vtxItem.taxes) {
+                        taxLine = new OrderTotal();
+                        taxLine.setModule(Constants.OT_TAX_MODULE_CODE);
+                        taxLine.setOrderTotalType(OrderTotalType.TAX);
+                        taxLine.setTitle(Constants.OT_TAX_MODULE_CODE);
+                        taxLine.setText(Constants.OT_TAX_MODULE_CODE + "-" + taxCount);
+                        taxLine.setSortOrder(taxCount);
+                        taxCount++;
+                        taxLine.setOrderTotalCode((vtxItemtax.imposition.value + " in the " + vtxItemtax.jurisdiction.jurisdictionType + " of " + vtxItemtax.jurisdiction.value + "(" + BigDecimal.valueOf(vtxItemtax.getEffectiveRate()).multiply(BigDecimal.valueOf(100)) + "%)"));
+
+                       // Gson gson = new Gson();
+                     //   taxLine.setOrderTotalCode(gson.toJson(vtxTaxCalc, VtxTaxCalc.class));
+
+                        taxLine.setValue(BigDecimal.valueOf(vtxItemtax.calculatedTax));
+                        orderTotals.add(taxLine);
+                    }
+
+
+                }
             }
-            grandTotal = grandTotal.add(totalTaxes);
-            totalSummary.setTaxTotal(totalTaxes);
+            OrderTotal taxLine = new OrderTotal();
+            taxLine.setModule(Constants.OT_TAX_MODULE_CODE);
+            taxLine.setOrderTotalType(OrderTotalType.TAX);
+
+
+            String country = customer.getBilling().getCountry().getIsoCode().toString(); //test
+            Object tester = customer.getAttributes();
+
+            if (country.equals("US")) {
+                taxLine.setTitle("Total" + Constants.OT_TAX_MODULE_CODE);
+                taxLine.setText("Tax");
+                taxLine.setOrderTotalCode("TAX");
+            } else if (country.equals("CA")) {
+                taxLine.setTitle("Total" + Constants.OT_TAX_MODULE_CODE);
+                taxLine.setText("GST/HST");
+                taxLine.setOrderTotalCode("GST/HST");
+            } else {
+
+                if (customer.getBilling().getIsVatValid() == "true") {
+                    taxLine.setTitle("VAT_VALID");
+                    taxLine.setText("VAT_VALID");
+                } else {
+                    taxLine.setTitle("VAT_INVALID");
+                    taxLine.setText("VAT_INVALID");
+                }
+
+
+                taxLine.setOrderTotalCode("VAT TOTAL");
+            }
+
+
+            taxLine.setSortOrder(taxCount);
+            taxCount++;
+            taxLine.setValue(BigDecimal.valueOf(vtxTaxCalc.data.getTotalTax()));
+            orderTotals.add(taxLine);
+
+
+            // grand total
+            OrderTotal orderTotal = new OrderTotal();
+            orderTotal.setModule(Constants.OT_TOTAL_MODULE_CODE);
+            orderTotal.setOrderTotalType(OrderTotalType.TOTAL);
+            orderTotal.setOrderTotalCode("order.total.total");
+            orderTotal.setTitle(Constants.OT_TOTAL_MODULE_CODE);
+            //orderTotal.setText("order.total.total");
+            orderTotal.setSortOrder(500);
+            orderTotal.setValue(BigDecimal.valueOf(vtxTaxCalc.data.getTotal()));
+            orderTotals.add(orderTotal);
+
+            totalSummary.setTotal(grandTotal);
+            totalSummary.setTotals(orderTotals);
         }
-
-        // grand total
-        OrderTotal orderTotal = new OrderTotal();
-        orderTotal.setModule(Constants.OT_TOTAL_MODULE_CODE);
-        orderTotal.setOrderTotalType(OrderTotalType.TOTAL);
-        orderTotal.setOrderTotalCode("order.total.total");
-        orderTotal.setTitle(Constants.OT_TOTAL_MODULE_CODE);
-        //orderTotal.setText("order.total.total");
-        orderTotal.setSortOrder(500);
-        orderTotal.setValue(grandTotal);
-        orderTotals.add(orderTotal);
-
-        totalSummary.setTotal(grandTotal);
-        totalSummary.setTotals(orderTotals);
-
         return totalSummary;
 
     }
@@ -700,11 +756,10 @@ public class OrderServiceImpl  extends SalesManagerEntityServiceImpl<Long, Order
 		return returnOrders;
 	}
 
-    @Override
-    public String createInvoice(Order order, Customer customer, List<ShoppingCartItem> items){
+    public String createInvoice(Order order, Customer customer, ArrayList<LineItem> items, MerchantStore store){
         // Don't want to throw exception back since we're overriding createInvoice, so ignore exception
         try {
-            GetConfigData(_store);
+            GetConfigData(store);
         } catch (ServiceException ignore){
             LOGGER.warn("GetConfigData from store failed...expect an Exception error");
         }
@@ -721,26 +776,44 @@ public class OrderServiceImpl  extends SalesManagerEntityServiceImpl<Long, Order
         trans.setBuyer_email(order.getCustomerEmailAddress());
         trans.setStatus("C");
         trans.setCurrency_code(order.getCurrency().getCode());
-        trans.setBuyer_tax_number("VAT1");//TODO
-      //  trans.setBuyer_ip(order.getIpAddress());
+        if(order.getBilling().getVatNumber() != null) {
+            trans.setBuyer_tax_number(order.getBilling().getVatNumber());//DJR - Fixed
+        }else {
+            trans.setBuyer_tax_number("n/a");//DJR - Fixed logic
+        }
+        trans.setBuyer_ip(order.getIpAddress());
 
         Invoice_address invAddress =new Invoice_address();
         invAddress.setCountry(order.getBilling().getCountry().getIsoCode());
         invAddress.setCity(order.getBilling().getCity());
         invAddress.setPostal_code(order.getBilling().getPostalCode());
+        invAddress.setFreeform_address(order.getBilling().getAddress()+" "+ order.getBilling().getCity() + " " + order.getBilling().getPostalCode()+ " " + order.getBilling().getCountry().getIsoCode());
+        if((invAddress.getCountry().equals("US")) || (invAddress.getCountry().equals("CA")))
+        {
+          invAddress.setRegion(order.getBilling().getCountry().getIsoCode());//SR fix
+        }
         trans.setInvoice_address(invAddress);
-
+        //Setting Billing Country Code
+        trans.setBilling_country_code(order.getBilling().getCountry().getIsoCode());
         ArrayList<Transaction_line> transaction_lines= new  ArrayList<Transaction_line>();
-        Transaction_line tLine= new Transaction_line();
-        for (ShoppingCartItem item :items) {
-            tLine.setDescription(item.getProduct().getProductDescription().getDescription());
-            tLine.setAmount(item.getItemPrice());
+        Integer cont=0;
+        for (LineItem itemProduct :items) {
+            Transaction_line tLine= new Transaction_line();
+            cont++;
+            tLine.setDescription(itemProduct.product.value);
+            tLine.setQuantity( itemProduct.quantity.value);
+            tLine.setAmount(itemProduct.extendedPrice);
+            double rate=0;
+            for (VtxTaxItem tax :itemProduct.getTaxes()){
+                rate+=tax.getEffectiveRate();
+            }
+            tLine.setTax_rate(rate*100);
             tLine.setInformative("true");//TODO
-            tLine.setTax_rate(5f);//TODO
-            tLine.setCustom_id("1");//TODO
+            tLine.setCustom_id(cont.toString());//TODO
             transaction_lines.add(tLine);
         }
         trans.transaction_lines=transaction_lines;
+
         taxamoRequest.setTransaction(trans);
         String jsonDataReq=gson.toJson(taxamoRequest, TaxamoRequest.class);
         RequestBody body = RequestBody.create(mediaType, jsonDataReq);

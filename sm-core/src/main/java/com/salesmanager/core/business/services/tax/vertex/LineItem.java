@@ -6,6 +6,7 @@ public class LineItem{
     public Customer customer;
     public String deliveryTerm;
     public BigDecimal extendedPrice;
+    public BigDecimal totalTax;
     public double fairMarketValue;
     public FlexibleFields flexibleFields;
     public int lineItemNumber;
@@ -15,15 +16,15 @@ public class LineItem{
     public Seller seller;
     public boolean taxIncludedIndicator;
 
-    public ArrayList<Taxis> getTaxes() {
+    public ArrayList<VtxTaxItem> getTaxes() {
         return taxes;
     }
 
-    public void setTaxes(ArrayList<Taxis> taxes) {
+    public void setTaxes(ArrayList<VtxTaxItem> taxes) {
         this.taxes = taxes;
     }
 
-    public ArrayList<Taxis> taxes;
+    public ArrayList<VtxTaxItem> taxes;
   //  public double totalTax;
     public String transactionType;
     public BigDecimal unitPrice;

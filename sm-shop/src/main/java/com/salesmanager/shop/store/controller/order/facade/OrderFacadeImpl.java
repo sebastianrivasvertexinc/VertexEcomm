@@ -1,6 +1,8 @@
 package com.salesmanager.shop.store.controller.order.facade;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -20,6 +22,7 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
+import com.salesmanager.core.model.order.*;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.Validate;
 import org.apache.commons.lang3.StringUtils;
@@ -56,11 +59,6 @@ import com.salesmanager.core.model.common.Billing;
 import com.salesmanager.core.model.common.Delivery;
 import com.salesmanager.core.model.customer.Customer;
 import com.salesmanager.core.model.merchant.MerchantStore;
-import com.salesmanager.core.model.order.Order;
-import com.salesmanager.core.model.order.OrderCriteria;
-import com.salesmanager.core.model.order.OrderList;
-import com.salesmanager.core.model.order.OrderSummary;
-import com.salesmanager.core.model.order.OrderTotalSummary;
 import com.salesmanager.core.model.order.attributes.OrderAttribute;
 import com.salesmanager.core.model.order.orderproduct.OrderProduct;
 import com.salesmanager.core.model.order.orderstatus.OrderStatus;
@@ -102,7 +100,6 @@ import com.salesmanager.shop.populator.order.transaction.ReadableTransactionPopu
 import com.salesmanager.shop.store.api.exception.ResourceNotFoundException;
 import com.salesmanager.shop.store.api.exception.ServiceRuntimeException;
 import com.salesmanager.shop.store.controller.customer.facade.CustomerFacade;
-import com.salesmanager.shop.store.controller.order.facade.OrderFacade;
 import com.salesmanager.shop.store.controller.shoppingCart.facade.ShoppingCartFacade;
 import com.salesmanager.shop.utils.DateUtil;
 import com.salesmanager.shop.utils.EmailTemplatesUtils;
@@ -197,6 +194,44 @@ public class OrderFacadeImpl implements OrderFacade {
 
 		Customer customer = customerFacade.getCustomerModel(order.getCustomer(), store, language);
 		OrderTotalSummary summary = calculateOrderTotal(store, customer, order, language);
+
+
+		// Cleaning up UI before sending back to front page
+		StringBuilder taxdetail = new StringBuilder();
+		ArrayList<com.salesmanager.core.model.order.OrderTotal> totals = new ArrayList<>();
+		for(com.salesmanager.core.model.order.OrderTotal items: summary.getTotals())
+		{
+			int i = 0; //iterator for array index
+			if(items.getTitle().toString() == "tax")
+			{
+				//force 2 decimal places
+
+				DecimalFormat df = new DecimalFormat("0.00");
+				Double txformatted = new Double(String.valueOf(items.getValue()));
+				df.format(txformatted);
+
+				taxdetail.append(items.getOrderTotalCode().toString() + " - " +  df.format(txformatted));
+				taxdetail.append(System.lineSeparator());
+			}
+
+			if(items.getTitle().toString() != "tax")
+			{
+				totals.add(items); //adding none tax titled items from list
+			}
+
+		}
+
+		summary.setTotals(totals); //getting rid of additional lineitems and summing with Totals
+		order.setComments(taxdetail.toString()); //setting order comments for the UI (overriding the null)
+
+		//Update Object that returns to front page
+		PersistableCustomer updateCustomerInfo = order.getCustomer();
+		Address add = updateCustomerInfo.getBilling();
+		add.setVatNumber(customer.getBilling().getVatNumber());
+		add.setIsVatValid(customer.getBilling().getIsVatValid());
+		updateCustomerInfo.setBilling(add);
+		order.setCustomer(updateCustomerInfo);
+
 		this.setOrderTotals(order, summary);
 		return summary;
 	}
@@ -206,7 +241,6 @@ public class OrderFacadeImpl implements OrderFacade {
 			com.salesmanager.shop.model.order.v0.PersistableOrder order, Language language) throws Exception {
 
 		List<PersistableOrderProduct> orderProducts = order.getOrderProductItems();
-
 		ShoppingCartItemPopulator populator = new ShoppingCartItemPopulator();
 		populator.setProductAttributeService(productAttributeService);
 		populator.setProductService(productService);
@@ -645,6 +679,7 @@ public class OrderFacadeImpl implements OrderFacade {
 			delivery.setState(billing.getState());
 			delivery.setCountry(billing.getCountry());
 			delivery.setZone(billing.getZone());
+
 		} else {
 			delivery = customer.getDelivery();
 		}
@@ -1508,6 +1543,8 @@ public class OrderFacadeImpl implements OrderFacade {
         target.setPostalCode(source.getPostalCode());
         target.setTelephone(source.getPhone());
         target.setAddress(source.getAddress());
+		target.setVatNumber(source.getVatNumber());
+		target.setIsVatValid(source.getIsVatValid());
         if(source.getCountry()!=null) {
         	target.setCountry(countryService.getByCode(source.getCountry()));
         }

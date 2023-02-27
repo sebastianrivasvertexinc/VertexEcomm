@@ -41,6 +41,13 @@ public class PersistableCustomerPopulator extends
 				if(source.getBilling().getState()!=null) {
 					address.setStateProvince(source.getBilling().getState());
 				}
+				if(source.getBilling().getVatNumber() !=null) {
+					address.setVatNumber(source.getBilling().getVatNumber()); //added so that persistable data will get loaded
+				}
+				if(source.getBilling().getIsVatValid() !=null) {
+					address.setIsVatValid(source.getBilling().getIsVatValid()); //added so that persistable data will get loaded
+
+				}
 				
 				target.setBilling(address);
 			}
