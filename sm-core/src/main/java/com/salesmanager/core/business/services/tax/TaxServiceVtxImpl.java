@@ -159,7 +159,7 @@ public class  TaxServiceVtxImpl
 			if	(!StringUtils.isBlank(store.getStorepostalcode()))
 				physicalOrigin.postalCode=store.getStorepostalcode();
 
-			seller.physicalOrigin=physicalOrigin;//TODO, need to find a way to allow this value to be an option from the UI
+		//	seller.physicalOrigin=physicalOrigin;//TODO, need to find a way to allow this value to be an option from the UI
 			calcRequest.setSeller(seller);
 
 			com.salesmanager.core.business.services.tax.vertex.Customer cust = new com.salesmanager.core.business.services.tax.vertex.Customer();
@@ -320,7 +320,7 @@ public class  TaxServiceVtxImpl
 			if	(!StringUtils.isBlank(store.getStorepostalcode()))
 				physicalOrigin.postalCode=store.getStorepostalcode();
 
-			seller.physicalOrigin=physicalOrigin;
+		//	seller.physicalOrigin=physicalOrigin; //TODO need to add a logic for ship from, now the value is null.
 			calcRequest.setSeller(seller);
 
 			com.salesmanager.core.business.services.tax.vertex.Customer cust = new com.salesmanager.core.business.services.tax.vertex.Customer();
