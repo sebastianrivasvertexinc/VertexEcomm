@@ -426,26 +426,32 @@ function checkVat(countryCode){
             if((!(countryCode=="US" || countryCode== "CA")) && (getCompany !=""))
             {
                 $("#vatNumberCheck").css('visibility', 'visible');
+
+                            if($("#cart-subtotal-VAT\\_VALID").length){
+                                $("#vatCheck").css({'visibility':'visible',
+                                                         'color':'#00FF00'});
+                                $("#customerBillingVatNumber").css({'visibility':'visible',
+                                                              'background-color':'#DFF0D8'});
+                                // add logic to correct text in Order Summary Total
+                                }
+
+                            if($("#cart-subtotal-VAT\\_INVALID").length){
+                                $("#vatCheck").css({'visibility':'hidden',
+                                                         'color':'#00FF00'});
+                                $("#customerBillingVatNumber").css({'visibility':'visible',
+                                                              'background-color':'#F2DEDE'});
+
+                                }
             }
             else
             {
                 $("#vatNumberCheck").css('visibility', 'hidden');
+                 $("#vatCheck").css({'visibility':'hidden',
+                                          'color':'#00FF00'});
+                 $("#customerBillingVatNumber").css({'visibility':'hidden',
+                                               'background-color':'#F2DEDE'});
             }
 
-            if($("#cart-subtotal-VAT\\_VALID").length){
-                $("#vatCheck").css({'visibility':'visible',
-                                         'color':'#00FF00'});
-                $("#customerBillingVatNumber").css({'visibility':'visible',
-                                              'background-color':'#DFF0D8'});
-                // add logic to correct text in Order Summary Total
-                }
 
-            if($("#cart-subtotal-VAT\\_INVALID").length){
-                $("#vatCheck").css({'visibility':'hidden',
-                                         'color':'#00FF00'});
-                $("#customerBillingVatNumber").css({'visibility':'visible',
-                                              'background-color':'#F2DEDE'});
-
-                }
 
 }
