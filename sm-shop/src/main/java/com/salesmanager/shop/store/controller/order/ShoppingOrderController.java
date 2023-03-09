@@ -1231,6 +1231,7 @@ public class ShoppingOrderController extends AbstractController {
 		}
 
 		// updating readableOrder with the new comments from Tax fields
+		// This is the tax details that show in the comments field
 		readableOrder.setComments(order.getComments());
 		// updating readableOrder with complete customer details
 		 Address address = order.getCustomer().getBilling();

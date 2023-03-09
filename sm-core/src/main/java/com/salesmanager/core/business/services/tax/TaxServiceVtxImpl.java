@@ -6,6 +6,7 @@ import com.salesmanager.core.business.exception.ServiceException;
 import com.salesmanager.core.business.services.system.MerchantConfigurationService;
 import com.salesmanager.core.business.services.tax.taxamo.VatValidate;
 import com.salesmanager.core.business.services.tax.vertex.*;
+import com.salesmanager.core.model.catalog.product.description.ProductDescription;
 import com.salesmanager.core.model.customer.Customer;
 import com.salesmanager.core.model.merchant.MerchantStore;
 import com.salesmanager.core.model.order.Order;
@@ -207,6 +208,7 @@ public class  TaxServiceVtxImpl
 			calcRequest.setCustomer(cust);
 
 			ArrayList<LineItem> itemsVtx=new ArrayList<LineItem>();
+			int i = 0; // to use for iteration for Product Descriptions to handle language
 
 			for (ShoppingCartItem it :orderSummary.getProducts())
 			{
@@ -216,12 +218,35 @@ public class  TaxServiceVtxImpl
 				itVtx.quantity=new Quantity();
 				itVtx.quantity.value=it.getQuantity();
 				itVtx.product=new Product();
+
+				// to Resolve issue of Hibernate / DB2 data not being sorted with languages, test store language then apply
+				// correct language product in Object
+
+				for(ProductDescription desc : orderSummary.getProducts().get(i).getProduct().getDescriptions())
+				{
+					if(language.getCode() == desc.getLanguage().getCode())
+					{
+						itVtx.product.productClass=desc.getName();
+					}
+
+					//String test = desc.getName();
+					//Language lang = desc.getLanguage();
+					//String testLang = lang.getCode();
+					//String languageSite = language.getCode();
+
+				}
+
 				if (it.getProduct().getSku()!=null)
 					itVtx.product.value= it.getProduct().getSku();
-				if (it.getProduct().getProductDescription()!=null)
-					itVtx.product.productClass=it.getProduct().getProductDescription().getName();
+
+				//replacing this code as it can flip the language
+
+				//if (it.getProduct().getProductDescription()!=null)
+				//	itVtx.product.productClass=it.getProduct().getProductDescription().getName();
+
 				itemsVtx.add(itVtx);
 
+				i++;
 			}
 
 			//ADD SHIPPING

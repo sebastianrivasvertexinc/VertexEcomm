@@ -128,7 +128,9 @@
               <goal>jar</goal>
             </goals>
             <configuration>
-              <additionalparam>${javadoc.opts}</additionalparam>
+              <additionalOptions>
+                <additionalOption>${javadoc.opts}</additionalOption>
+              </additionalOptions>
               <doclint>none</doclint>
               <source>8</source>
     		  <detectJavaApiLink>false</detectJavaApiLink>
@@ -136,6 +138,7 @@
           </execution>
         </executions>
       </plugin>
+
  
       <!--
       <plugin>
