@@ -111,7 +111,7 @@ response.setDateHeader ("Expires", -1);
 						</div>
 					</div>
 					
-					<div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+					<div class="col-0-4 col-md-4 col-sm-12 col-xs-12">
 						<div class="footer-wrapper">
 						<c:if test="${requestScope.CONTENT['footerImage']!=null}">
 						<div class="footer-logo">

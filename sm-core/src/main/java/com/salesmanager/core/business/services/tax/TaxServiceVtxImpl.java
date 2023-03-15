@@ -6,6 +6,7 @@ import com.salesmanager.core.business.exception.ServiceException;
 import com.salesmanager.core.business.services.system.MerchantConfigurationService;
 import com.salesmanager.core.business.services.tax.taxamo.VatValidate;
 import com.salesmanager.core.business.services.tax.vertex.*;
+import com.salesmanager.core.model.catalog.product.description.ProductDescription;
 import com.salesmanager.core.model.customer.Customer;
 import com.salesmanager.core.model.merchant.MerchantStore;
 import com.salesmanager.core.model.order.Order;
@@ -158,8 +159,8 @@ public class  TaxServiceVtxImpl
 				physicalOrigin.country= store.getCountry().getIsoCode();
 			if	(!StringUtils.isBlank(store.getStorepostalcode()))
 				physicalOrigin.postalCode=store.getStorepostalcode();
-//Removed Origin
-			//seller.physicalOrigin=physicalOrigin;
+
+		//	seller.physicalOrigin=physicalOrigin;//TODO, need to find a way to allow this value to be an option from the UI
 			calcRequest.setSeller(seller);
 
 			com.salesmanager.core.business.services.tax.vertex.Customer cust = new com.salesmanager.core.business.services.tax.vertex.Customer();
@@ -178,16 +179,10 @@ public class  TaxServiceVtxImpl
 
 
 
-			cust.taxRegistrations = new ArrayList<TaxRegistration>();
-			TaxRegistration tr = new TaxRegistration();
-			if (validVAT){ // only set when VAT is valid.
-				tr.setTaxRegistrationNumber(customer.getBilling().getVatNumber()); //modified to get VAT number from front page
-				tr.setIsoCountryCode(customer.getBilling().getCountry().getIsoCode());
-			}
-			cust.taxRegistrations.add(tr)		;
+
 			cust.customerCode=custCode;
-			if (validVAT==Boolean.TRUE)//TODO need to make sure this logic is valid for US
-				cust.isTaxExempt= true;
+		/*	if (validVAT==Boolean.TRUE)//TODO need to make sure this logic is valid for US
+				cust.isTaxExempt= true;*/
 			Destination destination= new Destination();
 			if	(!StringUtils.isBlank(customer.getBilling().getCity()))
 				destination.city=customer.getBilling().getCity();
@@ -200,9 +195,20 @@ public class  TaxServiceVtxImpl
 			if 	(!StringUtils.isBlank(customer.getBilling().getPostalCode()))
 				destination.postalCode=customer.getBilling().getPostalCode();
 			cust.destination=destination;
+
+			cust.taxRegistrations = new ArrayList<TaxRegistration>();
+			TaxRegistration tr = new TaxRegistration();
+			if (validVAT){ // only set when VAT is valid.
+				tr.setTaxRegistrationNumber(customer.getBilling().getVatNumber()); //modified to get VAT number from front page
+				tr.setIsoCountryCode(customer.getBilling().getCountry().getIsoCode());
+				cust.customerCode.isBusinessIndicator=true;
+			}
+			cust.taxRegistrations.add(tr)		;
+
 			calcRequest.setCustomer(cust);
 
 			ArrayList<LineItem> itemsVtx=new ArrayList<LineItem>();
+			int i = 0; // to use for iteration for Product Descriptions to handle language
 
 			for (ShoppingCartItem it :orderSummary.getProducts())
 			{
@@ -212,10 +218,29 @@ public class  TaxServiceVtxImpl
 				itVtx.quantity=new Quantity();
 				itVtx.quantity.value=it.getQuantity();
 				itVtx.product=new Product();
-				itVtx.product.value= it.getProduct().getProductDescription().getName();
-				itVtx.product.productClass=it.getProduct().getProductDescription().getName();
+
+				// to Resolve issue of Hibernate / DB2 data not being sorted with languages, test store language then apply
+				// correct language product in Object
+
+				for(ProductDescription desc : orderSummary.getProducts().get(i).getProduct().getDescriptions())
+				{
+					if(language.getCode() == desc.getLanguage().getCode())
+					{
+						itVtx.product.productClass=desc.getName();
+					}
+				}
+
+				if (it.getProduct().getSku()!=null)
+					itVtx.product.value= it.getProduct().getSku();
+
+				//replacing this code as it can flip the language
+
+				//if (it.getProduct().getProductDescription()!=null)
+				//	itVtx.product.productClass=it.getProduct().getProductDescription().getName();
+
 				itemsVtx.add(itVtx);
 
+				i++;
 			}
 
 			//ADD SHIPPING
@@ -313,8 +338,8 @@ public class  TaxServiceVtxImpl
 				physicalOrigin.country= store.getCountry().getIsoCode();
 			if	(!StringUtils.isBlank(store.getStorepostalcode()))
 				physicalOrigin.postalCode=store.getStorepostalcode();
-			//Removed Origin //TODO
-			//seller.physicalOrigin=physicalOrigin;
+
+		//	seller.physicalOrigin=physicalOrigin; //TODO need to add a logic for ship from, now the value is null.
 			calcRequest.setSeller(seller);
 
 			com.salesmanager.core.business.services.tax.vertex.Customer cust = new com.salesmanager.core.business.services.tax.vertex.Customer();
@@ -333,13 +358,8 @@ public class  TaxServiceVtxImpl
 					//If it fails on Service dont worry about error yet...
 				}
 
-			cust.taxRegistrations = new ArrayList<TaxRegistration>();
-			TaxRegistration tr = new TaxRegistration();
-			if(validVAT){
-				tr.setTaxRegistrationNumber(customer.getBilling().getVatNumber()); //modified to get VAT number from front page
-				tr.setIsoCountryCode(customer.getBilling().getCountry().getIsoCode());
-			}
-			cust.taxRegistrations.add(tr)		;
+
+
 			cust.customerCode=custCode;
 			Destination destination= new Destination();
 			if	(!StringUtils.isBlank(customer.getBilling().getCity()))
@@ -353,6 +373,15 @@ public class  TaxServiceVtxImpl
 			if 	(!StringUtils.isBlank(customer.getBilling().getPostalCode()))
 				destination.postalCode=customer.getBilling().getPostalCode();
 			cust.destination=destination;
+
+			cust.taxRegistrations = new ArrayList<TaxRegistration>();
+			TaxRegistration tr = new TaxRegistration();
+			if(validVAT){
+				tr.setTaxRegistrationNumber(customer.getBilling().getVatNumber()); //modified to get VAT number from front page
+				tr.setIsoCountryCode(customer.getBilling().getCountry().getIsoCode());
+				cust.customerCode.isBusinessIndicator=true;
+			}
+			cust.taxRegistrations.add(tr)		;
 			calcRequest.setCustomer(cust);
 
 			ArrayList<LineItem> itemsVtx=new ArrayList<LineItem>();
@@ -365,8 +394,10 @@ public class  TaxServiceVtxImpl
 				itVtx.quantity=new Quantity();
 				itVtx.quantity.value=it.getProductQuantity();
 				itVtx.product=new Product();
-				itVtx.product.value= it.getProductName();
-				itVtx.product.productClass=it.getSku();
+				if (it.getSku()!=null)
+					itVtx.product.value= it.getSku();
+				if (it.getProductName()!=null)
+					itVtx.product.productClass=it.getProductName();
 				itemsVtx.add(itVtx);
 
 			}

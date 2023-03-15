@@ -7,7 +7,7 @@ public class LineItem{
     public String deliveryTerm;
     public BigDecimal extendedPrice;
     public BigDecimal totalTax;
-    public double fairMarketValue;
+   // public double fairMarketValue;
     public FlexibleFields flexibleFields;
     public int lineItemNumber;
     public Product product;

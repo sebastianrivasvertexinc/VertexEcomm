@@ -162,20 +162,18 @@ $(document).ready(function() {
 		//populate zones
 		getZones('#billingStateList','#billingStateProvince',$(this).val(),'<c:out value="${order.customer.billing.zone}" />', '<c:out value="${order.customer.billing.zone}" />', '${requestScope.LANGUAGE.code}', countryListChanged);
 		setCountrySettings('billing',$(this).val());
-		var countryVAT = $(".billing-country-list").val();
-		checkVat(countryVAT);
+
     })
 
     //when the Company name changes
     $("#customer\\.billing\\.company").change(function() {
-    var countryVAT = $(".billing-country-list").val();
+        var countryVAT = $(".billing-country-list").val();
         checkVat(countryVAT);
     })
     //When the Company VAT number changes
     $("#customerBillingVatNumber").change(function() {
         //populate zones
         var countryVAT = $(".billing-country-list").val();
-        getZones('#billingStateList','#billingStateProvince',countryVAT,'<c:out value="${order.customer.billing.zone}" />', '<c:out value="${order.customer.billing.zone}" />', '${requestScope.LANGUAGE.code}', countryListChanged);
         checkVat(countryVAT);
     })
     
