@@ -228,12 +228,6 @@ public class  TaxServiceVtxImpl
 					{
 						itVtx.product.productClass=desc.getName();
 					}
-
-					//String test = desc.getName();
-					//Language lang = desc.getLanguage();
-					//String testLang = lang.getCode();
-					//String languageSite = language.getCode();
-
 				}
 
 				if (it.getProduct().getSku()!=null)
