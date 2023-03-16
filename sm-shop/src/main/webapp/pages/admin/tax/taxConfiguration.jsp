@@ -44,12 +44,16 @@
 	                        		<div class="sm-ui-component">
                                         <h3><s:message code="label.tax.vertextaxclass.title" text="Vertex Tax Engine" /></h3>
                                         <br/>
-
+                                    <div class="control-group">
+                                        <h4><label class="required"><s:message code="label.tax.authurl" text="Auth URL"/></label></h>
+                                            <div class="controls">
+                                                    <form:input cssClass="input-large" path="taxAuthURL" />
+                                    </div>
 	                        		<div class="control-group">
                                         <h4><label class="required"><s:message code="label.tax.vertexadminurl" text="Admin URL"/></label></h>
                                             <div class="controls">
                                                     <form:input cssClass="input-large" path="taxAdminURL" />
-                                            </div>
+                                    </div>
                                     </div>
                                     <div class="control-group">
                                         <label class="required"><s:message code="label.tax.vertexadminclientid" text="Admin Client Id"/></label>
