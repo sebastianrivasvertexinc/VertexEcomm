@@ -29,6 +29,7 @@ public class TaxConfiguration implements JSONAware {
 		data.put("taxAdminClientSecret", this.taxAdminClientSecret);
 		data.put("taxamoValidationURL", this.taxamoValidationURL);
 		data.put("taxamoAuthToken", this.taxamoAuthToken);
+		data.put("taxAuthURL", this.authenticationURL);
 
 		
 		return data.toJSONString();
@@ -142,5 +143,13 @@ public class TaxConfiguration implements JSONAware {
 	}
 	public void setTaxamoAuthToken(String txat) {
 		this.taxamoAuthToken = txat;
+	}
+	public String authenticationURL =  "This value is the Auth URL for Vertex Solutions";
+	public String getTaxAuthURL()
+	{
+		return this.authenticationURL ;
+	}
+	public void setTaxAuthURL(String auth) {
+		this.authenticationURL = auth;
 	}
 }

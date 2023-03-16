@@ -45,6 +45,7 @@ public class  TaxServiceVtxImpl
 	private String calc_url = "";
 	private String taxamoValidationURL  = "";
 	private String taxamoAuthToken = "";
+	private String authenticationURL = "";
 	@Inject
 	private MerchantConfigurationService merchantConfigurationService;
 	
@@ -114,6 +115,7 @@ public class  TaxServiceVtxImpl
 		this.calc_url = taxConfiguration.getTaxCalcURL();
 		this.taxamoValidationURL = taxConfiguration.getTaxamoValidationURL();
 		this.taxamoAuthToken = taxConfiguration.getTaxamoAuthToken();
+		this.authenticationURL = taxConfiguration.getTaxAuthURL();
 
 
 		//List<TaxItem> taxLines = new ArrayList<TaxItem>();
@@ -138,7 +140,7 @@ public class  TaxServiceVtxImpl
 		VtxTaxCalcReq calcRequest=new VtxTaxCalcReq();
 		String 	accessToken = "";
 		try {
-			accessToken = getAuthentication(this.client_Id, this.client_secret);
+			accessToken = getAuthentication(this.client_Id, this.client_secret, this.authenticationURL);
 			Date date = Calendar.getInstance().getTime();
 			DateFormat dateFormat = new SimpleDateFormat("YYYY-MM-dd");
 			String strDate = dateFormat.format(date);
@@ -298,6 +300,8 @@ public class  TaxServiceVtxImpl
 		this.calc_url = taxConfiguration.getTaxCalcURL();
 		this.taxamoValidationURL = taxConfiguration.getTaxamoValidationURL();
 		this.taxamoAuthToken = taxConfiguration.getTaxamoAuthToken();
+		this.authenticationURL = taxConfiguration.getTaxAuthURL();
+
 
 		Set<OrderProduct> items = order.getOrderProducts();
 		Boolean validVAT=false;
@@ -317,7 +321,7 @@ public class  TaxServiceVtxImpl
 		VtxTaxCalcReq calcRequest=new VtxTaxCalcReq();
 		String 	accessToken = "";
 		try {
-			accessToken = getAuthentication(this.client_Id, this.client_secret);
+			accessToken = getAuthentication(this.client_Id, this.client_secret, this.authenticationURL);
 			Date date = Calendar.getInstance().getTime();
 			DateFormat dateFormat = new SimpleDateFormat("YYYY-MM-dd");
 			String strDate = dateFormat.format(date);
@@ -459,13 +463,14 @@ public class  TaxServiceVtxImpl
 		return taxamovatvalidate.getBuyer_tax_number_valid();
 	}
 
-	public static String getAuthentication(String client_Id, String client_secret) throws IOException {
+	public static String getAuthentication(String client_Id, String client_secret, String auth_url) throws IOException {
 
 		OkHttpClient client = new OkHttpClient();
 		MediaType mediaType = MediaType.parse("application/x-www-form-urlencoded");
 		RequestBody body = RequestBody.create(mediaType, "client_id=" + client_Id + "&client_secret=" + client_secret +"&grant_type=client_credentials&scope=calc-rest-api");
 		Request request = new Request.Builder()
-				.url("https://auth.vertexsmb.com/identity/connect/token")//TODO: david add this to tha admin console as "Vertex Autentication URL"
+				//.url("https://auth.vertexsmb.com/identity/connect/token")//TODO: david add this to tha admin console as "Vertex Autentication URL"
+				.url(auth_url)
 				.method("POST", body)
 				.addHeader("Content-Type", "application/x-www-form-urlencoded")
 				.build();
