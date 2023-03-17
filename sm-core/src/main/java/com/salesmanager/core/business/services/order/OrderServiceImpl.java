@@ -231,30 +231,23 @@ OrderProductDownloadRepository orderProductDownloadRepository) {
             // Get order object product name
 
             Set<ProductDescription> desc = items.get(itemcheck).getProduct().getDescriptions();
-            String lang = order.getLocale().toString();
 
             for(ProductDescription d : desc)
             {
-                String l = d.getLanguage().getCode();
-                String pn = d.getName();
+               // String l = d.getLanguage().getCode();
+               // String pn = d.getName();
+               // String c = customer.getDefaultLanguage().getCode();
 
-                if(lang.toString().equals(l.toString()))
+                if(customer.getDefaultLanguage().getCode().equals(d.getLanguage().getCode()))
                 {
-                    //need to setOrderProducts;
-                    orderProduct.setProductName(pn);
-
+                    orderProduct.setProductName(d.getName());
                 }
-
             }
-
-
 
             itemcheck++; //increment for item check
         }
-
         // update the order
         order.setOrderProducts(updateProducts);
-
 
         //Do an invoice call to vertex
         ArrayList<LineItem> vtxLineItems = taxService.commitTax(order, customer, store, summary);
