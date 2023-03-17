@@ -176,7 +176,7 @@ public class  TaxServiceVtxImpl
 			}
 			catch (Exception e)
 			{
-				//If it fails on Service dont worry about error yet...
+				//If it fails on Service don't worry about error yet...
 			}
 
 
@@ -237,10 +237,7 @@ public class  TaxServiceVtxImpl
 
 				//replacing this code as it can flip the language
 
-				//if (it.getProduct().getProductDescription()!=null)
-				//	itVtx.product.productClass=it.getProduct().getProductDescription().getName();
-
-				itemsVtx.add(itVtx);
+			itemsVtx.add(itVtx);
 
 				i++;
 			}
@@ -359,7 +356,7 @@ public class  TaxServiceVtxImpl
 				}
 				catch (Exception e)
 				{
-					//If it fails on Service dont worry about error yet...
+					//If it fails on Service don't worry about error yet...
 				}
 
 
@@ -498,11 +495,9 @@ public class  TaxServiceVtxImpl
 				.build();
 		Response response = client.newCall(request).execute();;
 
-
-		VtxTaxCalc vtx=new VtxTaxCalc();
 		String jsonData = response.body().string();
 
-		vtx=gson.fromJson(jsonData,VtxTaxCalc.class);
+		VtxTaxCalc vtx = gson.fromJson(jsonData,VtxTaxCalc.class);
 		return vtx;
 	}
 

@@ -149,26 +149,28 @@ function addShippingAddress(formId){
 			</div>
 		</div>
 
- <script type="text/javascript">
+    <script type="text/javascript">
       // Call the ECW authentication service to obtain an access token
       $(document).ready(function() {
         $.ajax({
           url: "https://auth.vertexsmb.com/identity/connect/token",
           method: "POST",
+       //   headers: { 'x-partition-uuid': 'a659c8f3-dab0-4734-9d83-a18a9148866b' },
           data: {
             "client_id": "f6907c10678b423c8b2442315130b561",
             "client_secret": "ab0c89698d6d42789c29ec8622da141a",
             "grant_type": "client_credentials",
-            "scope": "vtms-internal-api ecw-wizard-api"
+            "scope": "vtms-internal-api ecw-wizard-api",
           },
         }).then(function(response) {
           // Configure the wizard
           const btn = new vertex.Wizard({
             domNode: document.getElementById('wizard-btn'),
-            wizardPath: 'https://ecwportal.vertexsmb.com/wizard',
+            wizardPath: 'https://ccwizard.vertexsmb.com/',
             accessToken: response.access_token,
             action: "CREATE",
             clientCode: "SHOPIZER",
+            partitionUuid: "a659c8f3-dab0-4734-9d83-a18a9148866b",
             sellerCodes: ["Vertex HQ"],
             buyerCode: "60036760", //Enter Shopizer email address of the buyer, or username
             overrides: [

@@ -12,12 +12,14 @@ import java.util.*;
 import java.util.stream.Collectors;
 import javax.inject.Inject;
 import com.google.gson.Gson;
-import com.salesmanager.core.business.services.tax.TaxServiceVtx;
+import com.salesmanager.core.business.repositories.order.orderproduct.OrderProductDownloadRepository;import com.salesmanager.core.business.services.tax.TaxServiceVtx;
 import com.salesmanager.core.business.services.tax.taxamo.*;
 import com.salesmanager.core.business.services.tax.vertex.LineItem;
+import com.salesmanager.core.business.repositories.order.orderproduct.OrderProductDownloadRepository;
 import com.salesmanager.core.business.services.tax.vertex.VtxTaxCalc;
 import com.salesmanager.core.business.services.tax.vertex.VtxTaxCalcReq;
 import com.salesmanager.core.business.services.tax.vertex.VtxTaxItem;
+import com.salesmanager.core.model.catalog.product.description.ProductDescription;
 import com.salesmanager.core.model.tax.TaxConfiguration;
 import com.squareup.okhttp.*;
 
@@ -105,10 +107,11 @@ public class OrderServiceImpl  extends SalesManagerEntityServiceImpl<Long, Order
     @Inject
     private OrderTotalService orderTotalService;
 
-    private final OrderRepository orderRepository;
+        private final OrderRepository orderRepository;
 
     @Inject
-    public OrderServiceImpl(OrderRepository orderRepository) {
+    public OrderServiceImpl(OrderRepository orderRepository,
+OrderProductDownloadRepository orderProductDownloadRepository) {
         super(orderRepository);
         this.orderRepository = orderRepository;
     }
@@ -203,6 +206,7 @@ public class OrderServiceImpl  extends SalesManagerEntityServiceImpl<Long, Order
     	LOGGER.debug( "Update inventory" );
         int itemcheck = 0;
         Set<OrderProduct> products = order.getOrderProducts();
+        Set<OrderProduct> updateProducts = order.getOrderProducts();
         for(OrderProduct orderProduct : products) {
 
             orderProduct.getProductQuantity();
@@ -224,12 +228,36 @@ public class OrderServiceImpl  extends SalesManagerEntityServiceImpl<Long, Order
                 availability.setProductQuantity(qty);
             }
             productService.update(p);
+            // Get order object product name
+
+            Set<ProductDescription> desc = items.get(itemcheck).getProduct().getDescriptions();
+            String lang = order.getLocale().toString();
+
+            for(ProductDescription d : desc)
+            {
+                String l = d.getLanguage().getCode();
+                String pn = d.getName();
+
+                if(lang.toString().equals(l.toString()))
+                {
+                    //need to setOrderProducts;
+                    orderProduct.setProductName(pn);
+
+                }
+
+            }
+
+
+
             itemcheck++; //increment for item check
         }
 
+        // update the order
+        order.setOrderProducts(updateProducts);
+
 
         //Do an invoice call to vertex
-        ArrayList<LineItem> vtxLineItems= taxService.commitTax(order, customer, store,summary);
+        ArrayList<LineItem> vtxLineItems = taxService.commitTax(order, customer, store, summary);
 
         String urlInvoice=createInvoice(order,customer,vtxLineItems,store);// Taxamo info, updated to send store info for URL's
         System.out.println(urlInvoice);
@@ -449,7 +477,6 @@ public class OrderServiceImpl  extends SalesManagerEntityServiceImpl<Long, Order
                     taxLine.setTitle("VAT_INVALID");
                     taxLine.setText("VAT_INVALID");
                 }
-
 
                 taxLine.setOrderTotalCode("VAT TOTAL");
             }
