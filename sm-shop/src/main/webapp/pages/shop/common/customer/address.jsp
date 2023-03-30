@@ -172,15 +172,16 @@ function addShippingAddress(formId){
             clientCode: "SHOPIZER",
             partitionUuid: "a659c8f3-dab0-4734-9d83-a18a9148866b",
             sellerCodes: ["Vertex HQ"],
-            buyerCode: "60036760", //Enter Shopizer email address of the buyer, or username
+            buyerCode:  "${customer.emailAddress}", //Enter Shopizer email address of the buyer, or username
             overrides: [
-              {qId:2, value: 'Vertex Shopizer'},                   // Shopizer Name
-              {qId:3, value: '3000 coral way'},    // Shopizer buyerStreetAddress
-              {qId:4, value: 'miami'},          // Shopizer buyerCity
-              {qId:5, value: 'fl'},                       // Shopizer buyerState
-              {qId:6, value: '33145'},                    // Shopizer buyerPostalCode
-              {qId:19, value: 'someuser@vertexinc.com'},  // Shopizer buyerEmail
-              {qId:22, value: '800-555-1212'}             // Shopizer buyerPhone
+              {qId:2, value: "${customer.firstName}"},
+              {qId:3, value: "${customer.billing.address}"},
+              {qId:4, value: "${customer.billing.city}"},
+              {qId:5, value: "${customer.billing.stateProvince}"},
+              {qId:6, value: "${customer.billing.postalCode}"},
+              {qId:7, value: "${customer.billing.country}"},
+              {qId:19, value: "${customer.emailAddress}"},
+              {qId:22, value: "${customer.billing.phone}"}
             ]
           });
 
