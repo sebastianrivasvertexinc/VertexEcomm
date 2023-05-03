@@ -53,7 +53,15 @@ public class TransactionResponse {
     private float tax_location_id;
     private String currency_code;
 
+    public AdditionalCurrencies additional_currencies;
 
+    public AdditionalCurrencies getAdditional_currencies() {
+        return additional_currencies;
+    }
+
+    public void setAdditional_currencies(AdditionalCurrencies additional_currencies) {
+        this.additional_currencies = additional_currencies;
+    }
 
     // Getter Methods
 

@@ -494,6 +494,18 @@ OrderProductDownloadRepository orderProductDownloadRepository) {
 
             totalSummary.setTotal(grandTotal);
             totalSummary.setTotals(orderTotals);
+            // fx
+           // if(!country.equals(store.getCountry().getIsoCode().toString())) {
+            Invoice currencyDetails = new Invoice();
+            currencyDetails=taxService.currencyConversion(store, country, orderTotal.getValue());
+            //TODO return currency code and amount to the UI
+            if (currencyDetails!=null){
+                taxLine.setOrderTotalCode(("Total in " + currencyDetails.currency_code));
+                taxLine.setValue(currencyDetails.amount);
+                orderTotals.add(taxLine);
+            }
+
+
         }
         return totalSummary;
 
