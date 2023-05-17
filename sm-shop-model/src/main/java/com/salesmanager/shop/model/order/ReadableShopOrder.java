@@ -19,6 +19,7 @@ public class ReadableShopOrder extends ReadableOrder implements Serializable {
 	private String errorMessage = null;//global error message
 	private List<ReadableOrderTotal> subTotals;//order calculation	
 	private String grandTotal;//grand total - order calculation
+	private String grandTotalLocal; // grand total - order calculation local currency
 	
 
 	public String getErrorMessage() {
@@ -46,4 +47,10 @@ public class ReadableShopOrder extends ReadableOrder implements Serializable {
 		this.shippingSummary = shippingSummary;
 	}
 
+	public String getGrandTotalLocal() {
+		return grandTotalLocal;
+	}
+	public void setGrandTotalLocal(String grandTotalLocal) {
+		this.grandTotalLocal = grandTotalLocal;
+	}
 }

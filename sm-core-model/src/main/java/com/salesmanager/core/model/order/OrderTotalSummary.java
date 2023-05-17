@@ -18,7 +18,10 @@ public class OrderTotalSummary implements Serializable {
 	private BigDecimal subTotal;//one time price for items
 	private BigDecimal total;//final price
 	private BigDecimal taxTotal;//total of taxes
-	
+
+	private BigDecimal totalLocal;//final price in local currency
+
+	private String currency; // final price local currency
 	private List<OrderTotal> totals;//all other fees (tax, shipping ....)
 
 	public BigDecimal getSubTotal() {
@@ -52,5 +55,13 @@ public class OrderTotalSummary implements Serializable {
 	public void setTaxTotal(BigDecimal taxTotal) {
 		this.taxTotal = taxTotal;
 	}
+	public BigDecimal getTotalLocal() {
+		return totalLocal;
+	}
+	public void setTotalLocal(BigDecimal totalLocal) {this.totalLocal = totalLocal;}
 
+	public String getCurrency() {
+		return currency;
+	}
+	public void setCurrency(String currency) {this.currency = currency;}
 }

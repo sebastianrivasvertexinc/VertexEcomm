@@ -1221,9 +1221,17 @@ public class ShoppingOrderController extends AbstractController {
 					readableOrder.setGrandTotal(ot.getTotal());
 				}
 			}
-			
-			
+
+			String totalInLocal = "";
 			readableOrder.setSubTotals(subtotals);
+			if(orderTotalSummary.getTotalLocal()!=null)
+			{
+				 totalInLocal = orderTotalSummary.getTotalLocal().toString();
+				 readableOrder.setGrandTotalLocal(totalInLocal);
+				 readableOrder.setCurrency(orderTotalSummary.getCurrency());
+			}
+
+
 		
 		} catch(Exception e) {
 			LOGGER.error("Error while getting shipping quotes",e);
@@ -1232,7 +1240,7 @@ public class ShoppingOrderController extends AbstractController {
 
 		// updating readableOrder with the new comments from Tax fields
 		// This is the tax details that show in the comments field
-		readableOrder.setComments(order.getComments());
+		readableOrder.setComments(order.getComments());;
 		// updating readableOrder with complete customer details
 		 Address address = order.getCustomer().getBilling();
 		ReadableBilling rb = new ReadableBilling().populate(order, address);
@@ -1379,7 +1387,7 @@ public class ShoppingOrderController extends AbstractController {
 				}
 			}
 			
-			
+
 			readableOrder.setSubTotals(subtotals);
 		
 		} catch(Exception e) {

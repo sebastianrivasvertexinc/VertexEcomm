@@ -43,6 +43,12 @@ Templates definition
 		<td><strong><span class="amount grand-total">{{grandTotal}}</td>
 </script>
 
+<!-- total in local template -->
+<script type="text/html" id="totalLocalTemplate">
+		<th>Total In (<s:message code="order.total.currency.warning" text="Indicative" />)</th>
+		<td><strong><span class="grand-total">{{currency}} {{grandTotalLocal}}</td>
+</script>
+
 											
 <!-- shipping template -->
 <script type="text/html" id="shippingTemplate">
@@ -877,7 +883,7 @@ function initPayment(paymentSelection) {
 										<tfoot>
 											<!-- subtotals -->
                                         <c:forEach items="${order.orderTotalSummary.totals}" var="total">
-                                            <c:if test="${total.orderTotalCode!='order.total.total'}">
+                                            <c:if test="${total.orderTotalCode!='order.total.total' || total.orderTotalCode!='order.total.total.local'}">
                                             <tr id="cart-subtotal-${total.text}" class="cart-subtotal subt">
                                                     <td class="order-total-label">
                                                     <c:choose>
@@ -978,7 +984,9 @@ function initPayment(paymentSelection) {
 											<tr id="totalRow" class="total-box order-total">
 												<th><s:message code="order.total.total" text="Total"/></th>
 												<td><strong><span class="amount grand-total"><sm:monetary value="${order.orderTotalSummary.total}"/></td>
-											</tr>						
+											</tr>
+                                            <tr id="totalLocalRow" class="cart-subtotal">
+                                            </tr>
 										</tfoot>
 									</table>
 								</div>

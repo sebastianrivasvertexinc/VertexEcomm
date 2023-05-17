@@ -151,7 +151,7 @@ function shippingQuotes(url,useDistanceWindow){
 		  		return;
 		  	}
 
-			//log(response);
+			console.log(response);
 			
 		  	//remove subtotal
 			$('#summary-table tr.subt').remove();
@@ -161,8 +161,14 @@ function shippingQuotes(url,useDistanceWindow){
 			var subTotalsTemplate = Hogan.compile(document.getElementById("subTotalsTemplate").innerHTML);
 			var totalTemplate = Hogan.compile(document.getElementById("totalTemplate").innerHTML);
 			var quotesTemplate = Hogan.compile(document.getElementById("shippingTemplate").innerHTML);
+			var totalLocalTemplate = Hogan.compile(document.getElementById("totalLocalTemplate").innerHTML);
 			var subTotalsRendered = subTotalsTemplate.render(response);
 			var totalRendred = totalTemplate.render(response);
+			var totalLocalRendered = totalLocalTemplate.render(response);
+
+			console.log(totalRendred);
+			console.log(subTotalsRendered);
+			console.log(totalLocalRendered);
 			
 			if(response.shippingSummary!=null) {
 
@@ -190,6 +196,7 @@ function shippingQuotes(url,useDistanceWindow){
 			} 
 			$('#summaryRows').append(subTotalsRendered);
 			$('#totalRow').html(totalRendred);
+			$('#totalLocalRow').html(totalLocalRendered);
 			$('#comments').html(response.comments); //added this to update the notes field
 			formValid = isFormValid();
 			
@@ -348,7 +355,7 @@ function calculateTotal(url,useDistanceWindow){
 
 			//console.log(rendered);
 			$('#summaryRows').append(subTotalsRendered);
-			$('#totalRow').html(totalRendred);
+			$('#totalRow').append(totalRendred);
 			formValid = isFormValid();
 			validateConfirmShipping(response,useDistanceWindow);
 	  },
@@ -425,6 +432,7 @@ function checkVat(countryCode){
 
             if((!(countryCode=="US" || countryCode== "CA")) && (getCompany !=""))
             {
+
                 $("#vatNumberCheck").css('visibility', 'visible');
 
                             if($("#cart-subtotal-VAT\\_VALID").length){
@@ -450,6 +458,15 @@ function checkVat(countryCode){
                                           'color':'#00FF00'});
                  $("#customerBillingVatNumber").css({'visibility':'hidden',
                                                'background-color':'#F2DEDE'});
+            }
+
+            if(countryCode=="US")
+            {
+                $("#totalLocalRow").css('visibility', 'hidden');
+            }
+            else
+            {
+                $("#totalLocalRow").css('visibility', 'visible'); //switches on view local currency
             }
 
 

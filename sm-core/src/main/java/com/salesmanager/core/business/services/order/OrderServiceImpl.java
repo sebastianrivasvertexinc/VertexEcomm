@@ -500,9 +500,12 @@ OrderProductDownloadRepository orderProductDownloadRepository) {
             currencyDetails=taxService.currencyConversion(store, country, orderTotal.getValue());
             //TODO return currency code and amount to the UI
             if (currencyDetails!=null){
-                taxLine.setOrderTotalCode(("Total in " + currencyDetails.currency_code));
-                taxLine.setValue(currencyDetails.amount);
-                orderTotals.add(taxLine);
+                // Add conversion after Website Currency to the totalSummary. Since these
+                // are not required to be calculated or totalled push to object ReadableOrder
+
+                totalSummary.setTotalLocal(currencyDetails.amount);
+                totalSummary.setCurrency(currencyDetails.currency_code);
+
             }
 
 
