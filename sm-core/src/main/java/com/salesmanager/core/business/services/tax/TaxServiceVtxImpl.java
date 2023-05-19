@@ -437,7 +437,7 @@ public class  TaxServiceVtxImpl
 	}
 
 	@Override
-	public Invoice currencyConversion(MerchantStore store, String destCurrency, BigDecimal grandTotal) throws ServiceException{
+	public Invoice currencyConversion(MerchantStore store, String destCurrency,String zone, BigDecimal grandTotal) throws ServiceException{
 
 		TaxConfiguration taxConfiguration = taxService.getTaxConfiguration(store);
 		if(taxConfiguration == null) {
@@ -457,6 +457,11 @@ public class  TaxServiceVtxImpl
 		TransactionRequest trans =new TransactionRequest();
 		trans.setForce_country_code(destCurrency);
 		trans.setCurrency_code(store.getCurrency().getCode());
+		Invoice_address invoice_address=new Invoice_address();
+		invoice_address.setCountry(destCurrency);
+		invoice_address.setRegion(zone);
+
+		trans.setInvoice_address(invoice_address);
 		ArrayList<Transaction_line> transaction_lines= new  ArrayList<Transaction_line>();
 			Transaction_line tLine= new Transaction_line();
 			tLine.setDescription("Online Subscription Purchase");

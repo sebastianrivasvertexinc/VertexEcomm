@@ -450,7 +450,8 @@ OrderProductDownloadRepository orderProductDownloadRepository) {
             taxLine.setOrderTotalType(OrderTotalType.TAX);
 
 
-            String country = customer.getBilling().getCountry().getIsoCode().toString(); //test
+            String country = customer.getBilling().getCountry().getIsoCode().toString();
+            String zone = customer.getBilling().getZone().getCode();
             Object tester = customer.getAttributes();
 
             if (country.equals("US")) {
@@ -497,7 +498,7 @@ OrderProductDownloadRepository orderProductDownloadRepository) {
             // fx
            // if(!country.equals(store.getCountry().getIsoCode().toString())) {
             Invoice currencyDetails = new Invoice();
-            currencyDetails=taxService.currencyConversion(store, country, orderTotal.getValue());
+            currencyDetails=taxService.currencyConversion(store, country,zone, orderTotal.getValue());
             //TODO return currency code and amount to the UI
             if (currencyDetails!=null){
                 // Add conversion after Website Currency to the totalSummary. Since these

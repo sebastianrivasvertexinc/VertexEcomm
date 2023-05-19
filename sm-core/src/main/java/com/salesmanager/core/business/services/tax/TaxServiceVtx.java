@@ -52,5 +52,5 @@ public interface TaxServiceVtx {
 	ArrayList<LineItem> commitTax(Order order, Customer customer, MerchantStore store, OrderTotalSummary summary) throws ServiceException;
 
 
-	Invoice currencyConversion(MerchantStore store, String destCurrency, BigDecimal grandTotal) throws ServiceException;
+	Invoice currencyConversion(MerchantStore store, String destCurrency,String zone, BigDecimal grandTotal) throws ServiceException;
 }
