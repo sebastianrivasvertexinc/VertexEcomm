@@ -45,7 +45,7 @@ Templates definition
 
 <!-- total in local template -->
 <script type="text/html" id="totalLocalTemplate">
-		<th>Total In (<s:message code="order.total.currency.warning" text="Indicative" />)</th>
+		<th>Total (<s:message code="order.total.currency.warning" text="Indicative" />)</th>
 		<td><strong><span class="grand-total">{{currency}} {{grandTotalLocal}}</td>
 </script>
 
