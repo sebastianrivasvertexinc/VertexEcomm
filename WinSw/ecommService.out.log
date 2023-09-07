@@ -1,0 +1,320 @@
+[INFO] Scanning for projects...
+[INFO] Inspecting build with total of 1 modules...
+[INFO] Installing Nexus Staging features:
+[INFO]   ... total of 1 executions of maven-deploy-plugin replaced with nexus-staging-maven-plugin
+[INFO] 
+[INFO] ------------------------< com.shopizer:sm-shop >------------------------
+[INFO] Building sm-shop 2.17.0
+[INFO]   from pom.xml
+[INFO] --------------------------------[ war ]---------------------------------
+[INFO] 
+[INFO] >>> spring-boot:2.5.4:run (default-cli) > test-compile @ sm-shop >>>
+[INFO] 
+[INFO] --- resources:3.2.0:resources (default-resources) @ sm-shop ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] Using 'UTF-8' encoding to copy filtered properties files.
+[INFO] Copying 1 resource
+[INFO] Copying 49 resources
+[INFO] 
+[INFO] --- compiler:3.8.1:compile (default-compile) @ sm-shop ---
+[INFO] Nothing to compile - all classes are up to date
+[INFO] 
+[INFO] --- resources:3.2.0:testResources (default-testResources) @ sm-shop ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] Using 'UTF-8' encoding to copy filtered properties files.
+[INFO] Copying 5 resources
+[INFO] 
+[INFO] --- compiler:3.8.1:testCompile (default-testCompile) @ sm-shop ---
+[INFO] Nothing to compile - all classes are up to date
+[INFO] 
+[INFO] <<< spring-boot:2.5.4:run (default-cli) < test-compile @ sm-shop <<<
+[INFO] 
+[INFO] 
+[INFO] --- spring-boot:2.5.4:run (default-cli) @ sm-shop ---
+[INFO] Attaching agents: []
+ _____  _                    _                  
+/  ___|| |                  (_)                 
+\ `--. | |__    ___   _ __   _  ____  ___  _ __ 
+ `--. \| '_ \  / _ \ | '_ \ | ||_  / / _ \| '__|
+/\__/ /| | | || (_) || |_) || | / / |  __/| |   
+\____/ |_| |_| \___/ | .__/ |_|/___| \___||_|   
+                     | |                        
+                     |_|        +  VERTEX TAX ENGINE
+[based on Spring Boot version 2.5.4]
+
+2023-09-07 16:04:10.659  INFO 1688 --- [           main] c.s.shop.application.ShopApplication     : Starting ShopApplication using Java 1.8.0_202 on ope-1002-01 with PID 1688 (C:\Ecomm\sm-shop\target\classes started by OPE-1002-01$ in C:\Ecomm\sm-shop)
+2023-09-07 16:04:10.662  INFO 1688 --- [           main] c.s.shop.application.ShopApplication     : No active profile set, falling back to default profiles: default
+2023-09-07 16:04:12.122  INFO 1688 --- [           main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2023-09-07 16:04:12.316  INFO 1688 --- [           main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 199 ms. Found 66 JPA repository interfaces.
+2023-09-07 16:04:12.947  INFO 1688 --- [           main] trationDelegate$BeanPostProcessorChecker : Bean 'asyncConfig' of type [com.salesmanager.shop.application.config.AsyncConfig$$EnhancerBySpringCGLIB$$7c28877b] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2023-09-07 16:04:12.986  INFO 1688 --- [           main] trationDelegate$BeanPostProcessorChecker : Bean 'org.springframework.aop.support.DefaultBeanFactoryPointcutAdvisor#0' of type [org.springframework.aop.support.DefaultBeanFactoryPointcutAdvisor] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2023-09-07 16:04:13.214  INFO 1688 --- [           main] trationDelegate$BeanPostProcessorChecker : Bean 'org.springframework.security.access.expression.method.DefaultMethodSecurityExpressionHandler@11e834ad' of type [org.springframework.security.access.expression.method.DefaultMethodSecurityExpressionHandler] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2023-09-07 16:04:13.215  INFO 1688 --- [           main] trationDelegate$BeanPostProcessorChecker : Bean 'methodSecurityConfig' of type [com.salesmanager.shop.application.config.MethodSecurityConfig$$EnhancerBySpringCGLIB$$dc4e9acc] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2023-09-07 16:04:13.226  INFO 1688 --- [           main] trationDelegate$BeanPostProcessorChecker : Bean 'methodSecurityMetadataSource' of type [org.springframework.security.access.method.DelegatingMethodSecurityMetadataSource] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2023-09-07 16:04:13.495  INFO 1688 --- [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port(s): 8080 (http)
+2023-09-07 16:04:13.508  INFO 1688 --- [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2023-09-07 16:04:13.508  INFO 1688 --- [           main] org.apache.catalina.core.StandardEngine  : Starting Servlet engine: [Apache Tomcat/9.0.52]
+2023-09-07 16:04:13.796  INFO 1688 --- [           main] org.apache.jasper.servlet.TldScanner     : At least one JAR was scanned for TLDs yet contained no TLDs. Enable debug logging for this logger for a complete list of JARs that were scanned but no TLDs were found in them. Skipping unneeded JARs during scanning can improve startup time and JSP compilation time.
+2023-09-07 16:04:13.803  INFO 1688 --- [           main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2023-09-07 16:04:13.803  INFO 1688 --- [           main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 3101 ms
+2023-09-07 16:04:14.031  INFO 1688 --- [           main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2023-09-07 16:04:14.063  INFO 1688 --- [           main] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 5.4.32.Final
+2023-09-07 16:04:14.189  WARN 1688 --- [           main] org.hibernate.orm.deprecation            : HHH020100: The Ehcache second-level cache provider for Hibernate is deprecated.  See https://hibernate.atlassian.net/browse/HHH-12441 for details.
+2023-09-07 16:04:14.206  INFO 1688 --- [           main] o.hibernate.annotations.common.Version   : HCANN000001: Hibernate Commons Annotations {5.1.2.Final}
+2023-09-07 16:04:14.338  WARN 1688 --- [           main] com.zaxxer.hikari.HikariConfig           : HikariPool-1 - idleTimeout has been set but has no effect because the pool is operating as a fixed size pool.
+2023-09-07 16:04:14.338  INFO 1688 --- [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2023-09-07 16:04:14.580  INFO 1688 --- [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2023-09-07 16:04:14.596  INFO 1688 --- [           main] org.hibernate.dialect.Dialect            : HHH000400: Using dialect: org.hibernate.dialect.H2Dialect
+2023-09-07 16:04:14.659  WARN 1688 --- [           main] org.hibernate.cfg.AnnotationBinder       : HHH000503: A class should not be annotated with both @Inheritance and @MappedSuperclass. @Inheritance will be ignored for: com.salesmanager.core.model.common.description.Description.
+2023-09-07 16:04:14.733  WARN 1688 --- [           main] o.h.b.i.InFlightMetadataCollectorImpl    : HHH000069: Duplicate generator name TABLE_GEN
+2023-09-07 16:04:14.738  WARN 1688 --- [           main] o.h.b.i.InFlightMetadataCollectorImpl    : HHH000069: Duplicate generator name description_gen
+2023-09-07 16:04:14.738  WARN 1688 --- [           main] o.h.b.i.InFlightMetadataCollectorImpl    : HHH000069: Duplicate generator name TABLE_GEN
+2023-09-07 16:04:14.738  WARN 1688 --- [           main] o.h.b.i.InFlightMetadataCollectorImpl    : HHH000069: Duplicate generator name TABLE_GEN
+2023-09-07 16:04:14.743  WARN 1688 --- [           main] o.h.b.i.InFlightMetadataCollectorImpl    : HHH000069: Duplicate generator name TABLE_GEN
+2023-09-07 16:04:14.743  WARN 1688 --- [           main] o.h.b.i.InFlightMetadataCollectorImpl    : HHH000069: Duplicate generator name TABLE_GEN
+2023-09-07 16:04:14.743  WARN 1688 --- [           main] o.h.b.i.InFlightMetadataCollectorImpl    : HHH000069: Duplicate generator name description_gen
+2023-09-07 16:04:14.743  WARN 1688 --- [           main] o.h.b.i.InFlightMetadataCollectorImpl    : HHH000069: Duplicate generator name TABLE_GEN
+2023-09-07 16:04:14.743  WARN 1688 --- [           main] o.h.b.i.InFlightMetadataCollectorImpl    : HHH000069: Duplicate generator name TABLE_GEN
+2023-09-07 16:04:14.743  WARN 1688 --- [           main] o.h.b.i.InFlightMetadataCollectorImpl    : HHH000069: Duplicate generator name TABLE_GEN
+2023-09-07 16:04:14.743  WARN 1688 --- [           main] o.h.b.i.InFlightMetadataCollectorImpl    : HHH000069: Duplicate generator name TABLE_GEN
+2023-09-07 16:04:14.743  WARN 1688 --- [           main] o.h.b.i.InFlightMetadataCollectorImpl    : HHH000069: Duplicate generator name description_gen
+2023-09-07 16:04:14.754  WARN 1688 --- [           main] o.h.b.i.InFlightMetadataCollectorImpl    : HHH000069: Duplicate generator name TABLE_GEN
+2023-09-07 16:04:14.754  WARN 1688 --- [           main] o.h.b.i.InFlightMetadataCollectorImpl    : HHH000069: Duplicate generator name TABLE_GEN
+2023-09-07 16:04:14.754  WARN 1688 --- [           main] o.h.b.i.InFlightMetadataCollectorImpl    : HHH000069: Duplicate generator name TABLE_GEN
+2023-09-07 16:04:14.754  WARN 1688 --- [           main] o.h.b.i.InFlightMetadataCollectorImpl    : HHH000069: Duplicate generator name TABLE_GEN
+2023-09-07 16:04:14.754  WARN 1688 --- [           main] o.h.b.i.InFlightMetadataCollectorImpl    : HHH000069: Duplicate generator name TABLE_GEN
+2023-09-07 16:04:14.754  WARN 1688 --- [           main] o.h.b.i.InFlightMetadataCollectorImpl    : HHH000069: Duplicate generator name description_gen
+2023-09-07 16:04:14.754  WARN 1688 --- [           main] o.h.b.i.InFlightMetadataCollectorImpl    : HHH000069: Duplicate generator name TABLE_GEN
+2023-09-07 16:04:14.754  WARN 1688 --- [           main] o.h.b.i.InFlightMetadataCollectorImpl    : HHH000069: Duplicate generator name TABLE_GEN
+2023-09-07 16:04:14.754  WARN 1688 --- [           main] o.h.b.i.InFlightMetadataCollectorImpl    : HHH000069: Duplicate generator name TABLE_GEN
+2023-09-07 16:04:14.770  WARN 1688 --- [           main] o.h.b.i.InFlightMetadataCollectorImpl    : HHH000069: Duplicate generator name TABLE_GEN
+2023-09-07 16:04:14.772  WARN 1688 --- [           main] o.h.b.i.InFlightMetadataCollectorImpl    : HHH000069: Duplicate generator name TABLE_GEN
+2023-09-07 16:04:14.773  WARN 1688 --- [           main] o.h.b.i.InFlightMetadataCollectorImpl    : HHH000069: Duplicate generator name description_gen
+2023-09-07 16:04:14.774  WARN 1688 --- [           main] o.h.b.i.InFlightMetadataCollectorImpl    : HHH000069: Duplicate generator name description_gen
+2023-09-07 16:04:14.775  WARN 1688 --- [           main] o.h.b.i.InFlightMetadataCollectorImpl    : HHH000069: Duplicate generator name description_gen
+2023-09-07 16:04:14.777  WARN 1688 --- [           main] o.h.b.i.InFlightMetadataCollectorImpl    : HHH000069: Duplicate generator name TABLE_GEN
+2023-09-07 16:04:14.778  WARN 1688 --- [           main] o.h.b.i.InFlightMetadataCollectorImpl    : HHH000069: Duplicate generator name TABLE_GEN
+2023-09-07 16:04:14.778  WARN 1688 --- [           main] o.h.b.i.InFlightMetadataCollectorImpl    : HHH000069: Duplicate generator name description_gen
+2023-09-07 16:04:14.780  WARN 1688 --- [           main] o.h.b.i.InFlightMetadataCollectorImpl    : HHH000069: Duplicate generator name TABLE_GEN
+2023-09-07 16:04:14.781  WARN 1688 --- [           main] o.h.b.i.InFlightMetadataCollectorImpl    : HHH000069: Duplicate generator name TABLE_GEN
+2023-09-07 16:04:14.782  WARN 1688 --- [           main] o.h.b.i.InFlightMetadataCollectorImpl    : HHH000069: Duplicate generator name description_gen
+2023-09-07 16:04:14.783  WARN 1688 --- [           main] o.h.b.i.InFlightMetadataCollectorImpl    : HHH000069: Duplicate generator name TABLE_GEN
+2023-09-07 16:04:14.786  WARN 1688 --- [           main] o.h.b.i.InFlightMetadataCollectorImpl    : HHH000069: Duplicate generator name TABLE_GEN
+2023-09-07 16:04:14.788  WARN 1688 --- [           main] o.h.b.i.InFlightMetadataCollectorImpl    : HHH000069: Duplicate generator name TABLE_GEN
+2023-09-07 16:04:14.789  WARN 1688 --- [           main] o.h.b.i.InFlightMetadataCollectorImpl    : HHH000069: Duplicate generator name description_gen
+2023-09-07 16:04:14.791  WARN 1688 --- [           main] o.h.b.i.InFlightMetadataCollectorImpl    : HHH000069: Duplicate generator name TABLE_GEN
+2023-09-07 16:04:14.794  WARN 1688 --- [           main] o.h.b.i.InFlightMetadataCollectorImpl    : HHH000069: Duplicate generator name TABLE_GEN
+2023-09-07 16:04:14.798  WARN 1688 --- [           main] o.h.b.i.InFlightMetadataCollectorImpl    : HHH000069: Duplicate generator name TABLE_GEN
+2023-09-07 16:04:14.799  WARN 1688 --- [           main] o.h.b.i.InFlightMetadataCollectorImpl    : HHH000069: Duplicate generator name TABLE_GEN
+2023-09-07 16:04:14.800  WARN 1688 --- [           main] o.h.b.i.InFlightMetadataCollectorImpl    : HHH000069: Duplicate generator name TABLE_GEN
+2023-09-07 16:04:14.802  WARN 1688 --- [           main] o.h.b.i.InFlightMetadataCollectorImpl    : HHH000069: Duplicate generator name TABLE_GEN
+2023-09-07 16:04:14.803  WARN 1688 --- [           main] o.h.b.i.InFlightMetadataCollectorImpl    : HHH000069: Duplicate generator name TABLE_GEN
+2023-09-07 16:04:14.804  WARN 1688 --- [           main] o.h.b.i.InFlightMetadataCollectorImpl    : HHH000069: Duplicate generator name TABLE_GEN
+2023-09-07 16:04:14.806  WARN 1688 --- [           main] o.h.b.i.InFlightMetadataCollectorImpl    : HHH000069: Duplicate generator name TABLE_GEN
+2023-09-07 16:04:14.806  WARN 1688 --- [           main] o.h.b.i.InFlightMetadataCollectorImpl    : HHH000069: Duplicate generator name TABLE_GEN
+2023-09-07 16:04:14.807  WARN 1688 --- [           main] o.h.b.i.InFlightMetadataCollectorImpl    : HHH000069: Duplicate generator name description_gen
+2023-09-07 16:04:14.808  WARN 1688 --- [           main] o.h.b.i.InFlightMetadataCollectorImpl    : HHH000069: Duplicate generator name TABLE_GEN
+2023-09-07 16:04:14.809  WARN 1688 --- [           main] o.h.b.i.InFlightMetadataCollectorImpl    : HHH000069: Duplicate generator name description_gen
+2023-09-07 16:04:14.810  WARN 1688 --- [           main] o.h.b.i.InFlightMetadataCollectorImpl    : HHH000069: Duplicate generator name TABLE_GEN
+2023-09-07 16:04:14.811  WARN 1688 --- [           main] o.h.b.i.InFlightMetadataCollectorImpl    : HHH000069: Duplicate generator name TABLE_GEN
+2023-09-07 16:04:14.813  WARN 1688 --- [           main] o.h.b.i.InFlightMetadataCollectorImpl    : HHH000069: Duplicate generator name TABLE_GEN
+2023-09-07 16:04:14.814  WARN 1688 --- [           main] o.h.b.i.InFlightMetadataCollectorImpl    : HHH000069: Duplicate generator name TABLE_GEN
+2023-09-07 16:04:14.816  WARN 1688 --- [           main] o.h.b.i.InFlightMetadataCollectorImpl    : HHH000069: Duplicate generator name TABLE_GEN
+2023-09-07 16:04:14.816  WARN 1688 --- [           main] o.h.b.i.InFlightMetadataCollectorImpl    : HHH000069: Duplicate generator name TABLE_GEN
+2023-09-07 16:04:14.817  WARN 1688 --- [           main] o.h.b.i.InFlightMetadataCollectorImpl    : HHH000069: Duplicate generator name description_gen
+2023-09-07 16:04:14.818  WARN 1688 --- [           main] o.h.b.i.InFlightMetadataCollectorImpl    : HHH000069: Duplicate generator name TABLE_GEN
+2023-09-07 16:04:14.821  WARN 1688 --- [           main] o.h.b.i.InFlightMetadataCollectorImpl    : HHH000069: Duplicate generator name TABLE_GEN
+2023-09-07 16:04:14.823  WARN 1688 --- [           main] o.h.b.i.InFlightMetadataCollectorImpl    : HHH000069: Duplicate generator name TABLE_GEN
+2023-09-07 16:04:14.824  WARN 1688 --- [           main] o.h.b.i.InFlightMetadataCollectorImpl    : HHH000069: Duplicate generator name description_gen
+2023-09-07 16:04:14.825  WARN 1688 --- [           main] o.h.b.i.InFlightMetadataCollectorImpl    : HHH000069: Duplicate generator name TABLE_GEN
+2023-09-07 16:04:14.826  WARN 1688 --- [           main] o.h.b.i.InFlightMetadataCollectorImpl    : HHH000069: Duplicate generator name TABLE_GEN
+2023-09-07 16:04:14.827  WARN 1688 --- [           main] o.h.b.i.InFlightMetadataCollectorImpl    : HHH000069: Duplicate generator name TABLE_GEN
+2023-09-07 16:04:14.828  WARN 1688 --- [           main] o.h.b.i.InFlightMetadataCollectorImpl    : HHH000069: Duplicate generator name TABLE_GEN
+2023-09-07 16:04:14.830  WARN 1688 --- [           main] o.h.b.i.InFlightMetadataCollectorImpl    : HHH000069: Duplicate generator name TABLE_GEN
+2023-09-07 16:04:14.832  WARN 1688 --- [           main] o.h.b.i.InFlightMetadataCollectorImpl    : HHH000069: Duplicate generator name TABLE_GEN
+2023-09-07 16:04:14.833  WARN 1688 --- [           main] o.h.b.i.InFlightMetadataCollectorImpl    : HHH000069: Duplicate generator name TABLE_GEN
+2023-09-07 16:04:14.833  WARN 1688 --- [           main] o.h.b.i.InFlightMetadataCollectorImpl    : HHH000069: Duplicate generator name TABLE_GEN
+2023-09-07 16:04:14.834  WARN 1688 --- [           main] o.h.b.i.InFlightMetadataCollectorImpl    : HHH000069: Duplicate generator name TABLE_GEN
+2023-09-07 16:04:14.837  WARN 1688 --- [           main] o.h.b.i.InFlightMetadataCollectorImpl    : HHH000069: Duplicate generator name TABLE_GEN
+2023-09-07 16:04:14.838  WARN 1688 --- [           main] o.h.b.i.InFlightMetadataCollectorImpl    : HHH000069: Duplicate generator name TABLE_GEN
+2023-09-07 16:04:14.838  WARN 1688 --- [           main] o.h.b.i.InFlightMetadataCollectorImpl    : HHH000069: Duplicate generator name description_gen
+2023-09-07 16:04:14.840  WARN 1688 --- [           main] o.h.b.i.InFlightMetadataCollectorImpl    : HHH000069: Duplicate generator name description_gen
+2023-09-07 16:04:14.840  WARN 1688 --- [           main] o.h.b.i.InFlightMetadataCollectorImpl    : HHH000069: Duplicate generator name TABLE_GEN
+2023-09-07 16:04:14.840  WARN 1688 --- [           main] o.h.b.i.InFlightMetadataCollectorImpl    : HHH000069: Duplicate generator name TABLE_GEN
+2023-09-07 16:04:14.840  WARN 1688 --- [           main] o.h.b.i.InFlightMetadataCollectorImpl    : HHH000069: Duplicate generator name TABLE_GEN
+2023-09-07 16:04:14.919  INFO 1688 --- [           main] org.hibernate.orm.beans                  : HHH10005002: No explicit CDI BeanManager reference was passed to Hibernate, but CDI is available on the Hibernate ClassLoader.
+2023-09-07 16:04:14.963  WARN 1688 --- [           main] n.s.ehcache.config.ConfigurationFactory  : No configuration found. Configuring ehcache from ehcache-failsafe.xml  found in the classpath: jar:file:/C:/repo/net/sf/ehcache/ehcache/2.10.9.2/ehcache-2.10.9.2.jar!/ehcache-failsafe.xml
+2023-09-07 16:04:15.030  WARN 1688 --- [           main] org.hibernate.orm.cache                  : HHH90001006: Missing cache[default-update-timestamps-region] was created on-the-fly. The created cache will use a provider-specific default configuration: make sure you defined one. You can disable this warning by setting 'hibernate.cache.ehcache.missing_cache_strategy' to 'create'.
+2023-09-07 16:04:15.094  WARN 1688 --- [           main] org.hibernate.orm.cache                  : HHH90001006: Missing cache[default-query-results-region] was created on-the-fly. The created cache will use a provider-specific default configuration: make sure you defined one. You can disable this warning by setting 'hibernate.cache.ehcache.missing_cache_strategy' to 'create'.
+2023-09-07 16:04:15.807  INFO 1688 --- [           main] org.hibernate.tuple.PojoInstantiator     : HHH000182: No default (no-argument) constructor for class: com.salesmanager.core.model.system.MerchantLog (class must be instantiated by Interceptor)
+2023-09-07 16:04:16.908  INFO 1688 --- [           main] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000490: Using JtaPlatform implementation: [org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform]
+2023-09-07 16:04:16.917  INFO 1688 --- [           main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2023-09-07 16:04:18.001  INFO 1688 --- [           main] o.s.boot.web.servlet.RegistrationBean    : Filter xssFilter was not registered (possibly already registered?)
+2023-09-07 16:04:18.013  INFO 1688 --- [           main] c.s.s.a.c.ShopServletContextListener     : ===context init===
+2023-09-07 16:04:18.379  INFO 1688 --- [           main] o.i.factories.GlobalComponentRegistry    : ISPN000128: Infinispan version: Infinispan 'Infinity Minus ONE +2' 9.4.18.Final
+2023-09-07 16:04:18.747  WARN 1688 --- [           main] o.i.t.l.GenericTransactionManagerLookup  : ISPN000104: Falling back to EmbeddedTransactionManager from Infinispan
+2023-09-07 16:04:18.806  INFO 1688 --- [           main] .m.c.c.i.CmsStaticContentFileManagerImpl : init com.salesmanager.core.business.modules.cms.content.infinispan.CmsStaticContentFileManagerImpl setting rootstore-merchant
+2023-09-07 16:04:19.124  WARN 1688 --- [           main] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2023-09-07 16:04:19.951  INFO 1688 --- [           main] c.s.c.b.m.c.p.i.CmsImageFileManagerImpl  : init com.salesmanager.core.business.modules.cms.product.infinispan.CmsImageFileManagerImpl setting rootproduct-merchant
+2023-09-07 16:04:20.613  INFO 1688 --- [           main] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 1 endpoint(s) beneath base path '/actuator'
+2023-09-07 16:04:21.176  INFO 1688 --- [           main] c.s.m.s.c.a.CanadaPostAutoConfiguration  : instantiate [CanadaPostQuoteModule]
+2023-09-07 16:04:21.177  INFO 1688 --- [           main] c.s.m.s.c.a.CanadaPostAutoConfiguration  : autoconfigure [com.shopizer.modules.shipping.canadapost.autoconfigure.CanadaPostAutoConfiguration$$EnhancerBySpringCGLIB$$d7644f41]
+2023-09-07 16:04:21.571  INFO 1688 --- [           main] .m.c.c.i.CmsStaticContentFileManagerImpl : init com.salesmanager.core.business.modules.cms.content.infinispan.CmsStaticContentFileManagerImpl setting rootproduct-file
+2023-09-07 16:04:22.228  INFO 1688 --- [           main] pertySourcedRequestMappingHandlerMapping : Mapped URL path [/v2/api-docs] onto method [springfox.documentation.swagger2.web.Swagger2Controller#getDocumentation(String, HttpServletRequest)]
+2023-09-07 16:04:22.411  INFO 1688 --- [           main] o.s.s.web.DefaultSecurityFilterChain     : Will secure Ant [pattern='/'] with []
+2023-09-07 16:04:22.411  INFO 1688 --- [           main] o.s.s.web.DefaultSecurityFilterChain     : Will secure Ant [pattern='/shop'] with []
+2023-09-07 16:04:22.412  INFO 1688 --- [           main] o.s.s.web.DefaultSecurityFilterChain     : Will secure Ant [pattern='/admin'] with []
+2023-09-07 16:04:22.412  INFO 1688 --- [           main] o.s.s.web.DefaultSecurityFilterChain     : Will secure Ant [pattern='/error'] with []
+2023-09-07 16:04:22.412  INFO 1688 --- [           main] o.s.s.web.DefaultSecurityFilterChain     : Will secure Ant [pattern='/resources/**'] with []
+2023-09-07 16:04:22.412  INFO 1688 --- [           main] o.s.s.web.DefaultSecurityFilterChain     : Will secure Ant [pattern='/static/**'] with []
+2023-09-07 16:04:22.412  INFO 1688 --- [           main] o.s.s.web.DefaultSecurityFilterChain     : Will secure Ant [pattern='/WEB-INF/**'] with []
+2023-09-07 16:04:22.412  INFO 1688 --- [           main] o.s.s.web.DefaultSecurityFilterChain     : Will secure Ant [pattern='/services/public/**'] with []
+2023-09-07 16:04:22.412  INFO 1688 --- [           main] o.s.s.web.DefaultSecurityFilterChain     : Will secure Ant [pattern='/swagger-ui.html'] with []
+2023-09-07 16:04:22.458  INFO 1688 --- [           main] o.s.s.web.DefaultSecurityFilterChain     : Will secure Ant [pattern='/shop/**'] with [org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@2fa69580, org.springframework.security.web.context.SecurityContextPersistenceFilter@436ef272, org.springframework.security.web.header.HeaderWriterFilter@4980460d, org.springframework.security.web.authentication.logout.LogoutFilter@45566129, org.springframework.security.web.authentication.www.BasicAuthenticationFilter@18359094, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@44f61a32, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@4abb5d17, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@1ba311d0, org.springframework.security.web.session.SessionManagementFilter@55a690be, org.springframework.security.web.access.ExceptionTranslationFilter@5acee0a3, org.springframework.security.web.access.intercept.FilterSecurityInterceptor@2133c523]
+2023-09-07 16:04:22.471  INFO 1688 --- [           main] o.s.s.web.DefaultSecurityFilterChain     : Will secure Ant [pattern='/services/**'] with [org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@684ad81c, org.springframework.security.web.context.SecurityContextPersistenceFilter@182d1967, org.springframework.security.web.header.HeaderWriterFilter@b8b6de6, org.springframework.security.web.authentication.logout.LogoutFilter@49a777ee, org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter@641ce448, org.springframework.security.web.authentication.ui.DefaultLoginPageGeneratingFilter@45399fae, org.springframework.security.web.authentication.ui.DefaultLogoutPageGeneratingFilter@4f3551c1, org.springframework.security.web.authentication.www.BasicAuthenticationFilter@1e52e3e8, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@494572fd, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@19f1c26e, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@381b485b, org.springframework.security.web.session.SessionManagementFilter@5341eab4, org.springframework.security.web.access.ExceptionTranslationFilter@683721ce, org.springframework.security.web.access.intercept.FilterSecurityInterceptor@4610594a]
+2023-09-07 16:04:22.475  INFO 1688 --- [           main] o.s.s.web.DefaultSecurityFilterChain     : Will secure Ant [pattern='/admin/**'] with [org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@2cbd2385, org.springframework.security.web.context.SecurityContextPersistenceFilter@75c4cd19, org.springframework.security.web.header.HeaderWriterFilter@698f3ac4, org.springframework.security.web.authentication.logout.LogoutFilter@7b6775c8, org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter@6f056fdf, org.springframework.security.web.authentication.www.BasicAuthenticationFilter@7256bc2, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@5eaa3349, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@4e636b42, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@388c0178, org.springframework.security.web.session.SessionManagementFilter@34ea5eff, org.springframework.security.web.access.ExceptionTranslationFilter@552fcd4d, org.springframework.security.web.access.intercept.FilterSecurityInterceptor@26364268]
+2023-09-07 16:04:22.478  INFO 1688 --- [           main] o.s.s.web.DefaultSecurityFilterChain     : Will secure Ant [pattern='/api/v*/private/**'] with [org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@74e17634, org.springframework.security.web.context.SecurityContextPersistenceFilter@268f1aeb, org.springframework.security.web.header.HeaderWriterFilter@61fe303d, org.springframework.security.web.authentication.logout.LogoutFilter@21fd75f2, org.springframework.security.web.authentication.www.BasicAuthenticationFilter@2303832d, com.salesmanager.shop.store.security.AuthenticationTokenFilter@47e7eb7, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@39e89471, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@298734a9, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@6ea4784a, org.springframework.security.web.session.SessionManagementFilter@54704b46, org.springframework.security.web.access.ExceptionTranslationFilter@76ad3ab9, org.springframework.security.web.access.intercept.FilterSecurityInterceptor@d96fa9e]
+2023-09-07 16:04:22.480  INFO 1688 --- [           main] o.s.s.web.DefaultSecurityFilterChain     : Will secure Ant [pattern='/api/v*/auth/**'] with [org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@22626d92, org.springframework.security.web.context.SecurityContextPersistenceFilter@50a0404b, org.springframework.security.web.header.HeaderWriterFilter@6f8cd739, org.springframework.security.web.authentication.logout.LogoutFilter@425fdf53, org.springframework.security.web.authentication.www.BasicAuthenticationFilter@4bb51f15, com.salesmanager.shop.store.security.AuthenticationTokenFilter@47e7eb7, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@e328d88, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@78ea668, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@6f37fb78, org.springframework.security.web.session.SessionManagementFilter@5e493feb, org.springframework.security.web.access.ExceptionTranslationFilter@4992ebdc, org.springframework.security.web.access.intercept.FilterSecurityInterceptor@2c20b04a]
+2023-09-07 16:04:22.494  INFO 1688 --- [           main] c.s.c.b.m.c.p.l.CmsImageFileManagerImpl  : init com.salesmanager.core.business.modules.cms.product.local.CmsImageFileManagerImpl setting root
+2023-09-07 16:04:22.494  INFO 1688 --- [           main] .m.c.c.l.CmsStaticContentFileManagerImpl : init com.salesmanager.core.business.modules.cms.content.local.CmsStaticContentFileManagerImpl setting root
+2023-09-07 16:04:22.509  INFO 1688 --- [           main] .m.c.c.l.CmsStaticContentFileManagerImpl : init com.salesmanager.core.business.modules.cms.content.local.CmsStaticContentFileManagerImpl setting root
+2023-09-07 16:04:22.604  INFO 1688 --- [           main] org.apache.tiles.access.TilesAccess      : Publishing TilesContext for context: org.springframework.web.servlet.view.tiles3.SpringWildcardServletTilesApplicationContext
+2023-09-07 16:04:23.274  INFO 1688 --- [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port(s): 8080 (http) with context path ''
+2023-09-07 16:04:23.274  INFO 1688 --- [           main] d.s.w.p.DocumentationPluginsBootstrapper : Context refreshed
+2023-09-07 16:04:23.284  INFO 1688 --- [           main] d.s.w.p.DocumentationPluginsBootstrapper : Found 1 custom documentation plugin(s)
+2023-09-07 16:04:23.367  INFO 1688 --- [           main] s.d.s.w.s.ApiListingReferenceScanner     : Scanning for api listing references
+2023-09-07 16:04:23.504  INFO 1688 --- [           main] .d.s.w.r.o.CachingOperationNameGenerator : Generating unique operation named: authenticateUsingPOST_1
+2023-09-07 16:04:23.567  INFO 1688 --- [           main] .d.s.w.r.o.CachingOperationNameGenerator : Generating unique operation named: existsUsingGET_1
+2023-09-07 16:04:23.575  INFO 1688 --- [           main] .d.s.w.r.o.CachingOperationNameGenerator : Generating unique operation named: createUsingPOST_1
+2023-09-07 16:04:23.586  INFO 1688 --- [           main] .d.s.w.r.o.CachingOperationNameGenerator : Generating unique operation named: listUsingGET_1
+2023-09-07 16:04:23.599  INFO 1688 --- [           main] .d.s.w.r.o.CachingOperationNameGenerator : Generating unique operation named: boxesUsingGET_1
+2023-09-07 16:04:23.623  INFO 1688 --- [           main] .d.s.w.r.o.CachingOperationNameGenerator : Generating unique operation named: pagesUsingGET_1
+2023-09-07 16:04:23.630  INFO 1688 --- [           main] .d.s.w.r.o.CachingOperationNameGenerator : Generating unique operation named: updatePageUsingPUT_1
+2023-09-07 16:04:23.630  INFO 1688 --- [           main] .d.s.w.r.o.CachingOperationNameGenerator : Generating unique operation named: uploadUsingPOST_1
+2023-09-07 16:04:23.638  INFO 1688 --- [           main] .d.s.w.r.o.CachingOperationNameGenerator : Generating unique operation named: createUsingPOST_2
+2023-09-07 16:04:23.638  INFO 1688 --- [           main] .d.s.w.r.o.CachingOperationNameGenerator : Generating unique operation named: deleteUsingDELETE_1
+2023-09-07 16:04:23.638  INFO 1688 --- [           main] .d.s.w.r.o.CachingOperationNameGenerator : Generating unique operation named: deleteUsingDELETE_2
+2023-09-07 16:04:23.638  INFO 1688 --- [           main] .d.s.w.r.o.CachingOperationNameGenerator : Generating unique operation named: getUsingGET_1
+2023-09-07 16:04:23.638  INFO 1688 --- [           main] .d.s.w.r.o.CachingOperationNameGenerator : Generating unique operation named: getAuthUserUsingGET_1
+2023-09-07 16:04:23.646  INFO 1688 --- [           main] .d.s.w.r.o.CachingOperationNameGenerator : Generating unique operation named: listUsingGET_2
+2023-09-07 16:04:23.646  INFO 1688 --- [           main] .d.s.w.r.o.CachingOperationNameGenerator : Generating unique operation named: updateUsingPUT_1
+2023-09-07 16:04:23.646  INFO 1688 --- [           main] .d.s.w.r.o.CachingOperationNameGenerator : Generating unique operation named: createUsingPOST_3
+2023-09-07 16:04:23.646  INFO 1688 --- [           main] .d.s.w.r.o.CachingOperationNameGenerator : Generating unique operation named: deleteUsingDELETE_3
+2023-09-07 16:04:23.646  INFO 1688 --- [           main] .d.s.w.r.o.CachingOperationNameGenerator : Generating unique operation named: updateUsingPUT_2
+2023-09-07 16:04:23.662  INFO 1688 --- [           main] .d.s.w.r.o.CachingOperationNameGenerator : Generating unique operation named: createUsingPOST_4
+2023-09-07 16:04:23.662  INFO 1688 --- [           main] .d.s.w.r.o.CachingOperationNameGenerator : Generating unique operation named: deleteUsingDELETE_4
+2023-09-07 16:04:23.662  INFO 1688 --- [           main] .d.s.w.r.o.CachingOperationNameGenerator : Generating unique operation named: updateUsingPUT_3
+2023-09-07 16:04:23.662  INFO 1688 --- [           main] .d.s.w.r.o.CachingOperationNameGenerator : Generating unique operation named: createUsingPOST_5
+2023-09-07 16:04:23.662  INFO 1688 --- [           main] .d.s.w.r.o.CachingOperationNameGenerator : Generating unique operation named: deleteUsingDELETE_5
+2023-09-07 16:04:23.678  INFO 1688 --- [           main] .d.s.w.r.o.CachingOperationNameGenerator : Generating unique operation named: existsUsingGET_2
+2023-09-07 16:04:23.678  INFO 1688 --- [           main] .d.s.w.r.o.CachingOperationNameGenerator : Generating unique operation named: existsUsingGET_3
+2023-09-07 16:04:23.678  INFO 1688 --- [           main] .d.s.w.r.o.CachingOperationNameGenerator : Generating unique operation named: getUsingGET_2
+2023-09-07 16:04:23.678  INFO 1688 --- [           main] .d.s.w.r.o.CachingOperationNameGenerator : Generating unique operation named: listUsingGET_3
+2023-09-07 16:04:23.678  INFO 1688 --- [           main] .d.s.w.r.o.CachingOperationNameGenerator : Generating unique operation named: listUsingGET_4
+2023-09-07 16:04:23.678  INFO 1688 --- [           main] .d.s.w.r.o.CachingOperationNameGenerator : Generating unique operation named: updateUsingPUT_4
+2023-09-07 16:04:23.678  INFO 1688 --- [           main] .d.s.w.r.o.CachingOperationNameGenerator : Generating unique operation named: createUsingPOST_6
+2023-09-07 16:04:23.725  INFO 1688 --- [           main] .d.s.w.r.o.CachingOperationNameGenerator : Generating unique operation named: checkoutUsingPOST_1
+2023-09-07 16:04:23.725  INFO 1688 --- [           main] .d.s.w.r.o.CachingOperationNameGenerator : Generating unique operation named: getUsingGET_3
+2023-09-07 16:04:23.741  INFO 1688 --- [           main] .d.s.w.r.o.CachingOperationNameGenerator : Generating unique operation named: listUsingGET_5
+2023-09-07 16:04:23.741  INFO 1688 --- [           main] .d.s.w.r.o.CachingOperationNameGenerator : Generating unique operation named: listUsingGET_6
+2023-09-07 16:04:23.741  INFO 1688 --- [           main] .d.s.w.r.o.CachingOperationNameGenerator : Generating unique operation named: listUsingGET_7
+2023-09-07 16:04:23.752  INFO 1688 --- [           main] .d.s.w.r.o.CachingOperationNameGenerator : Generating unique operation named: initUsingPOST_1
+2023-09-07 16:04:23.766  INFO 1688 --- [           main] .d.s.w.r.o.CachingOperationNameGenerator : Generating unique operation named: createUsingPOST_7
+2023-09-07 16:04:23.767  INFO 1688 --- [           main] .d.s.w.r.o.CachingOperationNameGenerator : Generating unique operation named: listUsingGET_8
+2023-09-07 16:04:23.774  INFO 1688 --- [           main] .d.s.w.r.o.CachingOperationNameGenerator : Generating unique operation named: addProductToCategoryUsingPOST_1
+2023-09-07 16:04:23.802  INFO 1688 --- [           main] .d.s.w.r.o.CachingOperationNameGenerator : Generating unique operation named: createUsingPOST_8
+2023-09-07 16:04:23.804  INFO 1688 --- [           main] .d.s.w.r.o.CachingOperationNameGenerator : Generating unique operation named: createUsingPOST_9
+2023-09-07 16:04:23.806  INFO 1688 --- [           main] .d.s.w.r.o.CachingOperationNameGenerator : Generating unique operation named: deleteUsingDELETE_6
+2023-09-07 16:04:23.806  INFO 1688 --- [           main] .d.s.w.r.o.CachingOperationNameGenerator : Generating unique operation named: deleteUsingDELETE_7
+2023-09-07 16:04:23.806  INFO 1688 --- [           main] .d.s.w.r.o.CachingOperationNameGenerator : Generating unique operation named: existsUsingGET_4
+2023-09-07 16:04:23.806  INFO 1688 --- [           main] .d.s.w.r.o.CachingOperationNameGenerator : Generating unique operation named: getUsingGET_4
+2023-09-07 16:04:23.806  INFO 1688 --- [           main] .d.s.w.r.o.CachingOperationNameGenerator : Generating unique operation named: getByfriendlyUrlUsingGET_1
+2023-09-07 16:04:23.806  INFO 1688 --- [           main] .d.s.w.r.o.CachingOperationNameGenerator : Generating unique operation named: getByfriendlyUrlUsingGET_2
+2023-09-07 16:04:23.806  INFO 1688 --- [           main] .d.s.w.r.o.CachingOperationNameGenerator : Generating unique operation named: listUsingGET_9
+2023-09-07 16:04:23.820  INFO 1688 --- [           main] .d.s.w.r.o.CachingOperationNameGenerator : Generating unique operation named: removeProductFromCategoryUsingDELETE_1
+2023-09-07 16:04:23.822  INFO 1688 --- [           main] .d.s.w.r.o.CachingOperationNameGenerator : Generating unique operation named: updateUsingPUT_5
+2023-09-07 16:04:23.822  INFO 1688 --- [           main] .d.s.w.r.o.CachingOperationNameGenerator : Generating unique operation named: updateUsingPUT_6
+2023-09-07 16:04:23.824  INFO 1688 --- [           main] .d.s.w.r.o.CachingOperationNameGenerator : Generating unique operation named: updateUsingPATCH_1
+2023-09-07 16:04:23.850  INFO 1688 --- [           main] .d.s.w.r.o.CachingOperationNameGenerator : Generating unique operation named: listUsingGET_10
+2023-09-07 16:04:23.850  INFO 1688 --- [           main] .d.s.w.r.o.CachingOperationNameGenerator : Generating unique operation named: deleteImageUsingDELETE_1
+2023-09-07 16:04:23.850  INFO 1688 --- [           main] .d.s.w.r.o.CachingOperationNameGenerator : Generating unique operation named: deleteImageUsingDELETE_2
+2023-09-07 16:04:23.859  INFO 1688 --- [           main] .d.s.w.r.o.CachingOperationNameGenerator : Generating unique operation named: uploadImagesUsingPOST_1
+2023-09-07 16:04:23.859  INFO 1688 --- [           main] .d.s.w.r.o.CachingOperationNameGenerator : Generating unique operation named: existsUsingGET_5
+2023-09-07 16:04:23.862  INFO 1688 --- [           main] .d.s.w.r.o.CachingOperationNameGenerator : Generating unique operation named: createUsingPOST_10
+2023-09-07 16:04:23.862  INFO 1688 --- [           main] .d.s.w.r.o.CachingOperationNameGenerator : Generating unique operation named: deleteUsingDELETE_8
+2023-09-07 16:04:23.862  INFO 1688 --- [           main] .d.s.w.r.o.CachingOperationNameGenerator : Generating unique operation named: getUsingGET_5
+2023-09-07 16:04:23.862  INFO 1688 --- [           main] .d.s.w.r.o.CachingOperationNameGenerator : Generating unique operation named: getUsingGET_6
+2023-09-07 16:04:23.866  INFO 1688 --- [           main] .d.s.w.r.o.CachingOperationNameGenerator : Generating unique operation named: getUsingGET_7
+2023-09-07 16:04:23.866  INFO 1688 --- [           main] .d.s.w.r.o.CachingOperationNameGenerator : Generating unique operation named: updateUsingPUT_7
+2023-09-07 16:04:23.866  INFO 1688 --- [           main] .d.s.w.r.o.CachingOperationNameGenerator : Generating unique operation named: createUsingPOST_11
+2023-09-07 16:04:23.866  INFO 1688 --- [           main] .d.s.w.r.o.CachingOperationNameGenerator : Generating unique operation named: deleteUsingDELETE_9
+2023-09-07 16:04:23.866  INFO 1688 --- [           main] .d.s.w.r.o.CachingOperationNameGenerator : Generating unique operation named: existsUsingGET_6
+2023-09-07 16:04:23.866  INFO 1688 --- [           main] .d.s.w.r.o.CachingOperationNameGenerator : Generating unique operation named: getUsingGET_8
+2023-09-07 16:04:23.866  INFO 1688 --- [           main] .d.s.w.r.o.CachingOperationNameGenerator : Generating unique operation named: listUsingGET_11
+2023-09-07 16:04:23.866  INFO 1688 --- [           main] .d.s.w.r.o.CachingOperationNameGenerator : Generating unique operation named: listUsingGET_12
+2023-09-07 16:04:23.866  INFO 1688 --- [           main] .d.s.w.r.o.CachingOperationNameGenerator : Generating unique operation named: updateUsingPUT_8
+2023-09-07 16:04:23.866  INFO 1688 --- [           main] .d.s.w.r.o.CachingOperationNameGenerator : Generating unique operation named: createUsingPOST_12
+2023-09-07 16:04:23.866  INFO 1688 --- [           main] .d.s.w.r.o.CachingOperationNameGenerator : Generating unique operation named: deleteUsingDELETE_10
+2023-09-07 16:04:23.866  INFO 1688 --- [           main] .d.s.w.r.o.CachingOperationNameGenerator : Generating unique operation named: existsUsingGET_7
+2023-09-07 16:04:23.866  INFO 1688 --- [           main] .d.s.w.r.o.CachingOperationNameGenerator : Generating unique operation named: getUsingGET_9
+2023-09-07 16:04:23.882  INFO 1688 --- [           main] .d.s.w.r.o.CachingOperationNameGenerator : Generating unique operation named: listUsingGET_13
+2023-09-07 16:04:23.883  INFO 1688 --- [           main] .d.s.w.r.o.CachingOperationNameGenerator : Generating unique operation named: updateUsingPUT_9
+2023-09-07 16:04:23.885  INFO 1688 --- [           main] .d.s.w.r.o.CachingOperationNameGenerator : Generating unique operation named: getAllUsingGET_1
+2023-09-07 16:04:23.887  INFO 1688 --- [           main] .d.s.w.r.o.CachingOperationNameGenerator : Generating unique operation named: createUsingPOST_13
+2023-09-07 16:04:23.887  INFO 1688 --- [           main] .d.s.w.r.o.CachingOperationNameGenerator : Generating unique operation named: createUsingPOST_14
+2023-09-07 16:04:23.887  INFO 1688 --- [           main] .d.s.w.r.o.CachingOperationNameGenerator : Generating unique operation named: deleteUsingDELETE_11
+2023-09-07 16:04:23.887  INFO 1688 --- [           main] .d.s.w.r.o.CachingOperationNameGenerator : Generating unique operation named: deleteUsingDELETE_12
+2023-09-07 16:04:23.887  INFO 1688 --- [           main] .d.s.w.r.o.CachingOperationNameGenerator : Generating unique operation named: getAllUsingGET_2
+2023-09-07 16:04:23.887  INFO 1688 --- [           main] .d.s.w.r.o.CachingOperationNameGenerator : Generating unique operation named: updateUsingPUT_10
+2023-09-07 16:04:23.887  INFO 1688 --- [           main] .d.s.w.r.o.CachingOperationNameGenerator : Generating unique operation named: updateUsingPUT_11
+2023-09-07 16:04:23.887  INFO 1688 --- [           main] .d.s.w.r.o.CachingOperationNameGenerator : Generating unique operation named: createUsingPOST_15
+2023-09-07 16:04:23.887  INFO 1688 --- [           main] .d.s.w.r.o.CachingOperationNameGenerator : Generating unique operation named: deleteUsingDELETE_13
+2023-09-07 16:04:23.887  INFO 1688 --- [           main] .d.s.w.r.o.CachingOperationNameGenerator : Generating unique operation named: existsUsingGET_8
+2023-09-07 16:04:23.887  INFO 1688 --- [           main] .d.s.w.r.o.CachingOperationNameGenerator : Generating unique operation named: getUsingGET_10
+2023-09-07 16:04:23.887  INFO 1688 --- [           main] .d.s.w.r.o.CachingOperationNameGenerator : Generating unique operation named: listUsingGET_14
+2023-09-07 16:04:23.897  INFO 1688 --- [           main] .d.s.w.r.o.CachingOperationNameGenerator : Generating unique operation named: updateUsingPUT_12
+2023-09-07 16:04:23.897  INFO 1688 --- [           main] .d.s.w.r.o.CachingOperationNameGenerator : Generating unique operation named: createUsingPOST_16
+2023-09-07 16:04:23.897  INFO 1688 --- [           main] .d.s.w.r.o.CachingOperationNameGenerator : Generating unique operation named: deleteUsingDELETE_14
+2023-09-07 16:04:23.897  INFO 1688 --- [           main] .d.s.w.r.o.CachingOperationNameGenerator : Generating unique operation named: existsUsingGET_9
+2023-09-07 16:04:23.897  INFO 1688 --- [           main] .d.s.w.r.o.CachingOperationNameGenerator : Generating unique operation named: getUsingGET_11
+2023-09-07 16:04:23.897  INFO 1688 --- [           main] .d.s.w.r.o.CachingOperationNameGenerator : Generating unique operation named: listUsingGET_15
+2023-09-07 16:04:23.897  INFO 1688 --- [           main] .d.s.w.r.o.CachingOperationNameGenerator : Generating unique operation named: updateUsingPUT_13
+2023-09-07 16:04:23.913  INFO 1688 --- [           main] .d.s.w.r.o.CachingOperationNameGenerator : Generating unique operation named: changePasswordUsingPOST_1
+2023-09-07 16:04:23.913  INFO 1688 --- [           main] .d.s.w.r.o.CachingOperationNameGenerator : Generating unique operation named: passwordResetRequestUsingPOST_1
+2023-09-07 16:04:23.913  INFO 1688 --- [           main] .d.s.w.r.o.CachingOperationNameGenerator : Generating unique operation named: passwordResetVerifyUsingGET_1
+2023-09-07 16:04:23.913  INFO 1688 --- [           main] .d.s.w.r.o.CachingOperationNameGenerator : Generating unique operation named: contactUsingPOST_1
+2023-09-07 16:04:23.923  INFO 1688 --- [           main] .d.s.w.r.o.CachingOperationNameGenerator : Generating unique operation named: configureUsingPOST_1
+2023-09-07 16:04:23.930  INFO 1688 --- [           main] .d.s.w.r.o.CachingOperationNameGenerator : Generating unique operation named: getCountryUsingGET_1
+2023-09-07 16:04:23.930  INFO 1688 --- [           main] .d.s.w.r.o.CachingOperationNameGenerator : Generating unique operation named: addToCartUsingPOST_1
+2023-09-07 16:04:23.945  INFO 1688 --- [           main] .d.s.w.r.o.CachingOperationNameGenerator : Generating unique operation named: getByCustomerUsingGET_1
+2023-09-07 16:04:23.945  INFO 1688 --- [           main] .d.s.w.r.o.CachingOperationNameGenerator : Generating unique operation named: modifyCartUsingPOST_1
+2023-09-07 16:04:23.945  INFO 1688 --- [           main] .d.s.w.r.o.CachingOperationNameGenerator : Generating unique operation named: createUsingPOST_17
+2023-09-07 16:04:23.945  INFO 1688 --- [           main] .d.s.w.r.o.CachingOperationNameGenerator : Generating unique operation named: deleteUsingDELETE_15
+2023-09-07 16:04:23.945  INFO 1688 --- [           main] .d.s.w.r.o.CachingOperationNameGenerator : Generating unique operation named: existsUsingGET_10
+2023-09-07 16:04:23.945  INFO 1688 --- [           main] .d.s.w.r.o.CachingOperationNameGenerator : Generating unique operation named: getUsingGET_12
+2023-09-07 16:04:23.959  INFO 1688 --- [           main] .d.s.w.r.o.CachingOperationNameGenerator : Generating unique operation named: listUsingGET_16
+2023-09-07 16:04:23.960  INFO 1688 --- [           main] .d.s.w.r.o.CachingOperationNameGenerator : Generating unique operation named: updateUsingPUT_14
+2023-09-07 16:04:23.961  INFO 1688 --- [           main] .d.s.w.r.o.CachingOperationNameGenerator : Generating unique operation named: createUsingPOST_18
+2023-09-07 16:04:23.961  INFO 1688 --- [           main] .d.s.w.r.o.CachingOperationNameGenerator : Generating unique operation named: deleteUsingDELETE_16
+2023-09-07 16:04:23.961  INFO 1688 --- [           main] .d.s.w.r.o.CachingOperationNameGenerator : Generating unique operation named: existsUsingGET_11
+2023-09-07 16:04:23.961  INFO 1688 --- [           main] .d.s.w.r.o.CachingOperationNameGenerator : Generating unique operation named: getUsingGET_13
+2023-09-07 16:04:23.961  INFO 1688 --- [           main] .d.s.w.r.o.CachingOperationNameGenerator : Generating unique operation named: listUsingGET_17
+2023-09-07 16:04:23.961  INFO 1688 --- [           main] .d.s.w.r.o.CachingOperationNameGenerator : Generating unique operation named: updateUsingPUT_15
+2023-09-07 16:04:23.961  INFO 1688 --- [           main] .d.s.w.r.o.CachingOperationNameGenerator : Generating unique operation named: createUsingPOST_19
+2023-09-07 16:04:23.961  INFO 1688 --- [           main] .d.s.w.r.o.CachingOperationNameGenerator : Generating unique operation named: deleteUsingDELETE_17
+2023-09-07 16:04:23.961  INFO 1688 --- [           main] .d.s.w.r.o.CachingOperationNameGenerator : Generating unique operation named: getUsingGET_14
+2023-09-07 16:04:23.961  INFO 1688 --- [           main] .d.s.w.r.o.CachingOperationNameGenerator : Generating unique operation named: getAuthUserUsingGET_2
+2023-09-07 16:04:23.961  INFO 1688 --- [           main] .d.s.w.r.o.CachingOperationNameGenerator : Generating unique operation named: listUsingGET_18
+2023-09-07 16:04:23.961  INFO 1688 --- [           main] .d.s.w.r.o.CachingOperationNameGenerator : Generating unique operation named: updateUsingPUT_16
+2023-09-07 16:04:23.996  INFO 1688 --- [           main] c.s.shop.application.ShopApplication     : Started ShopApplication in 13.771 seconds (JVM running for 14.272)
+2023-09-07 16:04:23.996  INFO 1688 --- [           main] uration$$EnhancerBySpringCGLIB$$466c6fa5 : Current working directory : C:\Ecomm\sm-shop
+2023-09-07 16:04:26.095  INFO 1688 --- [nio-8080-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2023-09-07 16:04:26.095  INFO 1688 --- [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2023-09-07 16:04:26.102  INFO 1688 --- [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 7 ms
+2023-09-07 16:04:26.556  WARN 1688 --- [nio-8080-exec-1] o.h.h.internal.ast.QueryTranslatorImpl   : HHH000104: firstResult/maxResults specified with collection fetch; applying in memory!
+2023-09-07 16:04:28.355  WARN 1688 --- [nio-8080-exec-8] o.h.h.internal.ast.QueryTranslatorImpl   : HHH000104: firstResult/maxResults specified with collection fetch; applying in memory!
+2023-09-07 16:04:28.403  INFO 1688 --- [nio-8080-exec-8] c.s.s.s.c.s.f.ShoppingCartFacadeImpl     : Cart model found.
+2023-09-07 16:04:31.327  WARN 1688 --- [nio-8080-exec-3] o.h.h.internal.ast.QueryTranslatorImpl   : HHH000104: firstResult/maxResults specified with collection fetch; applying in memory!
+2023-09-07 16:04:31.785  WARN 1688 --- [nio-8080-exec-9] o.h.h.internal.ast.QueryTranslatorImpl   : HHH000104: firstResult/maxResults specified with collection fetch; applying in memory!
+2023-09-07 16:04:31.801  INFO 1688 --- [nio-8080-exec-9] c.s.s.s.c.s.f.ShoppingCartFacadeImpl     : Cart model found.
+2023-09-07 16:04:31.801  WARN 1688 --- [io-8080-exec-10] o.h.h.internal.ast.QueryTranslatorImpl   : HHH000104: firstResult/maxResults specified with collection fetch; applying in memory!
