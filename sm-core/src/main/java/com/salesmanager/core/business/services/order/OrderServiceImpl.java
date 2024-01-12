@@ -933,7 +933,7 @@ OrderProductDownloadRepository orderProductDownloadRepository) {
         PageroExtension pageroExtension=new PageroExtension();
         pageroExtension.setDutyStamp(new PageroExtension.DutyStamp());
         pageroExtension.getDutyStamp().setAmount(new PUFAmountType());
-        pageroExtension.getDutyStamp().getAmount().setValue(new BigDecimal(order.getTotal().toString()));
+        pageroExtension.getDutyStamp().getAmount().setValue(BigDecimal.valueOf(order.getTotal().doubleValue()));
         pageroExtension.getDutyStamp().getAmount().setCurrencyID(order.getCurrency().getCode());
         uBLExtension.getExtensionContent().setAny(pageroExtension);
         uBLExtensionsType.getUBLExtension().add(uBLExtension);
@@ -1037,11 +1037,12 @@ OrderProductDownloadRepository orderProductDownloadRepository) {
         partyLegalEntityType.setRegistrationName(new RegistrationNameType());
         partyLegalEntityType.getRegistrationName().setValue(store.getStorename());
         partyLegalEntityType.setCompanyID(new CompanyIDType());
-        partyLegalEntityType.setCompanyID(new CompanyIDType());
-        partyLegalEntityType.getCompanyID().setValue(order.getMerchant().getId().toString());
+        partyLegalEntityType.getCompanyID().setValue(order.getMerchant().getCode());
         eInv.getAccountingSupplierParty().getParty().getPartyLegalEntity().add(partyLegalEntityType);
 
         ContactType contact= new ContactType();
+        contact.setID(new IDType());
+        contact.getID().setValue(store.getCode());
         contact.setName(new NameType());
         contact.getName().setValue(store.getStorename());
         contact.setTelephone(new TelephoneType());
@@ -1049,6 +1050,8 @@ OrderProductDownloadRepository orderProductDownloadRepository) {
         contact.setElectronicMail(new ElectronicMailType());
         contact.getElectronicMail().setValue(store.getStoreEmailAddress());
         eInv.getAccountingSupplierParty().getParty().setContact(contact);
+
+
 
         eInv.setAccountingCustomerParty(new CustomerPartyType());
         eInv.getAccountingCustomerParty().setSupplierAssignedAccountID(new SupplierAssignedAccountIDType());
@@ -1060,7 +1063,7 @@ OrderProductDownloadRepository orderProductDownloadRepository) {
         PartyNameType partyNameAc= new PartyNameType();
         partyNameAc.setName(new NameType());
         partyNameAc.getName().setValue(order.getBilling().getFirstName()+" "+order.getBilling().getLastName());
-        eInv.getAccountingCustomerParty().getParty().getPartyName().add(partyName);
+        eInv.getAccountingCustomerParty().getParty().getPartyName().add(partyNameAc);
         eInv.getAccountingCustomerParty().getParty().setPostalAddress(new AddressType());
         eInv.getAccountingCustomerParty().getParty().getPostalAddress().setStreetName(new StreetNameType());
         eInv.getAccountingCustomerParty().getParty().getPostalAddress().getStreetName().setValue(order.getBilling().getAddress());
@@ -1070,11 +1073,11 @@ OrderProductDownloadRepository orderProductDownloadRepository) {
         eInv.getAccountingCustomerParty().getParty().getPostalAddress().getCityName().setValue(order.getBilling().getCity());
         eInv.getAccountingCustomerParty().getParty().getPostalAddress().setCountry(new CountryType());
         eInv.getAccountingCustomerParty().getParty().getPostalAddress().getCountry().setName(new NameType());
-        eInv.getAccountingCustomerParty().getParty().getPostalAddress().getCountry().getName().setValue(order.getBilling().getCountry().getName());
+        eInv.getAccountingCustomerParty().getParty().getPostalAddress().getCountry().getName().setValue(order.getBilling().getCountry().getIsoCode());
 
         PartyTaxSchemeType partyTaxScheme=new PartyTaxSchemeType();
         partyTaxScheme.setCompanyID(new CompanyIDType());
-        partyTaxScheme.getCompanyID().setValue(order.getCustomerId().toString());
+        partyTaxScheme.getCompanyID().setValue(customer.getId().toString());
         partyTaxScheme.setTaxScheme(new TaxSchemeType());
         partyTaxScheme.getTaxScheme().setID(new IDType());
         partyTaxScheme.getTaxScheme().getID().setValue("VAT");
@@ -1113,28 +1116,29 @@ OrderProductDownloadRepository orderProductDownloadRepository) {
         totalTaxUBLExtension.getExtensionContent().setAny(pageroExtensionTotalTax);
         taxTotal.getUBLExtensions().getUBLExtension().add(totalTaxUBLExtension);
 
+
         TaxAmountType taxAmountHeader=new TaxAmountType();
         taxAmountHeader.setCurrencyID(order.getCurrency().getCode());
-        taxAmountHeader.setValue(new BigDecimal(0));
+        taxAmountHeader.setValue(BigDecimal.valueOf(0));
 
         MonetaryTotalType legalMonetaryTotal=new MonetaryTotalType();
         legalMonetaryTotal.setLineExtensionAmount(new LineExtensionAmountType());
         legalMonetaryTotal.getLineExtensionAmount().setCurrencyID(order.getCurrency().getCode());
-        legalMonetaryTotal.getLineExtensionAmount().setValue(new BigDecimal(0));
+        legalMonetaryTotal.getLineExtensionAmount().setValue(BigDecimal.valueOf(0));
 
         legalMonetaryTotal.setTaxExclusiveAmount(new TaxExclusiveAmountType());
         legalMonetaryTotal.getTaxExclusiveAmount().setCurrencyID(order.getCurrency().getCode());
-        legalMonetaryTotal.getTaxExclusiveAmount().setValue(new BigDecimal(0));
+        legalMonetaryTotal.getTaxExclusiveAmount().setValue(BigDecimal.valueOf(0));
 
         legalMonetaryTotal.setTaxInclusiveAmount(new TaxInclusiveAmountType());
         legalMonetaryTotal.getTaxInclusiveAmount().setCurrencyID(order.getCurrency().getCode());
-        legalMonetaryTotal.getTaxInclusiveAmount().setValue(new BigDecimal(0));
+        legalMonetaryTotal.getTaxInclusiveAmount().setValue(BigDecimal.valueOf(0));
 
         legalMonetaryTotal.setPayableAmount (new PayableAmountType());
         legalMonetaryTotal.getPayableAmount().setCurrencyID(order.getCurrency().getCode());
-        legalMonetaryTotal.getPayableAmount().setValue(new BigDecimal(0));
+        legalMonetaryTotal.getPayableAmount().setValue(BigDecimal.valueOf(0));
 
-        TaxSubtotalType taxSubtotal=new TaxSubtotalType();
+
 
         Integer cont=0;
         for (LineItem itemProduct :items) {
@@ -1156,21 +1160,25 @@ OrderProductDownloadRepository orderProductDownloadRepository) {
             invoiceLine.getPrice().getPriceAmount().setCurrencyID(order.getCurrency().getCode());
 
             for (VtxTaxItem tax :itemProduct.getTaxes()) {
+                TaxSubtotalType taxSubtotal=new TaxSubtotalType();
 
                 TaxAmountType taxAmountItem = new TaxAmountType();
                 taxAmountItem.setCurrencyID(order.getCurrency().getCode());
-                taxAmountItem.setValue(new BigDecimal(tax.calculatedTax));
+                taxAmountItem.setValue(BigDecimal.valueOf(tax.calculatedTax));
                 taxSubtotal.setTaxAmount (taxAmountItem);
 
                 TaxableAmountType taxableAmount = new TaxableAmountType();
                 taxableAmount.setCurrencyID ( order.getCurrency().getCode());
-                taxableAmount.setValue(new BigDecimal(tax.taxable));
+                taxableAmount.setValue(BigDecimal.valueOf(tax.taxable));
                 taxSubtotal.setTaxableAmount ( taxableAmount);
+
+                taxSubtotal.setPercent(new PercentType());
+                taxSubtotal.getPercent().setValue(BigDecimal.valueOf(tax.getEffectiveRate()));
 
                 TaxCategoryType taxCategory=new TaxCategoryType();
                 taxCategory.setPercent(new PercentType());
-                taxCategory.getPercent().setValue(new BigDecimal(tax.getEffectiveRate()));
-                invoiceLine.getItem().getClassifiedTaxCategory().add(taxCategory);
+                taxCategory.getPercent().setValue(BigDecimal.valueOf(tax.getEffectiveRate()));
+              //  invoiceLine.getItem().getClassifiedTaxCategory().add(taxCategory);
                 //.setPercent(invoiceLine.Item.ClassifiedTaxCategory.Percent+taxCategory.Percent;
                 if(tax.rateClassification!=null)
                 taxCategory.setID(new IDType());
@@ -1184,21 +1192,23 @@ OrderProductDownloadRepository orderProductDownloadRepository) {
                 taxSubtotal.setTaxCategory(taxCategory);
                 taxTotal.getTaxSubtotal().add(taxSubtotal);
 
-                taxAmountHeader.setValue( taxAmountHeader.getValue().add(new BigDecimal(tax.calculatedTax)));
-                legalMonetaryTotal.getLineExtensionAmount().setValue( legalMonetaryTotal.getLineExtensionAmount().getValue().add(new BigDecimal(tax.taxable)));
-                legalMonetaryTotal.getTaxExclusiveAmount().setValue( legalMonetaryTotal.getTaxExclusiveAmount().getValue().add(new BigDecimal(tax.nonTaxable)));
-                legalMonetaryTotal.getTaxInclusiveAmount().setValue( legalMonetaryTotal.getTaxInclusiveAmount().getValue().add(new BigDecimal(tax.taxable)));
-                legalMonetaryTotal.getPayableAmount().setValue( legalMonetaryTotal.getPayableAmount().getValue().add(new BigDecimal(tax.calculatedTax+tax.taxable)));
+                taxAmountHeader.setValue( taxAmountHeader.getValue().add(BigDecimal.valueOf(tax.calculatedTax)));
+                legalMonetaryTotal.getLineExtensionAmount().setValue( legalMonetaryTotal.getLineExtensionAmount().getValue().add(BigDecimal.valueOf(tax.taxable)));
+                legalMonetaryTotal.getTaxExclusiveAmount().setValue( legalMonetaryTotal.getTaxExclusiveAmount().getValue().add(BigDecimal.valueOf(tax.nonTaxable)));
+                legalMonetaryTotal.getTaxInclusiveAmount().setValue( legalMonetaryTotal.getTaxInclusiveAmount().getValue().add(BigDecimal.valueOf(tax.taxable)));
+                legalMonetaryTotal.getPayableAmount().setValue( legalMonetaryTotal.getPayableAmount().getValue().add(BigDecimal.valueOf(tax.calculatedTax+tax.taxable)));
 
             }
             eInv.getInvoiceLine().add(invoiceLine);
+
+
         }
 
-        taxTotal.setTaxAmount(taxAmountHeader);
         eInv.setLegalMonetaryTotal(legalMonetaryTotal);
-        taxTotal.setUBLExtensions(new UBLExtensionsType());taxTotal.setUBLExtensions(new UBLExtensionsType());
-        taxTotal.getUBLExtensions().getUBLExtension().add(totalTaxUBLExtension);
+        taxTotal.setTaxAmount(taxAmountHeader);
         eInv.getTaxTotal().add(taxTotal);
+
+
 
 /*prepare the XML*/
         String filename="pagerofile.xml";
