@@ -103,10 +103,14 @@ public class OrderServiceImpl  extends SalesManagerEntityServiceImpl<Long, Order
     private MerchantStore _store = new MerchantStore();
     private static final Logger LOGGER = LoggerFactory.getLogger(OrderServiceImpl.class);
 
-    private String eInvoicing_client_Id = "ybproNY06aXpKacO543pIaEVsgxeqD7q";//TODO David to send this to the Admini UI
-    private String eInvoicing_client_secret = "J_IFQUBX7rxA60tmO8W80JmfWS822nXN8bH0ZA7OAsD5r349v6R2Vcw5e3V-smO2";//TODO David to send this to the Admini UI
-    private String eInvoicing_url = "https://e-invoicing-service.cst-stage.vtxdev.net/customers/v1/documents";//TODO David to send this to the Admini UI
-    private String eInvoicing_auth_url = "https://stage-auth.vertexcloud.com/oauth/token";//TODO David to send this to the Admini UI
+  //  private String eInvoicing_client_Id = "ybproNY06aXpKacO543pIaEVsgxeqD7q";//TODO David to send this to the Admini UI
+    //private String eInvoicing_client_secret = "J_IFQUBX7rxA60tmO8W80JmfWS822nXN8bH0ZA7OAsD5r349v6R2Vcw5e3V-smO2";//TODO David to send this to the Admini UI
+    //private String eInvoicing_url = "https://e-invoicing-service.cst-stage.vtxdev.net/customers/v1/documents";//TODO David to send this to the Admini UI
+    //private String eInvoicing_auth_url = "https://stage-auth.vertexcloud.com/oauth/token";//TODO David to send this to the Admini UI
+    private String eInvoicing_client_Id = "9PNoWBAgkUPMrAxfIjRhC4ca3mxnP6E7";//TODO David to send this to the Admini UI
+    private String eInvoicing_client_secret = "jev3o7T05TTheCQVCZXKWB-xK-r9BSLIP4QyhvllLhj83I5eCW92THu-LvF56y0l";//TODO David to send this to the Admini UI
+    private String eInvoicing_url = "https://e-invoicing-service.vertexcloud.com/customers/v1/documents";//TODO David to send this to the Admini UI
+    private String eInvoicing_auth_url = "https://auth.vertexcloud.com/oauth/token";//TODO David to send this to the Admini UI
 
 
     @Inject
@@ -283,9 +287,12 @@ OrderProductDownloadRepository orderProductDownloadRepository) {
         //create an invoice with Taxamo
         String urlInvoice=createInvoice(order,customer,vtxLineItems,store);// Taxamo info, updated to send store info for URL's
         //Create the electronic invoice
-        if(order.getBilling().getCountry().getIsoCode().equals("IT"))//TODO add logic to work with supported countries
-            order.setEInvoiceId(createElectronicInvoice(order,customer,vtxLineItems,store,urlInvoice));
-            System.out.println("Document Id:"+ order.getEInvoiceId());// Taxamo info, updated to send store info for URL's
+        if(order.getBilling().getCountry().getIsoCode().equals("IT")||
+                order.getBilling().getCountry().getIsoCode().equals("FR")||
+                order.getBilling().getCountry().getIsoCode().equals("AU")||
+                order.getBilling().getCountry().getIsoCode().equals("SP")
+        )//TODO add logic to work with supported countries
+            System.out.println("Document Id:"+createElectronicInvoice(order,customer,vtxLineItems,store,urlInvoice));// Taxamo info, updated to send store info for URL's
 
         System.out.println(urlInvoice);
        order.setShippingModuleCode(urlInvoice);
