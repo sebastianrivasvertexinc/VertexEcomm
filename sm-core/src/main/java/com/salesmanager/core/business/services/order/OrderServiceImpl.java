@@ -284,7 +284,8 @@ OrderProductDownloadRepository orderProductDownloadRepository) {
         String urlInvoice=createInvoice(order,customer,vtxLineItems,store);// Taxamo info, updated to send store info for URL's
         //Create the electronic invoice
         if(order.getBilling().getCountry().getIsoCode().equals("IT"))//TODO add logic to work with supported countries
-            System.out.println("Document Id:"+createElectronicInvoice(order,customer,vtxLineItems,store,urlInvoice));// Taxamo info, updated to send store info for URL's
+            order.setEInvoiceId(createElectronicInvoice(order,customer,vtxLineItems,store,urlInvoice));
+            System.out.println("Document Id:"+ order.getEInvoiceId());// Taxamo info, updated to send store info for URL's
 
         System.out.println(urlInvoice);
        order.setShippingModuleCode(urlInvoice);

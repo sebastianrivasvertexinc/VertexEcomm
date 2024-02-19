@@ -147,11 +147,23 @@ public class ShoppingOrderConfirmationController extends AbstractController {
 		
         String[] orderEmailParams = {order.getCustomerEmailAddress()};
         String orderEmailMessage = messages.getMessage("label.checkout.email", orderEmailParams, locale);
+
+		// Testing to see if country is mandated
+		String countryCodeCheck = order.getBilling().getCountry().getIsoCode();
+		if(countryCodeCheck.equals("IT")) // We only support Italy for this example so hardcoded check
+		{
+			//orderEmailMessage = orderEmailMessage + System.lineSeparator() + "eInvoice has been sent to " + countryCodeCheck +": " + order.getEInvoiceId();
+			orderEmailMessage = orderEmailMessage + System.lineSeparator() + "eInvoice has been sent to " + countryCodeCheck;
+		}
 		model.addAttribute("orderemail", orderEmailMessage);
+
+		String[] eInvoiceDocId = {order.getEInvoiceId()};
+		String eInvoiceMessageDocId = messages.getMessage("label.checkout.eInvoiceId", eInvoiceDocId, locale);
+		model.addAttribute("orderEInvoiceIdMessage", eInvoiceMessageDocId);
 
 		String eInvoice = order.getShippingModuleCode();
 		model.addAttribute("ordereInvoice", eInvoice);
-		
+
 		ReadableOrder readableOrder = orderFacade.getReadableOrder(orderId, store, language);
 		
 
