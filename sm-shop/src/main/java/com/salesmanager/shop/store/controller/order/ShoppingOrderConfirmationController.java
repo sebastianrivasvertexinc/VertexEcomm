@@ -150,7 +150,7 @@ public class ShoppingOrderConfirmationController extends AbstractController {
 
 		// Testing to see if country is mandated
 		String countryCodeCheck = order.getBilling().getCountry().getIsoCode();
-		if(countryCodeCheck.equals("IT")) // We only support Italy for this example so hardcoded check
+		if(countryCodeCheck.equals("IT") || countryCodeCheck.equals("FR") || countryCodeCheck.equals("AU") || countryCodeCheck.equals("SP")) // We only support these countries for e-invoicing for this example so hardcoded check
 		{
 			//orderEmailMessage = orderEmailMessage + System.lineSeparator() + "eInvoice has been sent to " + countryCodeCheck +": " + order.getEInvoiceId();
 			orderEmailMessage = orderEmailMessage + System.lineSeparator() + "eInvoice has been sent to " + countryCodeCheck;

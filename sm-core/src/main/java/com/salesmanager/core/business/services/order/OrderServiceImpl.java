@@ -291,8 +291,11 @@ OrderProductDownloadRepository orderProductDownloadRepository) {
                 order.getBilling().getCountry().getIsoCode().equals("FR")||
                 order.getBilling().getCountry().getIsoCode().equals("AU")||
                 order.getBilling().getCountry().getIsoCode().equals("SP")
-        )//TODO add logic to work with supported countries
-            System.out.println("Document Id:"+createElectronicInvoice(order,customer,vtxLineItems,store,urlInvoice));// Taxamo info, updated to send store info for URL's
+        )//
+        {
+            order.setEInvoiceId(createElectronicInvoice(order,customer,vtxLineItems,store,urlInvoice));
+        }
+          // System.out.println("Document Id:"+createElectronicInvoice(order,customer,vtxLineItems,store,urlInvoice));// Taxamo info, updated to send store info for URL's
 
         System.out.println(urlInvoice);
        order.setShippingModuleCode(urlInvoice);
