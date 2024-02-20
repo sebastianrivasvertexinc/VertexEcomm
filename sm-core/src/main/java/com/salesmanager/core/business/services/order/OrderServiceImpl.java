@@ -999,7 +999,7 @@ OrderProductDownloadRepository orderProductDownloadRepository) {
             throw new RuntimeException(e);
         }
         documentReferenceType.getAttachment().getEmbeddedDocumentBinaryObject().setMimeCode("application/pdf");
-        documentReferenceType.getAttachment().getEmbeddedDocumentBinaryObject().setFilename("Attachment.pdf");
+        documentReferenceType.getAttachment().getEmbeddedDocumentBinaryObject().setFilename(order.getId().toString()+".pdf");
         eInv.getAdditionalDocumentReference().add(documentReferenceType);
 
         eInv.setAccountingSupplierParty(new SupplierPartyType());
@@ -1038,8 +1038,8 @@ OrderProductDownloadRepository orderProductDownloadRepository) {
         eInv.getAccountingSupplierParty().getParty().getPostalAddress().setPostalZone(new PostalZoneType());
         eInv.getAccountingSupplierParty().getParty().getPostalAddress().getPostalZone().setValue(store.getStorepostalcode());
         eInv.getAccountingSupplierParty().getParty().getPostalAddress().setCountry(new CountryType());
-        eInv.getAccountingSupplierParty().getParty().getPostalAddress().getCountry().setName(new NameType());
-        eInv.getAccountingSupplierParty().getParty().getPostalAddress().getCountry().getName().setValue(store.getCountry().getName());
+        eInv.getAccountingSupplierParty().getParty().getPostalAddress().getCountry().setIdentificationCode(new IdentificationCodeType());
+        eInv.getAccountingSupplierParty().getParty().getPostalAddress().getCountry().getIdentificationCode().setValue(store.getCountry().getIsoCode());
 
         PartyTaxSchemeType partyScheme=new PartyTaxSchemeType();
         partyScheme.setRegistrationName(new RegistrationNameType());
@@ -1092,8 +1092,8 @@ OrderProductDownloadRepository orderProductDownloadRepository) {
         eInv.getAccountingCustomerParty().getParty().getPostalAddress().setCityName(new CityNameType());
         eInv.getAccountingCustomerParty().getParty().getPostalAddress().getCityName().setValue(order.getBilling().getCity());
         eInv.getAccountingCustomerParty().getParty().getPostalAddress().setCountry(new CountryType());
-        eInv.getAccountingCustomerParty().getParty().getPostalAddress().getCountry().setName(new NameType());
-        eInv.getAccountingCustomerParty().getParty().getPostalAddress().getCountry().getName().setValue(order.getBilling().getCountry().getIsoCode());
+        eInv.getAccountingCustomerParty().getParty().getPostalAddress().getCountry().setIdentificationCode(new IdentificationCodeType());
+        eInv.getAccountingCustomerParty().getParty().getPostalAddress().getCountry().getIdentificationCode().setValue(order.getBilling().getCountry().getIsoCode());
 
         PartyTaxSchemeType partyTaxScheme=new PartyTaxSchemeType();
         partyTaxScheme.setCompanyID(new CompanyIDType());
