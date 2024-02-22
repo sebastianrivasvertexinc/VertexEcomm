@@ -858,6 +858,7 @@ OrderProductDownloadRepository orderProductDownloadRepository) {
         trans.setBuyer_name(order.getBilling().getFirstName()+" "+order.getBilling().getLastName());
         trans.setBuyer_email(order.getCustomerEmailAddress());
         trans.setStatus("C");
+        trans.setInvoice_number(order.getId().toString()); //adding set invoice number DJR
         trans.setCurrency_code(order.getCurrency().getCode());
         if(order.getBilling().getVatNumber() != null) {
             trans.setBuyer_tax_number(order.getBilling().getVatNumber());//DJR - Fixed
@@ -878,6 +879,7 @@ OrderProductDownloadRepository orderProductDownloadRepository) {
         trans.setInvoice_address(invAddress);
         //Setting Billing Country Code
         trans.setBilling_country_code(order.getBilling().getCountry().getIsoCode());
+
         ArrayList<Transaction_line> transaction_lines= new  ArrayList<Transaction_line>();
         Integer cont=0;
         for (LineItem itemProduct :items) {
