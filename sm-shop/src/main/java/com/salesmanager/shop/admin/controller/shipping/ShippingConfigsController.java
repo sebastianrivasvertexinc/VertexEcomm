@@ -178,7 +178,7 @@ public class ShippingConfigsController {
 			
 			ObjectMapper mapper = new ObjectMapper();
 			@SuppressWarnings("rawtypes")
-			Map conf = mapper.readValue(values, Map.class);
+			Map conf = mapper.readValue(values.replaceAll("&quot;","\""), Map.class);
 			
 			String countryCode = (String)conf.get("code");
 

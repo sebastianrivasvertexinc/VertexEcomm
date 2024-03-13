@@ -5,6 +5,8 @@ import java.util.ArrayList;
 
 public class TransactionRequest {
     private String force_country_code;
+
+    private String invoice_number; //for sending custom invoice ID from Shopizer
     private String buyer_name;
     private String buyer_email;
     private String status;
@@ -22,6 +24,8 @@ public class TransactionRequest {
     public String getForce_country_code() {
         return force_country_code;
     }
+
+    public String getInvoice_number() { return invoice_number;}
 
     public String getBuyer_name() {
         return buyer_name;
@@ -65,6 +69,7 @@ public class TransactionRequest {
         this.force_country_code = force_country_code;
     }
 
+    public void setInvoice_number(String invoice_number) {this.invoice_number = invoice_number;}
     public void setBuyer_name(String buyer_name) {
         this.buyer_name = buyer_name;
     }

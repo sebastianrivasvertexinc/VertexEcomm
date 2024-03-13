@@ -20,8 +20,8 @@ function addShippingAddress(formId){
 </script>
 
  <!-- Import the ECW javascript library -->
- <script src="https://ecwportal.vertexsmb.com/wizard/button.js"></script>
-
+ <script src="https://ccwizard.vertexsmb.com/wizard/button.js"></script>
+ <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
@@ -149,38 +149,41 @@ function addShippingAddress(formId){
 			</div>
 		</div>
 
- <script type="text/javascript">
+    <script type="text/javascript">
       // Call the ECW authentication service to obtain an access token
       $(document).ready(function() {
         $.ajax({
           url: "https://auth.vertexsmb.com/identity/connect/token",
           method: "POST",
+       //   headers: { 'x-partition-uuid': 'a659c8f3-dab0-4734-9d83-a18a9148866b' },
           data: {
             "client_id": "f6907c10678b423c8b2442315130b561",
             "client_secret": "ab0c89698d6d42789c29ec8622da141a",
             "grant_type": "client_credentials",
-            "scope": "vtms-internal-api ecw-wizard-api"
+            "scope": "vtms-internal-api ecw-wizard-api",
           },
         }).then(function(response) {
           // Configure the wizard
-          const btn = new vertex.Wizard({
-            domNode: document.getElementById('wizard-btn'),
-            wizardPath: 'https://ecwportal.vertexsmb.com/wizard',
-            accessToken: response.access_token,
-            action: "CREATE",
-            clientCode: "SHOPIZER",
-            sellerCodes: ["Vertex HQ"],
-            buyerCode: "60036760", //Enter Shopizer email address of the buyer, or username
-            overrides: [
-              {qId:2, value: 'Vertex Shopizer'},                   // Shopizer Name
-              {qId:3, value: '3000 coral way'},    // Shopizer buyerStreetAddress
-              {qId:4, value: 'miami'},          // Shopizer buyerCity
-              {qId:5, value: 'fl'},                       // Shopizer buyerState
-              {qId:6, value: '33145'},                    // Shopizer buyerPostalCode
-              {qId:19, value: 'someuser@vertexinc.com'},  // Shopizer buyerEmail
-              {qId:22, value: '800-555-1212'}             // Shopizer buyerPhone
-            ]
-          });
+                   const btn = new vertex.Wizard({
+                     domNode: document.getElementById('wizard-btn'),
+                     wizardPath: 'https://ccwizard.vertexsmb.com/',
+                     accessToken: response.access_token,
+                     action: "CREATE",
+                     clientCode: "SHOPIZER",
+                     partitionUuid: "a659c8f3-dab0-4734-9d83-a18a9148866b",
+                     sellerCodes: ["Vertex HQ"],
+                     buyerCode:  "${customer.emailAddress}", //Enter Shopizer email address of the buyer, or username
+                     overrides: [
+                       {qId:2, value: "${customer.firstName}"},
+                       {qId:3, value: "${customer.billing.address}"},
+                       {qId:4, value: "${customer.billing.city}"},
+                       {qId:5, value: "${customer.billing.stateProvince}"},
+                       {qId:6, value: "${customer.billing.postalCode}"},
+                       {qId:7, value: "${customer.billing.country}"},
+                       {qId:19, value: "${customer.emailAddress}"},
+                       {qId:22, value: "${customer.billing.phone}"}
+                     ]
+                   });
 
         // Add an event listener to get notifications when a certificate is created
         window.addEventListener("message", function(event) {

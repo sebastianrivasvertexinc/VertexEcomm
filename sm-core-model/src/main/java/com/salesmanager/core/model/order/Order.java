@@ -116,6 +116,11 @@ public class Order extends SalesManagerEntity<Long, Order> {
 	@Column(name = "CONFIRMED_ADDRESS")
 	private Boolean confirmedAddress = false;
 
+	// DJR - Order details to include e-invoicing return from Government.
+	// DJR - Add get and set einvoiceId
+	@Column (name ="EINVOICE_ID")
+	private String eInvoiceId;
+
 	@Embedded
 	private Delivery delivery = null;
 	
@@ -403,6 +408,14 @@ public class Order extends SalesManagerEntity<Long, Order> {
 
 	public void setShoppingCartCode(String shoppingCartCode) {
 		this.shoppingCartCode = shoppingCartCode;
+	}
+
+	// DJR - modified get and set in orders
+	public String getEInvoiceId() {
+		return eInvoiceId;
+	}
+	public void setEInvoiceId(String eInvoiceId) {
+		this.eInvoiceId = eInvoiceId;
 	}
 
 }

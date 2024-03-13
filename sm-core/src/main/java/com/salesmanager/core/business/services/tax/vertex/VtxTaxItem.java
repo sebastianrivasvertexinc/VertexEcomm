@@ -18,6 +18,7 @@ public class VtxTaxItem {
     public ImpositionType impositionType;
     public InclusionRuleId inclusionRuleId;
     public boolean isService;
+    public String rateClassification;
     public Jurisdiction jurisdiction;
     public boolean maxTaxIndicator;
     public double nominalRate;

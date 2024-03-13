@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.salesmanager.core.business.exception.ServiceException;
 import com.salesmanager.core.business.services.system.MerchantConfigurationService;
-import com.salesmanager.core.business.services.tax.taxamo.VatValidate;
+import com.salesmanager.core.business.services.tax.taxamo.*;
 import com.salesmanager.core.business.services.tax.vertex.*;
 import com.salesmanager.core.model.catalog.product.description.ProductDescription;
 import com.salesmanager.core.model.customer.Customer;
@@ -176,7 +176,7 @@ public class  TaxServiceVtxImpl
 			}
 			catch (Exception e)
 			{
-				//If it fails on Service dont worry about error yet...
+				//If it fails on Service don't worry about error yet...
 			}
 
 
@@ -237,10 +237,7 @@ public class  TaxServiceVtxImpl
 
 				//replacing this code as it can flip the language
 
-				//if (it.getProduct().getProductDescription()!=null)
-				//	itVtx.product.productClass=it.getProduct().getProductDescription().getName();
-
-				itemsVtx.add(itVtx);
+			itemsVtx.add(itVtx);
 
 				i++;
 			}
@@ -359,7 +356,7 @@ public class  TaxServiceVtxImpl
 				}
 				catch (Exception e)
 				{
-					//If it fails on Service dont worry about error yet...
+					//If it fails on Service don't worry about error yet...
 				}
 
 
@@ -437,7 +434,78 @@ public class  TaxServiceVtxImpl
 		}
 
 		return vtxEngineCalculation.data.getlineItems();
-	};
+	}
+
+	@Override
+	public Invoice currencyConversion(MerchantStore store, String destCurrency,String zone, BigDecimal grandTotal) throws ServiceException{
+
+		TaxConfiguration taxConfiguration = taxService.getTaxConfiguration(store);
+		if(taxConfiguration == null) {
+			throw new ServiceException("error getting taxConfig in Vertex Tax Calculation");
+		}
+
+		this.taxamoValidationURL = taxConfiguration.getTaxamoValidationURL();
+		this.taxamoAuthToken = taxConfiguration.getTaxamoAuthToken();
+
+		// Don't want to throw exception back since we're overriding createInvoice, so ignore exception
+		Gson gson = new Gson();
+		TaxamoRequest taxamoRequest=new TaxamoRequest();
+		OkHttpClient client = new OkHttpClient();
+		MediaType mediaType = MediaType.parse("application/json");
+
+		taxamoRequest.setPrivate_token(taxamoAuthToken);
+		TransactionRequest trans =new TransactionRequest();
+		trans.setForce_country_code(destCurrency);
+		trans.setCurrency_code(store.getCurrency().getCode());
+		Invoice_address invoice_address=new Invoice_address();
+		invoice_address.setCountry(destCurrency);
+		invoice_address.setRegion(zone);
+
+		trans.setInvoice_address(invoice_address);
+		ArrayList<Transaction_line> transaction_lines= new  ArrayList<Transaction_line>();
+			Transaction_line tLine= new Transaction_line();
+			tLine.setDescription("Online Subscription Purchase");
+			tLine.setAmount(grandTotal);
+			tLine.setInformative("true");//TODO
+			tLine.setCustom_id("1");//TODO
+			tLine.setTax_rate(0);
+			tLine.setQuantity(1);
+		transaction_lines.add(tLine);
+
+		trans.transaction_lines=transaction_lines;
+
+		taxamoRequest.setTransaction(trans);
+		String jsonDataReq=gson.toJson(taxamoRequest, TaxamoRequest.class);
+		RequestBody body = RequestBody.create(mediaType, jsonDataReq);
+
+		Request request = new Request.Builder()
+				.url(taxamoValidationURL + "/transactions")
+				.method("POST", body)
+				.addHeader("Content-Type", "application/json")
+				.build();
+		Response response = null;
+		try {
+			response = client.newCall(request).execute();
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+
+		TaxamoResponse taxamoResponse= new TaxamoResponse();
+		String jsonData = null;
+		try {
+			jsonData = response.body().string();
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+
+		taxamoResponse=gson.fromJson(jsonData,TaxamoResponse.class);
+		if (taxamoResponse.getTransaction().getAdditional_currencies()!=null)
+				return taxamoResponse.getTransaction().getAdditional_currencies().invoice;
+		else
+				return null;
+	}
+
+	;
 	@Inject
 	private TaxService taxService = null;
 	private Boolean doVatValidation(String taxRegistrationNumber, MerchantStore store) throws Exception {
@@ -498,11 +566,9 @@ public class  TaxServiceVtxImpl
 				.build();
 		Response response = client.newCall(request).execute();;
 
-
-		VtxTaxCalc vtx=new VtxTaxCalc();
 		String jsonData = response.body().string();
 
-		vtx=gson.fromJson(jsonData,VtxTaxCalc.class);
+		VtxTaxCalc vtx = gson.fromJson(jsonData,VtxTaxCalc.class);
 		return vtx;
 	}
 
