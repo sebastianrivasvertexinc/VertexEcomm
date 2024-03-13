@@ -290,6 +290,7 @@ OrderProductDownloadRepository orderProductDownloadRepository) {
         if(order.getBilling().getCountry().getIsoCode().equals("IT")||
                 order.getBilling().getCountry().getIsoCode().equals("FR")||
                 order.getBilling().getCountry().getIsoCode().equals("AU")||
+                order.getBilling().getCountry().getIsoCode().equals("GB")||
                 order.getBilling().getCountry().getIsoCode().equals("SP")
         )//
         {
@@ -1028,7 +1029,7 @@ OrderProductDownloadRepository orderProductDownloadRepository) {
 
         PartyNameType partyName= new PartyNameType();
         partyName.setName(new NameType());
-        partyName.getName().setValue(store.getStorename());
+        partyName.getName().setValue("Vertex Inc – End2End, TEST");
         eInv.getAccountingSupplierParty().getParty().getPartyName().add(partyName);
         eInv.getAccountingSupplierParty().getParty().setPostalAddress(new AddressType());
         eInv.getAccountingSupplierParty().getParty().getPostalAddress().setStreetName(new StreetNameType());
@@ -1075,14 +1076,14 @@ OrderProductDownloadRepository orderProductDownloadRepository) {
 
         eInv.setAccountingCustomerParty(new CustomerPartyType());
         eInv.getAccountingCustomerParty().setSupplierAssignedAccountID(new SupplierAssignedAccountIDType());
-        eInv.getAccountingCustomerParty().getSupplierAssignedAccountID( ).setValue("VTBIT001");
+        eInv.getAccountingCustomerParty().getSupplierAssignedAccountID( ).setValue("VRTXSL02");
         eInv.getAccountingCustomerParty().setParty(new PartyType());
         eInv.getAccountingCustomerParty().getParty().setEndpointID(new EndpointIDType());
         eInv.getAccountingCustomerParty().getParty().getEndpointID().setValue(order.getCustomerId().toString());
         eInv.getAccountingCustomerParty().getParty().getEndpointID().setSchemeAgencyID("0151");
         PartyNameType partyNameAc= new PartyNameType();
         partyNameAc.setName(new NameType());
-        partyNameAc.getName().setValue(order.getBilling().getFirstName()+" "+order.getBilling().getLastName());
+        partyNameAc.getName().setValue("Vertex – Sales, TEST");
         eInv.getAccountingCustomerParty().getParty().getPartyName().add(partyNameAc);
         eInv.getAccountingCustomerParty().getParty().setPostalAddress(new AddressType());
         eInv.getAccountingCustomerParty().getParty().getPostalAddress().setStreetName(new StreetNameType());
@@ -1107,7 +1108,12 @@ OrderProductDownloadRepository orderProductDownloadRepository) {
         partyTaxSchemeType.setRegistrationName(new RegistrationNameType());
         partyTaxSchemeType.getRegistrationName().setValue(order.getBilling().getCompany());
         partyTaxSchemeType.setCompanyID(new CompanyIDType());
-        partyTaxSchemeType.getCompanyID().setValue(order.getBilling().getVatNumber());
+        if (order.getBilling().getVatNumber().isEmpty())
+            partyTaxSchemeType.getCompanyID().setValue("GB65747736");
+        else
+            partyTaxSchemeType.getCompanyID().setValue(order.getBilling().getVatNumber());
+
+
         partyTaxSchemeType.getCompanyID().setSchemeID("0151");
         eInv.getAccountingCustomerParty().getParty().getPartyLegalEntity().add(partyLegalEntityType);
 
