@@ -3,6 +3,8 @@ package com.salesmanager.core.business.services.order;
 import java.io.*;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.net.URL;
+import java.net.URLConnection;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -997,7 +999,26 @@ OrderProductDownloadRepository orderProductDownloadRepository) {
         documentReferenceType.setAttachment(new AttachmentType());
         documentReferenceType.getAttachment().setEmbeddedDocumentBinaryObject(new EmbeddedDocumentBinaryObjectType());
         try {
-            documentReferenceType.getAttachment().getEmbeddedDocumentBinaryObject().setValue(getAsByteArray(TaxamoUrlInvoice));
+
+
+            //documentReferenceType.getAttachment().getEmbeddedDocumentBinaryObject().setValue(getAsByteArray(TaxamoUrlInvoice));
+            URL pdfUrl = new URL(TaxamoUrlInvoice);
+            URLConnection urlConnection = pdfUrl.openConnection();
+
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            byte[] byteArray = new byte[1024]; // amount of bytes reading from input stream at a given time
+            int readLength;
+
+            InputStream inputStream = pdfUrl.openStream();
+            while ((readLength = inputStream.read(byteArray)) > 0){
+                outputStream.write(byteArray, 0, readLength);
+            }
+
+            outputStream.flush();
+            outputStream.close();
+            inputStream.close();
+            documentReferenceType.getAttachment().getEmbeddedDocumentBinaryObject().setValue(outputStream.toByteArray());
+
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
