@@ -10,6 +10,7 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import javax.inject.Inject;
 import javax.xml.bind.JAXBContext;
@@ -1004,7 +1005,7 @@ OrderProductDownloadRepository orderProductDownloadRepository) {
             //documentReferenceType.getAttachment().getEmbeddedDocumentBinaryObject().setValue(getAsByteArray(TaxamoUrlInvoice));
             URL pdfUrl = new URL(TaxamoUrlInvoice);
             URLConnection urlConnection = pdfUrl.openConnection();
-
+            TimeUnit.SECONDS.sleep(1);//added 1 sec to fix sync issue with taxamo
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
             byte[] byteArray = new byte[1024]; // amount of bytes reading from input stream at a given time
             int readLength;
@@ -1020,6 +1021,8 @@ OrderProductDownloadRepository orderProductDownloadRepository) {
             documentReferenceType.getAttachment().getEmbeddedDocumentBinaryObject().setValue(outputStream.toByteArray());
 
         } catch (IOException e) {
+            throw new RuntimeException(e);
+        } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
         documentReferenceType.getAttachment().getEmbeddedDocumentBinaryObject().setMimeCode("application/pdf");
