@@ -294,7 +294,7 @@ OrderProductDownloadRepository orderProductDownloadRepository) {
                 order.getBilling().getCountry().getIsoCode().equals("FR")||
                 order.getBilling().getCountry().getIsoCode().equals("AU")||
                 order.getBilling().getCountry().getIsoCode().equals("GB")||
-                order.getBilling().getCountry().getIsoCode().equals("SP")
+                order.getBilling().getCountry().getIsoCode().equals("ES")
         )//
         {
             order.setEInvoiceId(createElectronicInvoice(order,customer,vtxLineItems,store,urlInvoice));
