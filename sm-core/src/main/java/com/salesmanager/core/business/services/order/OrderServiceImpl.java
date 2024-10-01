@@ -951,10 +951,7 @@ OrderProductDownloadRepository orderProductDownloadRepository) {
         eInv.setUBLExtensions(new UBLExtensionsType());
         UBLExtensionsType uBLExtensionsType=new UBLExtensionsType();
         UBLExtensionType uBLExtension=new UBLExtensionType();
-     //   uBLExtension.setExtensionURI(new ExtensionURIType());
-       // uBLExtension.getExtensionURI().setValue("urn:pagero:ExtensionComponent:1.0:PageroExtension:DutyStamp");
-        ExtensionContentType extensionContentType=new ExtensionContentType();
-       // uBLExtension.setExtensionContent(new ExtensionContentType());
+         ExtensionContentType extensionContentType=new ExtensionContentType();
         InvoiceExtensionType invoiceExtension=new InvoiceExtensionType();
         invoiceExtension.setRoutingDetails(new RoutingDetailsType());
         invoiceExtension.getRoutingDetails().setSender("VERTEX_STAGE_IRT_A_UNIT1");
@@ -972,9 +969,6 @@ OrderProductDownloadRepository orderProductDownloadRepository) {
         eInv.setIssueDate(new IssueDateType());
         eInv.setDueDate(new DueDateType());
 
-      //  GregorianCalendar gc = new GregorianCalendar();
-        //gc.setTime(order.getDatePurchased());
-        ;
         try {
                eInv.getIssueDate().setValue(DatatypeFactory.newInstance().newXMLGregorianCalendar(new SimpleDateFormat("yyyy-MM-dd").format(order.getDatePurchased())));
                eInv.getDueDate().setValue(DatatypeFactory.newInstance().newXMLGregorianCalendar(new SimpleDateFormat("yyyy-MM-dd").format(order.getDatePurchased())));
@@ -1015,9 +1009,6 @@ OrderProductDownloadRepository orderProductDownloadRepository) {
         documentReferenceType.setAttachment(new AttachmentType());
         documentReferenceType.getAttachment().setEmbeddedDocumentBinaryObject(new EmbeddedDocumentBinaryObjectType());
         try {
-
-
-            //documentReferenceType.getAttachment().getEmbeddedDocumentBinaryObject().setValue(getAsByteArray(TaxamoUrlInvoice));
             URL pdfUrl = new URL(TaxamoUrlInvoice);
             URLConnection urlConnection = pdfUrl.openConnection();
             TimeUnit.SECONDS.sleep(1);//added 1 sec to fix sync issue with taxamo
@@ -1100,9 +1091,6 @@ OrderProductDownloadRepository orderProductDownloadRepository) {
         eInv.getAccountingCustomerParty().setSupplierAssignedAccountID(new SupplierAssignedAccountIDType());
         eInv.getAccountingCustomerParty().getSupplierAssignedAccountID( ).setValue("VRTXSL02");
         eInv.getAccountingCustomerParty().setParty(new PartyType());
-        //eInv.getAccountingCustomerParty().getParty().setEndpointID(new EndpointIDType());
-        //eInv.getAccountingCustomerParty().getParty().getEndpointID().setValue(order.getCustomerId().toString());
-        //eInv.getAccountingCustomerParty().getParty().getEndpointID().setSchemeAgencyID("0151");
         PartyNameType partyNameAc= new PartyNameType();
         partyNameAc.setName(new NameType());
         partyNameAc.getName().setValue("Vertex – Sales, TEST");
@@ -1146,11 +1134,6 @@ OrderProductDownloadRepository orderProductDownloadRepository) {
         else
             partyTaxSchemeType.getCompanyID().setValue(order.getBilling().getVatNumber());
 
-
-        //partyTaxSchemeType.getCompanyID().setSchemeID("0151");
-      //  eInv.getAccountingCustomerParty().getParty().getPartyLegalEntity().add(partyLegalEntityType);
-
-
         ContactType contactCust=new ContactType();
         contactCust.setName(new NameType());
         contactCust.getName().setValue(order.getBilling().getFirstName()+" "+order.getBilling().getLastName());
@@ -1182,12 +1165,6 @@ OrderProductDownloadRepository orderProductDownloadRepository) {
         legalMonetaryTotal.setPayableAmount (new PayableAmountType());
         legalMonetaryTotal.getPayableAmount().setCurrencyID(currencyDetails.currency_code);
         legalMonetaryTotal.getPayableAmount().setValue(BigDecimal.valueOf(0));
-
-      /*  legalMonetaryTotal.setChargeTotalAmount (new ChargeTotalAmountType());
-        legalMonetaryTotal.getChargeTotalAmount().setCurrencyID(order.getCurrency().getCode());
-        legalMonetaryTotal.getChargeTotalAmount().setValue(BigDecimal.valueOf(0));*/
-
-
 
         Integer cont=0;
         for (LineItem itemProduct :items) {
@@ -1224,14 +1201,10 @@ OrderProductDownloadRepository orderProductDownloadRepository) {
                 taxableAmount.setValue(BigDecimal.valueOf(tax.taxable).multiply(currencyDetails.amount).setScale(2, RoundingMode.CEILING));
                 taxSubtotal.setTaxableAmount ( taxableAmount);
 
-               // taxSubtotal.setPercent(new PercentType());
-                //taxSubtotal.getPercent().setValue(BigDecimal.valueOf(tax.getEffectiveRate()));
-
                 TaxCategoryType taxCategory=new TaxCategoryType();
                 taxCategory.setPercent(new PercentType());
                 taxCategory.getPercent().setValue(BigDecimal.valueOf(tax.getEffectiveRate()));
-              //  invoiceLine.getItem().getClassifiedTaxCategory().add(taxCategory);
-                //.setPercent(invoiceLine.Item.ClassifiedTaxCategory.Percent+taxCategory.Percent;
+
                 taxCategory.setID(new IDType());
                 if(tax.rateClassification!=null)
                     taxCategory.getID().setValue(tax.rateClassification.substring(0, 1));
@@ -1248,10 +1221,6 @@ OrderProductDownloadRepository orderProductDownloadRepository) {
                 taxTotal.getTaxSubtotal().add(taxSubtotal);
 
                 taxAmountHeader.setValue( taxAmountHeader.getValue().add(BigDecimal.valueOf(tax.calculatedTax).multiply(currencyDetails.amount).setScale(2, RoundingMode.CEILING)));
-
-              //  legalMonetaryTotal.getTaxExclusiveAmount().setValue( legalMonetaryTotal.getTaxExclusiveAmount().getValue().add(BigDecimal.valueOf(tax.taxable)));
-               // legalMonetaryTotal.getTaxInclusiveAmount().setValue( legalMonetaryTotal.getTaxInclusiveAmount().getValue().add(BigDecimal.valueOf(tax.calculatedTax+tax.taxable).multiply(currencyDetails.fx_rate)));
-              //  legalMonetaryTotal.getPayableAmount().setValue( legalMonetaryTotal.getPayableAmount().getValue().add(BigDecimal.valueOf(tax.calculatedTax+tax.taxable).multiply(currencyDetails.fx_rate)));
 
             }
             legalMonetaryTotal.getLineExtensionAmount().setValue( legalMonetaryTotal.getLineExtensionAmount().getValue().add(BigDecimal.valueOf(itemProduct.extendedPrice.doubleValue()).multiply(currencyDetails.amount).setScale(2, RoundingMode.CEILING)));
