@@ -5,6 +5,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.net.URL;
 import java.net.URLConnection;
+import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -25,16 +26,17 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.salesmanager.core.business.repositories.order.orderproduct.OrderProductDownloadRepository;
 import com.salesmanager.core.business.services.tax.TaxServiceVtx;
-import com.salesmanager.core.business.services.tax.pagero.DefaultNamespacePrefixMapper;
-import com.salesmanager.core.business.services.tax.pagero.EInvoicingResponse;
-import com.salesmanager.core.business.services.tax.pagero.InvoiceType;
 
-import com.salesmanager.core.business.services.tax.pagero.commonaggregatecomponents.*;
-import com.salesmanager.core.business.services.tax.pagero.xsd.commonbasiccomponents.*;
-import com.salesmanager.core.business.services.tax.pagero.xsd.commonextensioncomponents.ExtensionContentType;
-import com.salesmanager.core.business.services.tax.pagero.xsd.commonextensioncomponents.ExtensionURIType;
-import com.salesmanager.core.business.services.tax.pagero.xsd.commonextensioncomponents.UBLExtensionType;
-import com.salesmanager.core.business.services.tax.pagero.xsd.commonextensioncomponents.UBLExtensionsType;
+import com.salesmanager.core.business.services.tax.ecosio.vrbl.DefaultNamespacePrefixMapper;
+import com.salesmanager.core.business.services.tax.ecosio.vrbl.EInvoicingResponse;
+import com.salesmanager.core.business.services.tax.ecosio.vrbl.oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_2.*;
+import com.salesmanager.core.business.services.tax.ecosio.vrbl.oasis.names.specification.ubl.schema.xsd.invoice_2.InvoiceType;
+import com.salesmanager.core.business.services.tax.ecosio.vrbl.oasis.names.specification.ubl.schema.xsd.commonextensioncomponents_2.*;
+import com.salesmanager.core.business.services.tax.ecosio.vrbl.oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.*;
+
+
+import com.salesmanager.core.business.services.tax.ecosio.vrbl.vertexinc.vrbl.extensioncomponent._1.*;
+import com.salesmanager.core.business.services.tax.ecosio.vrbl.vertexinc.vrbl.extensioncomponent._1.RoutingDetailsType;
 import com.salesmanager.core.business.services.tax.taxamo.*;
 import com.salesmanager.core.business.services.tax.vertex.LineItem;
 import com.salesmanager.core.business.services.tax.vertex.VtxTaxCalc;
@@ -42,9 +44,7 @@ import com.salesmanager.core.business.services.tax.vertex.VtxTaxItem;
 import com.salesmanager.core.model.catalog.product.description.ProductDescription;
 import com.salesmanager.core.model.tax.TaxConfiguration;
 
-import com.salesmanager.core.business.services.tax.pagero.extensioncomponent.PUFAmountType;
-import com.salesmanager.core.business.services.tax.pagero.extensioncomponent.PUFIDType;
-import com.salesmanager.core.business.services.tax.pagero.extensioncomponent.PageroExtension;
+
 
 import com.squareup.okhttp.*;
 import org.apache.commons.collections4.CollectionUtils;
@@ -110,10 +110,10 @@ public class OrderServiceImpl  extends SalesManagerEntityServiceImpl<Long, Order
     //private String eInvoicing_client_secret = "J_IFQUBX7rxA60tmO8W80JmfWS822nXN8bH0ZA7OAsD5r349v6R2Vcw5e3V-smO2";//TODO David to send this to the Admini UI
     //private String eInvoicing_url = "https://e-invoicing-service.cst-stage.vtxdev.net/customers/v1/documents";//TODO David to send this to the Admini UI
     //private String eInvoicing_auth_url = "https://stage-auth.vertexcloud.com/oauth/token";//TODO David to send this to the Admini UI
-    private String eInvoicing_client_Id = "9PNoWBAgkUPMrAxfIjRhC4ca3mxnP6E7";//TODO David to send this to the Admini UI
-    private String eInvoicing_client_secret = "jev3o7T05TTheCQVCZXKWB-xK-r9BSLIP4QyhvllLhj83I5eCW92THu-LvF56y0l";//TODO David to send this to the Admini UI
-    private String eInvoicing_url = "https://e-invoicing-service.vertexcloud.com/customers/v1/documents";//TODO David to send this to the Admini UI
-    private String eInvoicing_auth_url = "https://auth.vertexcloud.com/oauth/token";//TODO David to send this to the Admini UI
+    private String eInvoicing_client_Id = "s0xpW2Pogz4LXRTnoHI5MXElP0gHxEqH";//TODO David to send this to the Admini UI
+    private String eInvoicing_client_secret = "TOAQSrUqetRlYiSKdXQSUkj9gRioefsYmjE3v_Ar0T2CWlj5Xz9gNW2vKypAasot";//TODO David to send this to the Admini UI
+    private String eInvoicing_url = "https://e-invoicing-service.cst-stage.vtxdev.net/customers/v1/documents";//TODO David to send this to the Admini UI
+    private String eInvoicing_auth_url = "https://stage-auth.vertexcloud.com/oauth/token";//TODO David to send this to the Admini UI
 
 
     @Inject
@@ -290,14 +290,13 @@ OrderProductDownloadRepository orderProductDownloadRepository) {
         //create an invoice with Taxamo
         String urlInvoice=createInvoice(order,customer,vtxLineItems,store);// Taxamo info, updated to send store info for URL's
         //Create the electronic invoice
-        if(order.getBilling().getCountry().getIsoCode().equals("IT")||
-                order.getBilling().getCountry().getIsoCode().equals("FR")||
-                order.getBilling().getCountry().getIsoCode().equals("AU")||
-                order.getBilling().getCountry().getIsoCode().equals("GB")||
-                order.getBilling().getCountry().getIsoCode().equals("ES")
+        if(order.getBilling().getCountry().getIsoCode().equals("MY")||
+                order.getBilling().getCountry().getIsoCode().equals("RO")||
+                order.getBilling().getCountry().getIsoCode().equals("GE")
         )//
         {
-            order.setEInvoiceId(createElectronicInvoice(order,customer,vtxLineItems,store,urlInvoice));
+            order.setEInvoiceId("n/a");
+            order.setEInvoiceId(createElectronicInvoice(order,customer,vtxLineItems,store,urlInvoice)); //Removed Pagero code
         }
           // System.out.println("Document Id:"+createElectronicInvoice(order,customer,vtxLineItems,store,urlInvoice));// Taxamo info, updated to send store info for URL's
 
@@ -480,7 +479,7 @@ OrderProductDownloadRepository orderProductDownloadRepository) {
                             taxLine.setSortOrder(taxCount);
                             taxCount++;
 
-                            taxLine.setOrderTotalCode((vtxItemtax.imposition.value + " in the " + vtxItemtax.jurisdiction.jurisdictionType + " of " + vtxItemtax.jurisdiction.value + "(" + BigDecimal.valueOf(vtxItemtax.getEffectiveRate()).multiply(BigDecimal.valueOf(100)) + "%)"));
+                            taxLine.setOrderTotalCode((vtxItemtax.imposition.value + " in the xxx" + vtxItemtax.jurisdiction.jurisdictionType + " of " + vtxItemtax.jurisdiction.value + "(" + BigDecimal.valueOf(vtxItemtax.getEffectiveRate()).multiply(BigDecimal.valueOf(100)) + "%)"));
 
                            // Gson gson = new Gson();
                          //   taxLine.setOrderTotalCode(gson.toJson(vtxTaxCalc, VtxTaxCalc.class));
@@ -939,35 +938,46 @@ OrderProductDownloadRepository orderProductDownloadRepository) {
             LOGGER.warn("GetConfigData from store failed...expect an Exception error");
         }
 
+
+        com.salesmanager.core.business.services.tax.taxamo.Invoice currencyDetails = new com.salesmanager.core.business.services.tax.taxamo.Invoice();
+        try {
+            currencyDetails=taxService.currencyConversion(store, order.getBilling().getCountry().getIsoCode(),order.getCurrency().getCode(), new BigDecimal(1));
+        } catch (ServiceException e) {
+            throw new RuntimeException(e);
+        }
+
         InvoiceType eInv =new InvoiceType();
 
         eInv.setUBLExtensions(new UBLExtensionsType());
         UBLExtensionsType uBLExtensionsType=new UBLExtensionsType();
         UBLExtensionType uBLExtension=new UBLExtensionType();
-        uBLExtension.setExtensionURI(new ExtensionURIType());
-        uBLExtension.getExtensionURI().setValue("urn:pagero:ExtensionComponent:1.0:PageroExtension:DutyStamp");
-        uBLExtension.setExtensionContent(new ExtensionContentType());
-        PageroExtension pageroExtension=new PageroExtension();
-        pageroExtension.setDutyStamp(new PageroExtension.DutyStamp());
-        pageroExtension.getDutyStamp().setAmount(new PUFAmountType());
-        pageroExtension.getDutyStamp().getAmount().setValue(BigDecimal.valueOf(order.getTotal().doubleValue()));
-        pageroExtension.getDutyStamp().getAmount().setCurrencyID(order.getCurrency().getCode());
-        uBLExtension.getExtensionContent().setAny(pageroExtension);
-        uBLExtensionsType.getUBLExtension().add(uBLExtension);
-        eInv.setUBLExtensions(uBLExtensionsType);
+     //   uBLExtension.setExtensionURI(new ExtensionURIType());
+       // uBLExtension.getExtensionURI().setValue("urn:pagero:ExtensionComponent:1.0:PageroExtension:DutyStamp");
+        ExtensionContentType extensionContentType=new ExtensionContentType();
+       // uBLExtension.setExtensionContent(new ExtensionContentType());
+        InvoiceExtensionType invoiceExtension=new InvoiceExtensionType();
+        invoiceExtension.setRoutingDetails(new RoutingDetailsType());
+        invoiceExtension.getRoutingDetails().setSender("VERTEX_STAGE_IRT_A_UNIT1");
+        invoiceExtension.getRoutingDetails().setReceiver("GENERIC_RO_EFACTURA_1p0p9");
+        extensionContentType.setAny(invoiceExtension);
+        uBLExtension.setExtensionContent(extensionContentType);
+
+        eInv.getUBLExtensions().getUBLExtension().add(uBLExtension);
 
         eInv.setCustomizationID(new CustomizationIDType());
-        eInv.getCustomizationID().setValue("urn:pagero.com:puf:billing:2.0");
+        eInv.getCustomizationID().setValue("urn:vertexinc:vrbl:billing:1");
         eInv.setProfileID(new ProfileIDType());
-        eInv.getProfileID().setValue("urn:pagero.com:puf:billing:1.0");
+        eInv.getProfileID().setValue("urn:vertexinc:vrbl:billing:1");
 
         eInv.setIssueDate(new IssueDateType());
+        eInv.setDueDate(new DueDateType());
 
-        GregorianCalendar gc = new GregorianCalendar();
-        gc.setTime(order.getDatePurchased());
-
+      //  GregorianCalendar gc = new GregorianCalendar();
+        //gc.setTime(order.getDatePurchased());
+        ;
         try {
-               eInv.getIssueDate().setValue(DatatypeFactory.newInstance().newXMLGregorianCalendar(gc));
+               eInv.getIssueDate().setValue(DatatypeFactory.newInstance().newXMLGregorianCalendar(new SimpleDateFormat("yyyy-MM-dd").format(order.getDatePurchased())));
+               eInv.getDueDate().setValue(DatatypeFactory.newInstance().newXMLGregorianCalendar(new SimpleDateFormat("yyyy-MM-dd").format(order.getDatePurchased())));
         } catch (DatatypeConfigurationException e) {
                 throw new RuntimeException(e);
         }
@@ -977,7 +987,12 @@ OrderProductDownloadRepository orderProductDownloadRepository) {
         eInv.setInvoiceTypeCode(new InvoiceTypeCodeType());
         eInv.getInvoiceTypeCode().setValue("380");
         eInv.setDocumentCurrencyCode(new DocumentCurrencyCodeType());
-        eInv.getDocumentCurrencyCode().setValue(order.getCurrency().getCode());
+        eInv.getDocumentCurrencyCode().setValue(currencyDetails.currency_code);
+
+        NoteType noteType=new NoteType();
+        noteType.setValue("This is an invoice generated by the SE team using Shopizer");
+        noteType.setLanguageID("en");
+        eInv.getNote().add(noteType);
 
         eInv.setOrderReference(new OrderReferenceType());
         eInv.getOrderReference().setID(new IDType());
@@ -1031,31 +1046,12 @@ OrderProductDownloadRepository orderProductDownloadRepository) {
 
         eInv.setAccountingSupplierParty(new SupplierPartyType());
         eInv.getAccountingSupplierParty().setParty(new PartyType());
-        eInv.getAccountingSupplierParty().getParty().setUBLExtensions(new UBLExtensionsType());
 
-        UBLExtensionsType uBLExtensions=new UBLExtensionsType();
-        UBLExtensionType ublExtension =new UBLExtensionType();
-        ublExtension.setExtensionURI(new ExtensionURIType());
-        ublExtension.getExtensionURI().setValue("urn:pagero:ExtensionComponent:1.0:PageroExtension:PartyExtension");
-        ExtensionContentType extContent=new ExtensionContentType();
-        PageroExtension pageroExtensionContent= new PageroExtension();
-        pageroExtensionContent.setPartyExtension(new PageroExtension.PartyExtension());
-        PageroExtension.PartyExtension.RegistrationData registrationDataType =new PageroExtension.PartyExtension.RegistrationData();
-        registrationDataType.setID(new IDType());
-        registrationDataType.getID().setValue("MI");
-        registrationDataType.setIDType(new PUFIDType());
-        registrationDataType.getIDType().setValue("IT:Ufficio");
-        registrationDataType.getIDType().setListID("PUF-001-REGISTRATIONDATA");
-        pageroExtensionContent.getPartyExtension().getRegistrationData().add(registrationDataType);
-
-        extContent.setAny(pageroExtensionContent);
-        ublExtension.setExtensionContent(extContent);
-        uBLExtensions.getUBLExtension().add(ublExtension);
-        eInv.getAccountingSupplierParty().getParty().setUBLExtensions(uBLExtensions);
 
         PartyNameType partyName= new PartyNameType();
         partyName.setName(new NameType());
-        partyName.getName().setValue("Vertex Inc – End2End, TEST");
+        NameType nameType=new NameType();
+        nameType.setValue("Vertex Inc – End2End, TEST");
         eInv.getAccountingSupplierParty().getParty().getPartyName().add(partyName);
         eInv.getAccountingSupplierParty().getParty().setPostalAddress(new AddressType());
         eInv.getAccountingSupplierParty().getParty().getPostalAddress().setStreetName(new StreetNameType());
@@ -1104,9 +1100,9 @@ OrderProductDownloadRepository orderProductDownloadRepository) {
         eInv.getAccountingCustomerParty().setSupplierAssignedAccountID(new SupplierAssignedAccountIDType());
         eInv.getAccountingCustomerParty().getSupplierAssignedAccountID( ).setValue("VRTXSL02");
         eInv.getAccountingCustomerParty().setParty(new PartyType());
-        eInv.getAccountingCustomerParty().getParty().setEndpointID(new EndpointIDType());
-        eInv.getAccountingCustomerParty().getParty().getEndpointID().setValue(order.getCustomerId().toString());
-        eInv.getAccountingCustomerParty().getParty().getEndpointID().setSchemeAgencyID("0151");
+        //eInv.getAccountingCustomerParty().getParty().setEndpointID(new EndpointIDType());
+        //eInv.getAccountingCustomerParty().getParty().getEndpointID().setValue(order.getCustomerId().toString());
+        //eInv.getAccountingCustomerParty().getParty().getEndpointID().setSchemeAgencyID("0151");
         PartyNameType partyNameAc= new PartyNameType();
         partyNameAc.setName(new NameType());
         partyNameAc.getName().setValue("Vertex – Sales, TEST");
@@ -1114,8 +1110,12 @@ OrderProductDownloadRepository orderProductDownloadRepository) {
         eInv.getAccountingCustomerParty().getParty().setPostalAddress(new AddressType());
         eInv.getAccountingCustomerParty().getParty().getPostalAddress().setStreetName(new StreetNameType());
         eInv.getAccountingCustomerParty().getParty().getPostalAddress().getStreetName().setValue(order.getBilling().getAddress());
+        eInv.getAccountingCustomerParty().getParty().getPostalAddress().setCitySubdivisionName(new CitySubdivisionNameType());
+        eInv.getAccountingCustomerParty().getParty().getPostalAddress().getCitySubdivisionName().setValue("VRBL:RO:SECTOR1");//TODO:fix hardcoded
         eInv.getAccountingCustomerParty().getParty().getPostalAddress().setPostalZone(new PostalZoneType());
         eInv.getAccountingCustomerParty().getParty().getPostalAddress().getPostalZone().setValue(order.getBilling().getPostalCode());
+        eInv.getAccountingCustomerParty().getParty().getPostalAddress().setCountrySubentity(new CountrySubentityType());
+        eInv.getAccountingCustomerParty().getParty().getPostalAddress().getCountrySubentity().setValue("RO-B");//TODO:fix hardcoded
         eInv.getAccountingCustomerParty().getParty().getPostalAddress().setCityName(new CityNameType());
         eInv.getAccountingCustomerParty().getParty().getPostalAddress().getCityName().setValue(order.getBilling().getCity());
         eInv.getAccountingCustomerParty().getParty().getPostalAddress().setCountry(new CountryType());
@@ -1130,6 +1130,13 @@ OrderProductDownloadRepository orderProductDownloadRepository) {
         partyTaxScheme.getTaxScheme().getID().setValue("VAT");
         eInv.getAccountingCustomerParty().getParty().getPartyTaxScheme().add(partyTaxScheme);
 
+        PartyLegalEntityType partyLegalEntityType1=new PartyLegalEntityType();
+        partyLegalEntityType1.setRegistrationName(new RegistrationNameType());
+        partyLegalEntityType1.getRegistrationName().setValue(store.getStorename());
+        partyLegalEntityType1.setCompanyID(new CompanyIDType());
+        partyLegalEntityType1.getCompanyID().setValue(order.getMerchant().getCode());
+        eInv.getAccountingCustomerParty().getParty().getPartyLegalEntity().add(partyLegalEntityType1);
+
         PartyTaxSchemeType partyTaxSchemeType= new PartyTaxSchemeType();
         partyTaxSchemeType.setRegistrationName(new RegistrationNameType());
         partyTaxSchemeType.getRegistrationName().setValue(order.getBilling().getCompany());
@@ -1140,8 +1147,8 @@ OrderProductDownloadRepository orderProductDownloadRepository) {
             partyTaxSchemeType.getCompanyID().setValue(order.getBilling().getVatNumber());
 
 
-        partyTaxSchemeType.getCompanyID().setSchemeID("0151");
-        eInv.getAccountingCustomerParty().getParty().getPartyLegalEntity().add(partyLegalEntityType);
+        //partyTaxSchemeType.getCompanyID().setSchemeID("0151");
+      //  eInv.getAccountingCustomerParty().getParty().getPartyLegalEntity().add(partyLegalEntityType);
 
 
         ContactType contactCust=new ContactType();
@@ -1154,41 +1161,31 @@ OrderProductDownloadRepository orderProductDownloadRepository) {
         eInv.getAccountingCustomerParty().getParty().setContact(contactCust);
 
         TaxTotalType taxTotal=new TaxTotalType();
-        taxTotal.setUBLExtensions(new UBLExtensionsType());
-
-        UBLExtensionType totalTaxUBLExtension =new UBLExtensionType();
-        totalTaxUBLExtension.setExtensionURI(new ExtensionURIType());
-        totalTaxUBLExtension.getExtensionURI().setValue("urn:pagero:ExtensionComponent:1.0:PageroExtension:TaxSubtotalExtension");
-        totalTaxUBLExtension.setExtensionContent(new ExtensionContentType());
-        PageroExtension pageroExtensionTotalTax=new PageroExtension();
-        pageroExtensionTotalTax.setTaxSubtotalExtension(new PageroExtension.TaxSubtotalExtension());
-        pageroExtensionTotalTax.getTaxSubtotalExtension().setTaxChargeability(new PageroExtension.TaxSubtotalExtension.TaxChargeability());
-        pageroExtensionTotalTax.getTaxSubtotalExtension().getTaxChargeability().setTaxTypeCode(new TaxTypeCodeType());
-        pageroExtensionTotalTax.getTaxSubtotalExtension().getTaxChargeability().getTaxTypeCode().setValue("I");
-        totalTaxUBLExtension.getExtensionContent().setAny(pageroExtensionTotalTax);
-        taxTotal.getUBLExtensions().getUBLExtension().add(totalTaxUBLExtension);
-
 
         TaxAmountType taxAmountHeader=new TaxAmountType();
-        taxAmountHeader.setCurrencyID(order.getCurrency().getCode());
+        taxAmountHeader.setCurrencyID(currencyDetails.currency_code);
         taxAmountHeader.setValue(BigDecimal.valueOf(0));
 
         MonetaryTotalType legalMonetaryTotal=new MonetaryTotalType();
         legalMonetaryTotal.setLineExtensionAmount(new LineExtensionAmountType());
-        legalMonetaryTotal.getLineExtensionAmount().setCurrencyID(order.getCurrency().getCode());
+        legalMonetaryTotal.getLineExtensionAmount().setCurrencyID(currencyDetails.currency_code);
         legalMonetaryTotal.getLineExtensionAmount().setValue(BigDecimal.valueOf(0));
 
         legalMonetaryTotal.setTaxExclusiveAmount(new TaxExclusiveAmountType());
-        legalMonetaryTotal.getTaxExclusiveAmount().setCurrencyID(order.getCurrency().getCode());
+        legalMonetaryTotal.getTaxExclusiveAmount().setCurrencyID(currencyDetails.currency_code);
         legalMonetaryTotal.getTaxExclusiveAmount().setValue(BigDecimal.valueOf(0));
 
         legalMonetaryTotal.setTaxInclusiveAmount(new TaxInclusiveAmountType());
-        legalMonetaryTotal.getTaxInclusiveAmount().setCurrencyID(order.getCurrency().getCode());
+        legalMonetaryTotal.getTaxInclusiveAmount().setCurrencyID(currencyDetails.currency_code);
         legalMonetaryTotal.getTaxInclusiveAmount().setValue(BigDecimal.valueOf(0));
 
         legalMonetaryTotal.setPayableAmount (new PayableAmountType());
-        legalMonetaryTotal.getPayableAmount().setCurrencyID(order.getCurrency().getCode());
+        legalMonetaryTotal.getPayableAmount().setCurrencyID(currencyDetails.currency_code);
         legalMonetaryTotal.getPayableAmount().setValue(BigDecimal.valueOf(0));
+
+      /*  legalMonetaryTotal.setChargeTotalAmount (new ChargeTotalAmountType());
+        legalMonetaryTotal.getChargeTotalAmount().setCurrencyID(order.getCurrency().getCode());
+        legalMonetaryTotal.getChargeTotalAmount().setValue(BigDecimal.valueOf(0));*/
 
 
 
@@ -1199,42 +1196,48 @@ OrderProductDownloadRepository orderProductDownloadRepository) {
             invoiceLine.getID().setValue(String.valueOf(itemProduct.lineItemNumber));
             invoiceLine.setInvoicedQuantity(new InvoicedQuantityType());
             invoiceLine.getInvoicedQuantity().setValue(BigDecimal.valueOf(itemProduct.quantity.value));
-            invoiceLine.getInvoicedQuantity().setUnitCode(itemProduct.quantity.unitOfMeasure);
+            if (itemProduct.quantity.unitOfMeasure==null)
+                invoiceLine.getInvoicedQuantity().setUnitCode("MTK");
+            else
+                invoiceLine.getInvoicedQuantity().setUnitCode(itemProduct.quantity.unitOfMeasure);
             invoiceLine.setLineExtensionAmount(new LineExtensionAmountType());
-            invoiceLine.getLineExtensionAmount().setCurrencyID(order.getCurrency().getCode());
-            invoiceLine.getLineExtensionAmount().setValue(itemProduct.extendedPrice);
+            invoiceLine.getLineExtensionAmount().setCurrencyID(currencyDetails.currency_code);
+            invoiceLine.getLineExtensionAmount().setValue(itemProduct.extendedPrice.multiply(currencyDetails.amount).setScale(2, RoundingMode.CEILING));
             invoiceLine.setItem(new ItemType());
             invoiceLine.getItem().setName(new NameType());
             invoiceLine.getItem().getName().setValue(itemProduct.product.productClass);
             invoiceLine.setPrice(new PriceType());
             invoiceLine.getPrice().setPriceAmount(new PriceAmountType());
-            invoiceLine.getPrice().getPriceAmount().setValue(itemProduct.extendedPrice);
-            invoiceLine.getPrice().getPriceAmount().setCurrencyID(order.getCurrency().getCode());
+            invoiceLine.getPrice().getPriceAmount().setValue(itemProduct.extendedPrice.multiply(currencyDetails.amount).setScale(2, RoundingMode.CEILING));
+            invoiceLine.getPrice().getPriceAmount().setCurrencyID(currencyDetails.currency_code);
 
             for (VtxTaxItem tax :itemProduct.getTaxes()) {
                 TaxSubtotalType taxSubtotal=new TaxSubtotalType();
 
                 TaxAmountType taxAmountItem = new TaxAmountType();
-                taxAmountItem.setCurrencyID(order.getCurrency().getCode());
-                taxAmountItem.setValue(BigDecimal.valueOf(tax.calculatedTax));
+                taxAmountItem.setCurrencyID(currencyDetails.currency_code);
+                taxAmountItem.setValue(BigDecimal.valueOf(tax.calculatedTax).multiply(currencyDetails.amount).setScale(2, RoundingMode.CEILING));
                 taxSubtotal.setTaxAmount (taxAmountItem);
 
                 TaxableAmountType taxableAmount = new TaxableAmountType();
-                taxableAmount.setCurrencyID ( order.getCurrency().getCode());
-                taxableAmount.setValue(BigDecimal.valueOf(tax.taxable));
+                taxableAmount.setCurrencyID ( currencyDetails.currency_code);
+                taxableAmount.setValue(BigDecimal.valueOf(tax.taxable).multiply(currencyDetails.amount).setScale(2, RoundingMode.CEILING));
                 taxSubtotal.setTaxableAmount ( taxableAmount);
 
-                taxSubtotal.setPercent(new PercentType());
-                taxSubtotal.getPercent().setValue(BigDecimal.valueOf(tax.getEffectiveRate()));
+               // taxSubtotal.setPercent(new PercentType());
+                //taxSubtotal.getPercent().setValue(BigDecimal.valueOf(tax.getEffectiveRate()));
 
                 TaxCategoryType taxCategory=new TaxCategoryType();
                 taxCategory.setPercent(new PercentType());
                 taxCategory.getPercent().setValue(BigDecimal.valueOf(tax.getEffectiveRate()));
               //  invoiceLine.getItem().getClassifiedTaxCategory().add(taxCategory);
                 //.setPercent(invoiceLine.Item.ClassifiedTaxCategory.Percent+taxCategory.Percent;
-                if(tax.rateClassification!=null)
                 taxCategory.setID(new IDType());
-                taxCategory.getID().setValue(tax.rateClassification.substring(0,1));//vertex returns Standard or Reduced. gotten the first letter.
+                if(tax.rateClassification!=null)
+                    taxCategory.getID().setValue(tax.rateClassification.substring(0, 1));
+                else
+                    taxCategory.getID().setValue("S");
+
                 TaxSchemeType taxSchemeItem=new TaxSchemeType();
                 taxSchemeItem.setID(new IDType());
                 taxSchemeItem.getID().setValue(tax.taxType);
@@ -1244,13 +1247,17 @@ OrderProductDownloadRepository orderProductDownloadRepository) {
                 taxSubtotal.setTaxCategory(taxCategory);
                 taxTotal.getTaxSubtotal().add(taxSubtotal);
 
-                taxAmountHeader.setValue( taxAmountHeader.getValue().add(BigDecimal.valueOf(tax.calculatedTax)));
-                legalMonetaryTotal.getLineExtensionAmount().setValue( legalMonetaryTotal.getLineExtensionAmount().getValue().add(BigDecimal.valueOf(tax.taxable)));
-                legalMonetaryTotal.getTaxExclusiveAmount().setValue( legalMonetaryTotal.getTaxExclusiveAmount().getValue().add(BigDecimal.valueOf(tax.nonTaxable)));
-                legalMonetaryTotal.getTaxInclusiveAmount().setValue( legalMonetaryTotal.getTaxInclusiveAmount().getValue().add(BigDecimal.valueOf(tax.taxable)));
-                legalMonetaryTotal.getPayableAmount().setValue( legalMonetaryTotal.getPayableAmount().getValue().add(BigDecimal.valueOf(tax.calculatedTax+tax.taxable)));
+                taxAmountHeader.setValue( taxAmountHeader.getValue().add(BigDecimal.valueOf(tax.calculatedTax).multiply(currencyDetails.amount).setScale(2, RoundingMode.CEILING)));
+
+              //  legalMonetaryTotal.getTaxExclusiveAmount().setValue( legalMonetaryTotal.getTaxExclusiveAmount().getValue().add(BigDecimal.valueOf(tax.taxable)));
+               // legalMonetaryTotal.getTaxInclusiveAmount().setValue( legalMonetaryTotal.getTaxInclusiveAmount().getValue().add(BigDecimal.valueOf(tax.calculatedTax+tax.taxable).multiply(currencyDetails.fx_rate)));
+              //  legalMonetaryTotal.getPayableAmount().setValue( legalMonetaryTotal.getPayableAmount().getValue().add(BigDecimal.valueOf(tax.calculatedTax+tax.taxable).multiply(currencyDetails.fx_rate)));
 
             }
+            legalMonetaryTotal.getLineExtensionAmount().setValue( legalMonetaryTotal.getLineExtensionAmount().getValue().add(BigDecimal.valueOf(itemProduct.extendedPrice.doubleValue()).multiply(currencyDetails.amount).setScale(2, RoundingMode.CEILING)));
+            legalMonetaryTotal.getTaxExclusiveAmount().setValue( legalMonetaryTotal.getTaxExclusiveAmount().getValue().add(BigDecimal.valueOf(itemProduct.extendedPrice.doubleValue()).multiply(currencyDetails.amount).setScale(2, RoundingMode.CEILING)));
+            legalMonetaryTotal.getTaxInclusiveAmount().setValue( legalMonetaryTotal.getTaxInclusiveAmount().getValue().add(BigDecimal.valueOf(itemProduct.fairMarketValue.doubleValue()).multiply(currencyDetails.amount).setScale(2, RoundingMode.CEILING)));
+            legalMonetaryTotal.getPayableAmount().setValue( legalMonetaryTotal.getPayableAmount().getValue().add(BigDecimal.valueOf(itemProduct.fairMarketValue.doubleValue()).multiply(currencyDetails.amount).setScale(2, RoundingMode.CEILING)));
             eInv.getInvoiceLine().add(invoiceLine);
 
 
@@ -1263,22 +1270,23 @@ OrderProductDownloadRepository orderProductDownloadRepository) {
 
 
 /*prepare the XML*/
-        String filename="pagerofile.xml";
+        String filename="eInvXMLfile.xml";
         File file = new File(filename);
         JAXBContext jaxbContext = null;
         try {
-            jaxbContext = JAXBContext.newInstance(InvoiceType.class,ExtensionContentType.class,PageroExtension.class);
+            jaxbContext = JAXBContext.newInstance(InvoiceType.class,UBLExtensionsType.class,InvoiceExtensionType.class);
           //  JAXBElement<InvoiceType> jaxbWrappedHeader =  objectFactory.createHeader(eInv);
             Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
             jaxbMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+
             jaxbMarshaller.setProperty("com.sun.xml.bind.namespacePrefixMapper", new DefaultNamespacePrefixMapper());
 
             //JAXBElement<InvoiceType> root = new JAXBElement<>(qName, InvoiceType.class, eInv);
 
-            com.salesmanager.core.business.services.tax.pagero.ObjectFactory Obj=new com.salesmanager.core.business.services.tax.pagero.ObjectFactory();
-            QName qName = new QName("urn:pagero:PageroUniversalFormat:Invoice:1.0", "Invoice");
-         //   JAXBElement<InvoiceType> root = new JAXBElement<>(qName, InvoiceType.class, eInv);
-            JAXBElement<InvoiceType> root= Obj.createInvoice(eInv);
+            com.salesmanager.core.business.services.tax.ecosio.vrbl.oasis.names.specification.ubl.schema.xsd.invoice_2.ObjectFactory Obj=new com.salesmanager.core.business.services.tax.ecosio.vrbl.oasis.names.specification.ubl.schema.xsd.invoice_2.ObjectFactory();
+            QName qName = new QName("urn:oasis:names:specification:ubl:schema:xsd:Invoice-2", "Invoice");
+            JAXBElement<InvoiceType> root = new JAXBElement<>(qName, InvoiceType.class, eInv);
+            //JAXBElement<InvoiceType> root= Obj.createInvoice(eInv);
 
             jaxbMarshaller.marshal(root, file);
             jaxbMarshaller.marshal(root, System.out);

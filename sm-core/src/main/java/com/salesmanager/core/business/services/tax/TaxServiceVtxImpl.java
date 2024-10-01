@@ -569,6 +569,9 @@ public class  TaxServiceVtxImpl
 		String jsonData = response.body().string();
 
 		VtxTaxCalc vtx = gson.fromJson(jsonData,VtxTaxCalc.class);
+		System.out.println("Vertex O Series Request:" +jsonDataReq);
+		System.out.println("Vertex O Series Response:" +jsonData);
+
 		return vtx;
 	}
 

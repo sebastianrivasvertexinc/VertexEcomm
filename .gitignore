@@ -31,6 +31,7 @@ sm-shop/src/main/resources/database.properties
 .DS_Store
 
 .mvnw/*.jar
+/sm-shop/SALESMANAGER.trace.db
 *.log
 *.log
 *.log
