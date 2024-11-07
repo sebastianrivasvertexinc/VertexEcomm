@@ -7,6 +7,9 @@ public class VtxTaxItem {
     public double getEffectiveRate() {
         return effectiveRate;
     }
+    public double getNominalRate() {
+        return nominalRate;
+    }
 
     public void setEffectiveRate(double effectiveRate) {
         this.effectiveRate = effectiveRate;
