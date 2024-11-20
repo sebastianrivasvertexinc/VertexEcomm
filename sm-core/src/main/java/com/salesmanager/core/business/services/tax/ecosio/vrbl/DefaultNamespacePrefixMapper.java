@@ -18,6 +18,7 @@ public class DefaultNamespacePrefixMapper extends NamespacePrefixMapper {
         namespaceMap.put("urn:vertexinc:vrbl:ExtensionComponent:1", "vrbl");
         namespaceMap.put("urn:oasis:names:specification:ubl:schema:xsd:CommonExtensionComponents-2", "cec");
         namespaceMap.put("urn:oasis:names:specification:ubl:schema:xsd:Invoice-2", "ubl");
+        namespaceMap.put("urn:vertexinc:vrbl:ExtensionComponent:", "vrbl");
     }
 
     /* (non-Javadoc)
