@@ -196,6 +196,8 @@ public class  TaxServiceVtxImpl
 				destination.country= customer.getBilling().getCountry().getIsoCode();
 			if 	(!StringUtils.isBlank(customer.getBilling().getPostalCode()))
 				destination.postalCode=customer.getBilling().getPostalCode();
+			if 	(!StringUtils.isBlank(customer.getBilling().getZone().getCode()))
+				destination.mainDivision=customer.getBilling().getZone().getCode();
 			cust.destination=destination;
 
 			cust.taxRegistrations = new ArrayList<TaxRegistration>();
@@ -204,8 +206,9 @@ public class  TaxServiceVtxImpl
 				tr.setTaxRegistrationNumber(customer.getBilling().getVatNumber()); //modified to get VAT number from front page
 				tr.setIsoCountryCode(customer.getBilling().getCountry().getIsoCode());
 				cust.customerCode.isBusinessIndicator=true;
+				cust.taxRegistrations.add(tr)		;
 			}
-			cust.taxRegistrations.add(tr)		;
+
 
 			calcRequest.setCustomer(cust);
 
@@ -340,6 +343,7 @@ public class  TaxServiceVtxImpl
 			if	(!StringUtils.isBlank(store.getStorepostalcode()))
 				physicalOrigin.postalCode=store.getStorepostalcode();
 
+
 		//	seller.physicalOrigin=physicalOrigin; //TODO need to add a logic for ship from, now the value is null.
 			calcRequest.setSeller(seller);
 
@@ -373,6 +377,8 @@ public class  TaxServiceVtxImpl
 				destination.country= customer.getBilling().getCountry().getIsoCode();
 			if 	(!StringUtils.isBlank(customer.getBilling().getPostalCode()))
 				destination.postalCode=customer.getBilling().getPostalCode();
+			if 	(!StringUtils.isBlank(customer.getBilling().getZone().getCode()))
+				destination.mainDivision=customer.getBilling().getZone().getCode();
 			cust.destination=destination;
 
 			cust.taxRegistrations = new ArrayList<TaxRegistration>();
@@ -381,8 +387,9 @@ public class  TaxServiceVtxImpl
 				tr.setTaxRegistrationNumber(customer.getBilling().getVatNumber()); //modified to get VAT number from front page
 				tr.setIsoCountryCode(customer.getBilling().getCountry().getIsoCode());
 				cust.customerCode.isBusinessIndicator=true;
+				cust.taxRegistrations.add(tr);
 			}
-			cust.taxRegistrations.add(tr)		;
+
 			calcRequest.setCustomer(cust);
 
 			ArrayList<LineItem> itemsVtx=new ArrayList<LineItem>();
