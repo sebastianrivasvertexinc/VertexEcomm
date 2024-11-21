@@ -308,6 +308,7 @@ OrderProductDownloadRepository orderProductDownloadRepository) {
                 order.getBilling().getCountry().getIsoCode().equals("ES")||
                 order.getBilling().getCountry().getIsoCode().equals("IT")||
                 order.getBilling().getCountry().getIsoCode().equals("PT")||
+                order.getBilling().getCountry().getIsoCode().equals("FR")||
                 order.getBilling().getCountry().getIsoCode().equals("DE")
         )//
         {
@@ -1040,7 +1041,40 @@ OrderProductDownloadRepository orderProductDownloadRepository) {
                 {"IT", "PaymentTermsCode", "VRBL:IT:TP01"},
                 {"IT", "TaxLevelCode", "VRBL:IT:RF01"},
 
+                {"PT", "Sender", "VERTEX_PROD_END2END_COR_A_UNIT1"},
+                {"PT", "Receiver", "GENERIC_FE-AP_UBL_CIUS-PT_2p1p1"},
+                {"PT", "SdIReceiverCode", "O92KTP"},
+                {"PT", "TransmissionFormatCode", "VRBL:PT:FPA12"},
+                {"PT", "InvoiceTypeCode", "380"},
+                {"PT", "TaxCategoryId_E", "E"},
+                {"PT", "TaxCategoryId", "S"},
+                {"PT", "AccountingSupplierPartyVAT", "PT500226480"},
+                {"PT", "PaymentMeansCode", "[Payment means text]"},
+                {"PT", "PaymentMeansValue", "58"},
+                {"PT", "AccountingCustomerPartyVAT","pT00743110157"},
+                {"PT", "TaxExemptionReasonCode","VRBL:PT:N2.2"},
+                {"PT", "CountrySubentity", "PT-RM"},
+                {"PT", "PaymentTermsCode", "VRBL:PT:TP01"},
+                {"PT", "TaxLevelCode", "VRBL:IT:RF01"},
 
+                {"FR", "Sender", "VERTEX_PROD_END2END_COR_A_UNIT1"},
+                {"FR", "Receiver", "GENERIC_FE-AP_UBL_CIUS-PT_2p1p1"},
+                {"FR", "ReceiverDetails", "9957:VERTEX_PROD_SALES_COR_A_UNIT1"},
+                {"DE", "EndpointIDSchemeID", "9920"},
+                {"DE", "EndpointID", "VERTEX_PROD_SALES_COR_A_UNIT1"},
+                {"FR", "SdIReceiverCode", "O92KTP"},
+                {"FR", "TransmissionFormatCode", "VRBL:PT:FPA12"},
+                {"FR", "InvoiceTypeCode", "380"},
+                {"FR", "TaxCategoryId_E", "E"},
+                {"FR", "TaxCategoryId", "S"},
+                {"FR", "AccountingSupplierPartyVAT", "PT500226480"},
+                {"FR", "PaymentMeansCode", "[Payment means text]"},
+                {"FR", "PaymentMeansValue", "58"},
+                {"FR", "AccountingCustomerPartyVAT","pT00743110157"},
+                {"FR", "TaxExemptionReasonCode","VRBL:PT:N2.2"},
+                {"FR", "CountrySubentity", "PT-RM"},
+                {"FR", "PaymentTermsCode", "VRBL:PT:TP01"},
+                {"FR", "TaxLevelCode", "VRBL:IT:RF01"},
 
 
 
