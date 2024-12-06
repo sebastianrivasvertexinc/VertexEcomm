@@ -32,11 +32,11 @@ Get the code:
 -------------------
 Clone the repository:
      
-	 $ git clone git://github.com/shopizer-ecommerce/shopizer.git
+	 $ git clone https://github.com/sebastianrivasvertexinc/VertexEcomm.git
 
 If this is your first time using Github, review http://help.github.com to learn the basics.
 
-You can also download the zip file containing the code from https://github.com/shopizer-ecommerce/shopizer 
+You can also download the zip file containing the code from https://github.com/sebastianrivasvertexinc/VertexEcomm 
 
 ## Contributing
 
@@ -53,7 +53,7 @@ To build the application:
 -------------------	
 From the command line:
 
-	$ cd shopizer
+	$ cd VertexEcomm
 	$ mvnw clean install
 	
 
@@ -174,7 +174,7 @@ FRENCH
 Shopizer (pour java 1.8 +)
 -------------------
 
-[![last_version](https://img.shields.io/badge/last_version-v2.12.0-blue.svg?style=flat)](https://github.com/shopizer-ecommerce/shopizer/tree/2.12.0)
+[![last_version](https://img.shields.io/badge/last_version-v2.12.0-blue.svg?style=flat)](https://github.com/sebastianrivasvertexinc/VertexEcomm/tree/2.12.0)
 [![Official site](https://img.shields.io/website-up-down-green-red/https/shields.io.svg?label=official%20site)](http://www.shopizer.com/)
 [![Docker Pulls](https://img.shields.io/docker/pulls/shopizerecomm/shopizer.svg)](https://hub.docker.com/r/shopizerecomm/shopizer)
 [![stackoverflow](https://img.shields.io/badge/shopizer-stackoverflow-orange.svg?style=flat)](http://stackoverflow.com/questions/tagged/shopizer)
@@ -202,17 +202,17 @@ Obtenez le code:
 -------------------
 Clonez le référentiel:
      
-	 $ git clone git://github.com/shopizer-ecommerce/shopizer.git
+	 $ git clone https://github.com/sebastianrivasvertexinc/VertexEcomm.git
 
 Si c'est la première fois que vous utilisez Github, consultez  http://help.github.com to learn the basics.
 
- Vous pouvez également télécharger le fichier zip contenant le code depuis https://github.com/shopizer-ecommerce/shopizer 
+ Vous pouvez également télécharger le fichier zip contenant le code depuis https://github.com/sebastianrivasvertexinc/VertexEcomm 
 
 Pour créer l'application:
 -------------------	
 Depuis la ligne de commande:
 
-	$ cd shopizer
+	$ cd VertexEcomm
 	$ mvnw clean install
 	
 
@@ -285,7 +285,7 @@ afin que nous puissions envoyer une invitation sur notre chaîne Slack
 Shopizer（适用于 java 1.8 +）
 -------------------
 
-[![最新版本](https://img.shields.io/badge/last_version-v2.12.0-blue.svg?style=flat)](https://github.com/shopizer-ecommerce/shopizer/tree/2.12.0)
+[![最新版本](https://img.shields.io/badge/last_version-v2.12.0-blue.svg?style=flat)](https://github.com/sebastianrivasvertexinc/VertexEcomm/tree/2.12.0)
 [![官方网站](https://img.shields.io/website-up-down-green-red/https/shields.io.svg?label=official%20site)](http://www.shopizer.com/)
 [![Docker Pulls](https://img.shields.io/docker/pulls/shopizerecomm/shopizer.svg)](https://hub.docker.com/r/shopizerecomm/shopizer)
 [![stackoverflow](https://img.shields.io/badge/shopizer-stackoverflow-orange.svg?style=flat)](http://stackoverflow.com/questions/tagged/shopizer)
@@ -312,18 +312,18 @@ http://aws-demo.shopizer.com:8080/
 -------------------
 克隆存储库：
      
-$ git clone git://github.com/shopizer-ecommerce/shopizer.git
+$ git clone https://github.com/sebastianrivasvertexinc/VertexEcomm.git
 
 如果这是您第一次使用 Github，请查看 http://help.github.com 以了解基础知识。
 
-您还可以从 https://github.com/shopizer-ecommerce/shopizer 下载包含代码的 zip 文件
+您还可以从 https://github.com/sebastianrivasvertexinc/VertexEcomm 下载包含代码的 zip 文件
 
 将要构建应用程序： 
 
 -------------------
 从命令行： 
 
-	$ cd shopizer
+	$ cd VertexEcomm
 	$ mvnw clean install
 
 从 Tomcat 运行应用程序
