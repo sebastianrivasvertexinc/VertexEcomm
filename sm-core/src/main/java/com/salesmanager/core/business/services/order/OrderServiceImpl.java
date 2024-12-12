@@ -1425,7 +1425,7 @@ OrderProductDownloadRepository orderProductDownloadRepository) {
                 taxTotalItem.getTaxSubtotal().add(taxSubtotal);
 
 
-                    addOrUpdateItem(taxTotalHeader.getTaxSubtotal(),taxSubtotal);
+                 addOrUpdateItem(taxTotalHeader.getTaxSubtotal(),taxSubtotal);
                     taxAmountHeader.setValue(taxAmountHeader.getValue().add(BigDecimal.valueOf(tax.calculatedTax).multiply(currencyDetails.amount).setScale(new  Integer(getHardcodedValue(eInvCountry,"DecimalScale")), RoundingMode.HALF_UP)));
 
             }
@@ -1522,9 +1522,12 @@ OrderProductDownloadRepository orderProductDownloadRepository) {
         // Search for an existing item with the same name
         for (TaxSubtotalType item : itemList) {
             Integer count=0;
-            if (item.getTaxCategory().getTaxScheme().getID().getValue().equals(newItem.getTaxCategory().getTaxScheme().getID().getValue())&&
-            item.getTaxCategory().getID().getValue().equals(newItem.getTaxCategory().getID().getValue())) {
-                // If found, update the existing item's quantity and price
+            if (item.getTaxCategory().getTaxScheme().getID().getValue().equals(newItem.getTaxCategory().getTaxScheme().getID().getValue())
+                    &&
+                    item.getTaxCategory().getID().getValue().equals(newItem.getTaxCategory().getID().getValue())
+                    &&
+                    item.getTaxCategory().getPercent().getValue().equals(newItem.getTaxCategory().getPercent().getValue())) {
+                // If found same Tax Rate , update the existing item's quantity and price
                 itemList.get(count).getTaxAmount().setValue( item.getTaxAmount().getValue().add(newItem.getTaxAmount().getValue()));
                 itemList.get(count).getTaxableAmount().setValue( item.getTaxableAmount().getValue().add(newItem.getTaxableAmount().getValue()));
                 found = true;
