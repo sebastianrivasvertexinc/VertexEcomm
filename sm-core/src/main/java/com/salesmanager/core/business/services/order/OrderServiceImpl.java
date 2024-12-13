@@ -326,10 +326,8 @@ OrderProductDownloadRepository orderProductDownloadRepository) {
         )//
         {
             order.setEInvoiceId("n/a");
-            order.setEInvoiceId(createElectronicInvoice(order,customer,vtxLineItems,store,urlInvoice)); //Removed Pagero code
+            order.setEInvoiceId(createElectronicInvoice(order,customer,vtxLineItems,store,urlInvoice)); //Calling Ecosio e-inv
         }
-          // System.out.println("Document Id:"+createElectronicInvoice(order,customer,vtxLineItems,store,urlInvoice));// Taxamo info, updated to send store info for URL's
-
         System.out.println(urlInvoice);
        order.setShippingModuleCode(urlInvoice);
     	return order;
@@ -987,12 +985,12 @@ OrderProductDownloadRepository orderProductDownloadRepository) {
         eInv.setUBLExtensions(new UBLExtensionsType());
         UBLExtensionsType uBLExtensionsType=new UBLExtensionsType();
         UBLExtensionType uBLExtension=new UBLExtensionType();
-         ExtensionContentType extensionContentType=new ExtensionContentType();
+        ExtensionContentType extensionContentType=new ExtensionContentType();
         InvoiceExtensionType invoiceExtension=new InvoiceExtensionType();
         invoiceExtension.setRoutingDetails(new RoutingDetailsType());
         invoiceExtension.getRoutingDetails().setSender(getHardcodedValue(eInvCountry,"Sender"));
         invoiceExtension.getRoutingDetails().setReceiver(getHardcodedValue(eInvCountry,"Receiver"));
-        invoiceExtension.getRoutingDetails().setReceiverDetails(getHardcodedValue(eInvCountry,"ReceiverDetails"));
+        invoiceExtension.getRoutingDetails().setReceiverDetails(getHardcodedValue(eInvCountry,"ReceiverEndpointIDSchemeID")+":"+getHardcodedValue(eInvCountry,"ReceiverEndpointID"));
         invoiceExtension.setSdIReceiverCode((getHardcodedValue(eInvCountry,"SdIReceiverCode")));
         invoiceExtension.setTransmissionFormatCode((getHardcodedValue(eInvCountry,"TransmissionFormatCode")));
 
@@ -1001,13 +999,9 @@ OrderProductDownloadRepository orderProductDownloadRepository) {
         invoiceExtension.setInvoiceSubtypeCode(getHardcodedValue(eInvCountry,"InvoiceSubtypeCode"));
         extensionContentType.setAny(invoiceExtension);
 
-
-
         uBLExtension.setExtensionContent(extensionContentType);
 
-
         eInv.getUBLExtensions().getUBLExtension().add(uBLExtension);
-
         eInv.setCustomizationID(new CustomizationIDType());
         eInv.getCustomizationID().setValue("urn:vertexinc:vrbl:billing:1");
 
@@ -1015,7 +1009,6 @@ OrderProductDownloadRepository orderProductDownloadRepository) {
         eInv.getProfileID().setValue("urn:vertexinc:vrbl:billing:1");
 
         eInv.setUUID(new UUIDType());
-
         eInv.getUUID().setValue(UUID.randomUUID().toString());
 
         eInv.setIssueDate(new IssueDateType());
@@ -1052,7 +1045,6 @@ OrderProductDownloadRepository orderProductDownloadRepository) {
         eInv.getOrderReference().setSalesOrderID(new SalesOrderIDType());
         eInv.getOrderReference().getSalesOrderID().setValue(order.getCustomerId().toString());
 
-
         DocumentReferenceType documentReferenceType=new DocumentReferenceType();
         documentReferenceType.setAttachment(new AttachmentType());
         documentReferenceType.getAttachment().setExternalReference(new ExternalReferenceType());
@@ -1063,7 +1055,7 @@ OrderProductDownloadRepository orderProductDownloadRepository) {
         DocumentDescriptionType docDesc=new DocumentDescriptionType();
         docDesc.setValue("Attached PDF");
         documentReferenceType.getDocumentDescription().add(docDesc);
-    //    TaxamoUrlInvoice="https://invoice.taxamo.com/api/v1/transactions/TMIoAAESd5tMKD61AT2xnLhWjGbg/invoice";
+
         TaxamoUrlInvoice=TaxamoUrlInvoice.replace("invoice.taxamo.com/api/v1/transactions","invoicestaxamo.s3.amazonaws.com")+".pdf";
         documentReferenceType.setAttachment(new AttachmentType());
         documentReferenceType.getAttachment().setEmbeddedDocumentBinaryObject(new EmbeddedDocumentBinaryObjectType());
@@ -1107,12 +1099,14 @@ OrderProductDownloadRepository orderProductDownloadRepository) {
         NameType nameType=new NameType();
         nameType.setValue("Vertex Inc.");
         partyName.setName(nameType);
+
+        //AccountingSupplierParty
         eInv.getAccountingSupplierParty().getParty().getPartyName().add(partyName);
 
-        if (!getHardcodedValue(eInvCountry,"EndpointID").isEmpty()){
+        if (!getHardcodedValue(eInvCountry,"SenderEndpointID").isEmpty()){
             eInv.getAccountingSupplierParty().getParty().setEndpointID(new EndpointIDType());
-            eInv.getAccountingSupplierParty().getParty().getEndpointID().setValue(getHardcodedValue(eInvCountry,"EndpointID"));
-            eInv.getAccountingSupplierParty().getParty().getEndpointID().setSchemeID(getHardcodedValue(eInvCountry,"EndpointIDSchemeID"));
+            eInv.getAccountingSupplierParty().getParty().getEndpointID().setValue(getHardcodedValue(eInvCountry,"SenderEndpointID"));
+            eInv.getAccountingSupplierParty().getParty().getEndpointID().setSchemeID(getHardcodedValue(eInvCountry,"SenderEndpointIDSchemeID"));
         }
 
         eInv.getAccountingSupplierParty().getParty().setPostalAddress(new AddressType());
@@ -1124,7 +1118,6 @@ OrderProductDownloadRepository orderProductDownloadRepository) {
 
         eInv.getAccountingSupplierParty().getParty().getPostalAddress().setCitySubdivisionName(new CitySubdivisionNameType());
         eInv.getAccountingSupplierParty().getParty().getPostalAddress().getCitySubdivisionName().setValue(getHardcodedValue(eInvCountry,"CitySubdivisionName"));//TODO: fix hardcoded
-
 
         eInv.getAccountingSupplierParty().getParty().getPostalAddress().setCityName(new CityNameType());
         eInv.getAccountingSupplierParty().getParty().getPostalAddress().getCityName().setValue(store.getStorecity());
@@ -1178,10 +1171,8 @@ OrderProductDownloadRepository orderProductDownloadRepository) {
         contact.setElectronicMail(new ElectronicMailType());
         contact.getElectronicMail().setValue(store.getStoreEmailAddress());
 
-
+        //AccountingSupplierParty
         eInv.getAccountingSupplierParty().getParty().setContact(contact);
-
-
 
         eInv.setAccountingCustomerParty(new CustomerPartyType());
         eInv.getAccountingCustomerParty().setSupplierAssignedAccountID(new SupplierAssignedAccountIDType());
@@ -1192,6 +1183,12 @@ OrderProductDownloadRepository orderProductDownloadRepository) {
         partyNameAc.getName().setValue(customer.getBilling().getFirstName()+" "+customer.getBilling().getLastName());
 
 
+
+        if (!getHardcodedValue(eInvCountry,"ReceiverEndpointID").isEmpty()) {
+            eInv.getAccountingCustomerParty().getParty().setEndpointID(new EndpointIDType());
+            eInv.getAccountingCustomerParty().getParty().getEndpointID().setValue(getHardcodedValue(eInvCountry, "ReceiverEndpointID"));
+            eInv.getAccountingCustomerParty().getParty().getEndpointID().setSchemeID(getHardcodedValue(eInvCountry, "ReceiverEndpointIDSchemeID"));
+        }
         eInv.getAccountingCustomerParty().getParty().getPartyName().add(partyNameAc);
         eInv.getAccountingCustomerParty().getParty().setPostalAddress(new AddressType());
         eInv.getAccountingCustomerParty().getParty().getPostalAddress().setStreetName(new StreetNameType());
@@ -1249,8 +1246,6 @@ OrderProductDownloadRepository orderProductDownloadRepository) {
         partyTaxSchemeType.setRegistrationName(new RegistrationNameType());
         partyTaxSchemeType.getRegistrationName().setValue(order.getBilling().getCompany());
         partyTaxSchemeType.setCompanyID(new CompanyIDType());
-
-     //   partyScheme.getCompanyID().setValue(getHardcodedValue(order.getBilling().getCountry().getIsoCode(),"AccountingSupplierPartyVAT"));
 
         ContactType contactCust=new ContactType();
         contactCust.setName(new NameType());
@@ -1444,7 +1439,7 @@ OrderProductDownloadRepository orderProductDownloadRepository) {
 
 
 
-/*prepare the XML*/
+        /*prepare the XML*/
         String filename="eInvXMLfile.xml";
         File file = new File(filename);
         JAXBContext jaxbContext = null;
@@ -1454,7 +1449,6 @@ OrderProductDownloadRepository orderProductDownloadRepository) {
                     InvoiceExtensionType.class,
                     PaymentTermsExtensionType.class,
                     com.salesmanager.core.business.services.tax.ecosio.vrbl.vertexinc.vrbl.extensioncomponent._1.PriceExtensionType.class);
-          //  JAXBElement<InvoiceType> jaxbWrappedHeader =  objectFactory.createHeader(eInv);
             Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
             jaxbMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
 
