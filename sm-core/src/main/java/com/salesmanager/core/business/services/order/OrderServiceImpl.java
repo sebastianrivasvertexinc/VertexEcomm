@@ -1064,7 +1064,7 @@ OrderProductDownloadRepository orderProductDownloadRepository) {
         try {
             URL pdfUrl = new URL(TaxamoUrlInvoice);
             URLConnection urlConnection = pdfUrl.openConnection();
-            TimeUnit.SECONDS.sleep(1);//added 1 sec to fix sync issue with taxamo
+            TimeUnit.SECONDS.sleep(2);//added 2 sec to fix sync issue with taxamo
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
             byte[] byteArray = new byte[1024]; // amount of bytes reading from input stream at a given time
             int readLength;
