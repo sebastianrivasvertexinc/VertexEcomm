@@ -990,7 +990,9 @@ OrderProductDownloadRepository orderProductDownloadRepository) {
         invoiceExtension.setRoutingDetails(new RoutingDetailsType());
         invoiceExtension.getRoutingDetails().setSender(getHardcodedValue(eInvCountry,"Sender"));
         invoiceExtension.getRoutingDetails().setReceiver(getHardcodedValue(eInvCountry,"Receiver"));
-        invoiceExtension.getRoutingDetails().setReceiverDetails(getHardcodedValue(eInvCountry,"ReceiverEndpointIDSchemeID")+":"+getHardcodedValue(eInvCountry,"ReceiverEndpointID"));
+        if (!getHardcodedValue(eInvCountry,"ReceiverEndpointIDSchemeID").isEmpty()) {
+              invoiceExtension.getRoutingDetails().setReceiverDetails(getHardcodedValue(eInvCountry,"ReceiverEndpointIDSchemeID")+":"+getHardcodedValue(eInvCountry,"ReceiverEndpointID"));
+        }
         invoiceExtension.setSdIReceiverCode((getHardcodedValue(eInvCountry,"SdIReceiverCode")));
         invoiceExtension.setTransmissionFormatCode((getHardcodedValue(eInvCountry,"TransmissionFormatCode")));
 
