@@ -304,12 +304,11 @@ OrderProductDownloadRepository orderProductDownloadRepository) {
         //create an invoice with Taxamo
         String urlInvoice=createInvoice(order,customer,vtxLineItems,store);// Taxamo info, updated to send store info for URL's
         //Create the electronic invoice
-         if(order.getBilling().getCountry().getIsoCode().equals("MY")||
+         if(!getHardcodedValue(order.getBilling().getCountry().getIsoCode(),"Sender").isEmpty())
+       /*          order.getBilling().getCountry().getIsoCode().equals("MY")||
                 order.getBilling().getCountry().getIsoCode().equals("RO")||
                 order.getBilling().getCountry().getIsoCode().equals("SA")||
                 order.getBilling().getCountry().getIsoCode().equals("ES")||
-                order.getBilling().getCountry().getIsoCode().equals("IT")||
-                order.getBilling().getCountry().getIsoCode().equals("PT")||
                 order.getBilling().getCountry().getIsoCode().equals("FR")||
                 order.getBilling().getCountry().getIsoCode().equals("DK")||
                 order.getBilling().getCountry().getIsoCode().equals("JP")||
@@ -322,8 +321,9 @@ OrderProductDownloadRepository orderProductDownloadRepository) {
                 order.getBilling().getCountry().getIsoCode().equals("SK")||
                 order.getBilling().getCountry().getIsoCode().equals("SI")||
                 order.getBilling().getCountry().getIsoCode().equals("GB")||
+                order.getBilling().getCountry().getIsoCode().equals("IT")||
                 order.getBilling().getCountry().getIsoCode().equals("DE")
-        )//
+        )//*/
         {
             order.setEInvoiceId("n/a");
             order.setEInvoiceId(createElectronicInvoice(order,customer,vtxLineItems,store,urlInvoice)); //Calling Ecosio e-inv
