@@ -1148,9 +1148,10 @@ OrderProductDownloadRepository orderProductDownloadRepository) {
             eInv.getAccountingSupplierParty().getParty().getPostalAddress().setBuildingNumber(new BuildingNumberType());
             eInv.getAccountingSupplierParty().getParty().getPostalAddress().getBuildingNumber().setValue(getHardcodedValue(eInvCountry, "BuildingNumber"));//TODO: fix hardcoded
         }
-        eInv.getAccountingSupplierParty().getParty().getPostalAddress().setCitySubdivisionName(new CitySubdivisionNameType());
-        eInv.getAccountingSupplierParty().getParty().getPostalAddress().getCitySubdivisionName().setValue(getHardcodedValue(eInvCountry,"CitySubdivisionName"));//TODO: fix hardcoded
-
+        if (!getHardcodedValue(eInvCountry,"CitySubdivisionName").isEmpty()) {
+            eInv.getAccountingSupplierParty().getParty().getPostalAddress().setCitySubdivisionName(new CitySubdivisionNameType());
+            eInv.getAccountingSupplierParty().getParty().getPostalAddress().getCitySubdivisionName().setValue(getHardcodedValue(eInvCountry, "CitySubdivisionName"));//TODO: fix hardcoded
+        }
         eInv.getAccountingSupplierParty().getParty().getPostalAddress().setCityName(new CityNameType());
         eInv.getAccountingSupplierParty().getParty().getPostalAddress().getCityName().setValue(store.getStorecity());
         eInv.getAccountingSupplierParty().getParty().getPostalAddress().setPostalZone(new PostalZoneType());
@@ -1236,9 +1237,10 @@ OrderProductDownloadRepository orderProductDownloadRepository) {
             eInv.getAccountingCustomerParty().getParty().getPostalAddress().setBuildingNumber(new BuildingNumberType());
             eInv.getAccountingCustomerParty().getParty().getPostalAddress().getBuildingNumber().setValue(getHardcodedValue(eInvCountry, "BuildingNumber"));//TODO:fix hardcoded
         }
-        eInv.getAccountingCustomerParty().getParty().getPostalAddress().setCitySubdivisionName(new CitySubdivisionNameType());
-        eInv.getAccountingCustomerParty().getParty().getPostalAddress().getCitySubdivisionName().setValue(getHardcodedValue(eInvCountry,"CitySubdivisionName"));//TODO:fix hardcoded
-
+        if (!getHardcodedValue(eInvCountry,"CitySubdivisionName").isEmpty()) {
+            eInv.getAccountingCustomerParty().getParty().getPostalAddress().setCitySubdivisionName(new CitySubdivisionNameType());
+            eInv.getAccountingCustomerParty().getParty().getPostalAddress().getCitySubdivisionName().setValue(getHardcodedValue(eInvCountry, "CitySubdivisionName"));//TODO:fix hardcoded
+        }
         eInv.getAccountingCustomerParty().getParty().getPostalAddress().setPostalZone(new PostalZoneType());
         eInv.getAccountingCustomerParty().getParty().getPostalAddress().getPostalZone().setValue(order.getBilling().getPostalCode());
         eInv.getAccountingCustomerParty().getParty().getPostalAddress().setCountrySubentity(new CountrySubentityType());
