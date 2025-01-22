@@ -287,7 +287,7 @@ public class  TaxServiceVtxImpl
 
 
 	}
-	public ArrayList<LineItem> commitTax(Order order, Customer customer, MerchantStore store, OrderTotalSummary summary)throws ServiceException {
+	public VtxTaxCalc commitTax(Order order, Customer customer, MerchantStore store, OrderTotalSummary summary)throws ServiceException {
 
 		//set all the config information
 		TaxConfiguration taxConfiguration = taxService.getTaxConfiguration(store);
@@ -440,7 +440,7 @@ public class  TaxServiceVtxImpl
 			return null;
 		}
 
-		return vtxEngineCalculation.data.getlineItems();
+		return vtxEngineCalculation;
 	}
 
 	@Override
