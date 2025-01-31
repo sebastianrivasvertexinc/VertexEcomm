@@ -892,11 +892,25 @@ OrderProductDownloadRepository orderProductDownloadRepository) {
         trans.setStatus("C");
         trans.setInvoice_number(order.getId().toString()); //adding set invoice number DJR
         trans.setCurrency_code(order.getCurrency().getCode());
-        if(order.getBilling().getVatNumber() != null) {
-            trans.setBuyer_tax_number(order.getBilling().getVatNumber());//DJR - Fixed
-        }else {
+
+        //Check if Company name is null / empty if it is make sure that VAT number is n/a
+        if(order.getBilling().getCompany() == null || order.getBilling().getCompany().isEmpty())
+        {
             trans.setBuyer_tax_number("n/a");//DJR - Fixed logic
+        } else {
+        if(order.getBilling().getVatNumber() != null || !order.getBilling().getCompany().isEmpty() || !order.getBilling().getCompany().isEmpty())
+
+            trans.setBuyer_tax_number(order.getBilling().getVatNumber());//DJR - Fixed logic
         }
+
+
+
+     //   if(order.getBilling().getVatNumber() != null) {
+    //      trans.setBuyer_tax_number(order.getBilling().getVatNumber());//DJR - Fixed
+     //   }else {
+     //       trans.setBuyer_tax_number("n/a");//DJR - Fixed logic
+     //   }
+
         trans.setBuyer_ip(order.getIpAddress());
 
         Invoice_address invAddress =new Invoice_address();
