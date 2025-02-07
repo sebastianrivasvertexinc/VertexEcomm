@@ -38,6 +38,7 @@ import com.salesmanager.core.business.services.tax.ecosio.vrbl.oasis.names.speci
 
 import com.salesmanager.core.business.services.tax.ecosio.vrbl.vertexinc.vrbl.extensioncomponent._1.InvoiceExtensionType;
 import com.salesmanager.core.business.services.tax.ecosio.vrbl.vertexinc.vrbl.extensioncomponent._1.PaymentTermsExtensionType;
+import com.salesmanager.core.business.services.tax.ecosio.vrbl.vertexinc.vrbl.extensioncomponent._1.ProcessDetailsType;
 import com.salesmanager.core.business.services.tax.ecosio.vrbl.vertexinc.vrbl.extensioncomponent._1.RoutingDetailsType;
 import com.salesmanager.core.business.services.tax.taxamo.*;
 import com.salesmanager.core.business.services.tax.vertex.LineItem;
@@ -303,7 +304,7 @@ OrderProductDownloadRepository orderProductDownloadRepository) {
         VtxTaxCalc vtxEngineCalculation = taxService.commitTax(order, customer, store, summary);
        // ArrayList<LineItem> vtxLineItems =vtxEngineCalculation.data.getlineItems();
         //create an invoice with Taxamo
-        String urlInvoice=createInvoice(order,customer,vtxEngineCalculation.data.getlineItems(),store);// Taxamo info, updated to send store info for URL's
+        String urlInvoice=createInvoice(order,customer,vtxEngineCalculation.data.getlineItems(),store);//TODO DJR Calling taxamo e-inv print results in the UI
         //Create the electronic invoice
          if(!getHardcodedValue(order.getBilling().getCountry().getIsoCode(),"Sender").isEmpty())
        /*          order.getBilling().getCountry().getIsoCode().equals("MY")||
@@ -327,7 +328,7 @@ OrderProductDownloadRepository orderProductDownloadRepository) {
         )//*/
         {
             order.setEInvoiceId("n/a");
-            order.setEInvoiceId(createElectronicInvoice(order,customer,vtxEngineCalculation,store,urlInvoice)); //Calling Ecosio e-inv
+            order.setEInvoiceId(createElectronicInvoice(order,customer,vtxEngineCalculation,store,urlInvoice)); //TODO DJR Calling Ecosio e-inv print results in the UI
         }
         System.out.println(urlInvoice);
        order.setShippingModuleCode(urlInvoice);
@@ -470,7 +471,7 @@ OrderProductDownloadRepository orderProductDownloadRepository) {
 
         //tax
         //List<TaxItem> taxes = taxService.calculateTax(summary, customer, store, language);
-        VtxTaxCalc vtxTaxCalc= taxService.calculateTax(summary, customer, store, language);
+        VtxTaxCalc vtxTaxCalc= taxService.calculateTax(summary, customer, store, language);//TODO DJR call vertex Oseries for quotation to be printed in the UI
 
         ArrayList<LineItem> vtxLineItems=null;
         if ((vtxTaxCalc!=null) &&(vtxTaxCalc.data!=null))
@@ -990,7 +991,7 @@ OrderProductDownloadRepository orderProductDownloadRepository) {
         com.salesmanager.core.business.services.tax.taxamo.Invoice currencyDetails = new com.salesmanager.core.business.services.tax.taxamo.Invoice();
         try {
             currencyDetails=taxService.currencyConversion(store, order.getBilling().getCountry().getIsoCode(),order.getCurrency().getCode(), new BigDecimal(1));
-            //currencyDetails.amount=new BigDecimal(1);
+
         } catch (ServiceException e) {
             throw new RuntimeException(e);
         }
@@ -1021,6 +1022,8 @@ OrderProductDownloadRepository orderProductDownloadRepository) {
         if (!getHardcodedValue(eInvCountry,"TransmissionFormatCode").isEmpty())
             invoiceExtension.setTransmissionFormatCode((getHardcodedValue(eInvCountry,"TransmissionFormatCode")));
 
+        invoiceExtension.setProcessDetails(new ProcessDetailsType());
+        invoiceExtension.getProcessDetails().setCompanyCode(order.getMerchant().getStorename());
 
 
        // invoiceExtension.setInvoiceSubtypeCode(getHardcodedValue(eInvCountry,"InvoiceSubtypeCode"));
@@ -1178,7 +1181,7 @@ OrderProductDownloadRepository orderProductDownloadRepository) {
 
         eInv.getAccountingSupplierParty().getParty().getPostalAddress().setCountry(new CountryType());
         eInv.getAccountingSupplierParty().getParty().getPostalAddress().getCountry().setIdentificationCode(new IdentificationCodeType());
-        eInv.getAccountingSupplierParty().getParty().getPostalAddress().getCountry().getIdentificationCode().setValue(eInvCountry);//TODO using the destination country as the origin is USA and that will not work
+        eInv.getAccountingSupplierParty().getParty().getPostalAddress().getCountry().getIdentificationCode().setValue(store.getCountry().getIsoCode());//TODO: testing country
 
         if (!getHardcodedValue(eInvCountry,"IndustryClassificationCodeValue").isEmpty()) {
             eInv.getAccountingSupplierParty().getParty().setIndustryClassificationCode(new IndustryClassificationCodeType());
@@ -1278,8 +1281,8 @@ OrderProductDownloadRepository orderProductDownloadRepository) {
         PartyTaxSchemeType partyTaxScheme=new PartyTaxSchemeType();
         partyTaxScheme.setCompanyID(new CompanyIDType());
 
-        if (order.getBilling().getVatNumber().isEmpty()) {
-            Random random = new Random();
+        if (order.getBilling().getVatNumber().isEmpty()||order.getBilling().getVatNumber().equals("N/A")||order.getBilling().getVatNumber().equals("n/a")) {
+           // Random random = new Random();
             partyTaxScheme.getCompanyID().setValue( String.format(getHardcodedValue(eInvCountry,"AccountingCustomerPartyVAT")));
         }
         else
@@ -1352,9 +1355,9 @@ OrderProductDownloadRepository orderProductDownloadRepository) {
 
 
 
-        TaxAmountType taxAmountHeader=new TaxAmountType();
-        taxAmountHeader.setCurrencyID(currencyDetails.currency_code);
-        taxAmountHeader.setValue(BigDecimal.valueOf(0));
+     //   TaxAmountType taxAmountHeader=new TaxAmountType();
+      //  taxAmountHeader.setCurrencyID(currencyDetails.currency_code);
+       // taxAmountHeader.setValue(BigDecimal.valueOf(0));
 
         MonetaryTotalType legalMonetaryTotal=new MonetaryTotalType();
         legalMonetaryTotal.setLineExtensionAmount(new LineExtensionAmountType());
@@ -1372,7 +1375,11 @@ OrderProductDownloadRepository orderProductDownloadRepository) {
         legalMonetaryTotal.setPayableAmount (new PayableAmountType());
         legalMonetaryTotal.getPayableAmount().setCurrencyID(currencyDetails.currency_code);
         legalMonetaryTotal.getPayableAmount().setValue(BigDecimal.valueOf(0));
+
         TaxTotalType taxTotalHeader=new TaxTotalType();
+        taxTotalHeader.setTaxAmount(new TaxAmountType());
+        taxTotalHeader.getTaxAmount().setCurrencyID(currencyDetails.currency_code);
+        taxTotalHeader.getTaxAmount().setValue(BigDecimal.valueOf(0));
 
         Integer cont=0;
         for (LineItem itemProduct :vertexResponse.data.getlineItems()) {
@@ -1383,14 +1390,14 @@ OrderProductDownloadRepository orderProductDownloadRepository) {
             invoiceLine.setID(new IDType());
             invoiceLine.getID().setValue(String.valueOf(cont++));
             invoiceLine.setInvoicedQuantity(new InvoicedQuantityType());
-            invoiceLine.getInvoicedQuantity().setValue(BigDecimal.valueOf(itemProduct.quantity.value).setScale(new  Integer(getHardcodedValue(eInvCountry,"DecimalScale")), RoundingMode.HALF_DOWN));
+            invoiceLine.getInvoicedQuantity().setValue(BigDecimal.valueOf(itemProduct.quantity.value).setScale(new  Integer(getHardcodedValue(eInvCountry,"DecimalScale")), RoundingMode.HALF_UP));
             if (itemProduct.quantity.unitOfMeasure==null)
                 invoiceLine.getInvoicedQuantity().setUnitCode("MTK");
             else
                 invoiceLine.getInvoicedQuantity().setUnitCode(itemProduct.quantity.unitOfMeasure);
             invoiceLine.setLineExtensionAmount(new LineExtensionAmountType());
             invoiceLine.getLineExtensionAmount().setCurrencyID(currencyDetails.currency_code);
-            invoiceLine.getLineExtensionAmount().setValue(itemProduct.extendedPrice.multiply(currencyDetails.amount).setScale(new  Integer(getHardcodedValue(eInvCountry,"DecimalScale")), RoundingMode.HALF_DOWN));
+            invoiceLine.getLineExtensionAmount().setValue(itemProduct.extendedPrice.multiply(currencyDetails.amount).setScale(new  Integer(getHardcodedValue(eInvCountry,"DecimalScale")), RoundingMode.HALF_UP));
 
 
 
@@ -1406,14 +1413,14 @@ OrderProductDownloadRepository orderProductDownloadRepository) {
             UBLExtensionType ublExtensionPrice=new UBLExtensionType();
             ExtensionContentType extensionContentPrice=new ExtensionContentType();
             com.salesmanager.core.business.services.tax.ecosio.vrbl.vertexinc.vrbl.extensioncomponent._1.PriceExtensionType priceExtention=new com.salesmanager.core.business.services.tax.ecosio.vrbl.vertexinc.vrbl.extensioncomponent._1.PriceExtensionType();
-            priceExtention.setPriceAmountBeforeAllowanceCharge(itemProduct.extendedPrice.multiply(currencyDetails.amount).divide(new BigDecimal(itemProduct.quantity.value)).setScale(new  Integer(getHardcodedValue(eInvCountry,"DecimalScale")), RoundingMode.HALF_DOWN));
+            priceExtention.setPriceAmountBeforeAllowanceCharge(itemProduct.extendedPrice.multiply(currencyDetails.amount).divide(new BigDecimal(itemProduct.quantity.value)).setScale(new  Integer(getHardcodedValue(eInvCountry,"DecimalScale")), RoundingMode.HALF_UP));
             extensionContentPrice.setAny(priceExtention);
             ublExtensionPrice.setExtensionContent(extensionContentPrice);
             ublExtensionsPrice.getUBLExtension().add(ublExtensionPrice);
             invoiceLine.getPrice().setUBLExtensions(ublExtensionsPrice);
 
             invoiceLine.getPrice().setPriceAmount(new PriceAmountType());
-            invoiceLine.getPrice().getPriceAmount().setValue(itemProduct.extendedPrice.multiply(currencyDetails.amount).divide(new BigDecimal(itemProduct.quantity.value)).setScale(new  Integer(getHardcodedValue(eInvCountry,"DecimalScale")), RoundingMode.HALF_DOWN));
+            invoiceLine.getPrice().getPriceAmount().setValue(itemProduct.extendedPrice.multiply(currencyDetails.amount).divide(new BigDecimal(itemProduct.quantity.value)).setScale(new  Integer(getHardcodedValue(eInvCountry,"DecimalScale")), RoundingMode.HALF_UP));
             invoiceLine.getPrice().getPriceAmount().setCurrencyID(currencyDetails.currency_code);
 
 
@@ -1426,44 +1433,51 @@ OrderProductDownloadRepository orderProductDownloadRepository) {
 
             invoiceLine.setItemPriceExtension(new PriceExtensionType());
             invoiceLine.getItemPriceExtension().setAmount(new AmountType());
-            invoiceLine.getItemPriceExtension().getAmount().setValue(itemProduct.extendedPrice.multiply(currencyDetails.amount).setScale(new  Integer(getHardcodedValue(eInvCountry,"DecimalScale")), RoundingMode.HALF_DOWN));
+            invoiceLine.getItemPriceExtension().getAmount().setValue(itemProduct.extendedPrice.multiply(currencyDetails.amount).setScale(new  Integer(getHardcodedValue(eInvCountry,"DecimalScale")), RoundingMode.HALF_UP));
             invoiceLine.getItemPriceExtension().getAmount().setCurrencyID(currencyDetails.currency_code);
 
 
             for (VtxTaxItem tax :itemProduct.getTaxes()) {
-                TaxSubtotalType taxSubtotal=new TaxSubtotalType();
+                TaxSubtotalType taxSubtotal = new TaxSubtotalType();
+
+
+                TaxCategoryType taxCategory = new TaxCategoryType();
+                taxCategory.setPercent(new PercentType());
+                taxCategory.getPercent().setValue(BigDecimal.valueOf(tax.getNominalRate()).multiply(BigDecimal.valueOf(100)).setScale(new Integer(getHardcodedValue(eInvCountry, "DecimalScalePercent")), RoundingMode.HALF_UP));
+
+                TaxableAmountType taxableAmount = new TaxableAmountType();
+                taxableAmount.setCurrencyID(currencyDetails.currency_code);
+                taxableAmount.setValue(BigDecimal.valueOf(tax.taxable).multiply(currencyDetails.amount).setScale(new Integer(getHardcodedValue(eInvCountry, "DecimalScale")), RoundingMode.HALF_UP));
+                taxSubtotal.setTaxableAmount(taxableAmount);
 
                 TaxAmountType taxAmountItem = new TaxAmountType();
                 taxAmountItem.setCurrencyID(currencyDetails.currency_code);
-                taxAmountItem.setValue(BigDecimal.valueOf(tax.calculatedTax).multiply(currencyDetails.amount).setScale(new  Integer(getHardcodedValue(eInvCountry,"DecimalScale")), RoundingMode.HALF_DOWN));
-                taxSubtotal.setTaxAmount (taxAmountItem);
+                taxAmountItem.setValue(taxableAmount.getValue().multiply(taxCategory.getPercent().getValue().divide(new BigDecimal(100))).setScale(new Integer(getHardcodedValue(eInvCountry, "DecimalScale")), RoundingMode.HALF_UP));
+                taxSubtotal.setTaxAmount(taxAmountItem);
 
-                TaxableAmountType taxableAmount = new TaxableAmountType();
-                taxableAmount.setCurrencyID ( currencyDetails.currency_code);
-                taxableAmount.setValue(BigDecimal.valueOf(tax.taxable).multiply(currencyDetails.amount).setScale(new  Integer(getHardcodedValue(eInvCountry,"DecimalScale")), RoundingMode.HALF_DOWN));
-                taxSubtotal.setTaxableAmount ( taxableAmount);
+                TaxInclusiveAmountType taxInclusiveAmountItem = new TaxInclusiveAmountType();
+                taxInclusiveAmountItem.setCurrencyID(currencyDetails.currency_code);
+                taxInclusiveAmountItem.setValue(taxableAmount.getValue().add(taxAmountItem.getValue()));
+                taxSubtotal.setTaxInclusiveAmount(taxInclusiveAmountItem);
 
 
-                TaxCategoryType taxCategory=new TaxCategoryType();
-                taxCategory.setPercent(new PercentType());
-                taxCategory.getPercent().setValue(BigDecimal.valueOf(tax.getNominalRate()).multiply(BigDecimal.valueOf(100)).setScale(new  Integer(0), RoundingMode.HALF_DOWN));
 
                 taxCategory.setID(new IDType());
-                taxCategory.getID().setValue(getHardcodedValue(eInvCountry,"TaxCategoryId"));
+                taxCategory.getID().setValue(getHardcodedValue(eInvCountry, "TaxCategoryId"));
 
-                if (BigDecimal.valueOf(tax.getNominalRate()).equals(BigDecimal.valueOf(0.0))){
-                    taxCategory.getID().setValue(getHardcodedValue(eInvCountry,"TaxCategoryId_E"));
-                    TaxExemptionReasonType taxExemptionReasonType=new TaxExemptionReasonType();
+                if (BigDecimal.valueOf(tax.getNominalRate()).equals(BigDecimal.valueOf(0.0))) {
+                    taxCategory.getID().setValue(getHardcodedValue(eInvCountry, "TaxCategoryId_E"));
+                    TaxExemptionReasonType taxExemptionReasonType = new TaxExemptionReasonType();
                     taxExemptionReasonType.setValue(tax.rateClassification);
                     taxCategory.getTaxExemptionReason().add(taxExemptionReasonType);
 
-                    TaxExemptionReasonCodeType taxExemptionReasonCodeType=new TaxExemptionReasonCodeType();
-                    taxExemptionReasonCodeType.setValue(getHardcodedValue(eInvCountry,"TaxExemptionReasonCode"));
+                    TaxExemptionReasonCodeType taxExemptionReasonCodeType = new TaxExemptionReasonCodeType();
+                    taxExemptionReasonCodeType.setValue(getHardcodedValue(eInvCountry, "TaxExemptionReasonCode"));
                     taxCategory.setTaxExemptionReasonCode(taxExemptionReasonCodeType);
 
                 }
 
-                TaxSchemeType taxSchemeItem=new TaxSchemeType();
+                TaxSchemeType taxSchemeItem = new TaxSchemeType();
                 taxSchemeItem.setID(new IDType());
                 taxSchemeItem.getID().setValue("VAT");
                 taxCategory.setTaxScheme(taxSchemeItem);
@@ -1472,45 +1486,37 @@ OrderProductDownloadRepository orderProductDownloadRepository) {
                 taxSubtotal.setTaxCategory(taxCategory);
 
                 taxTotalItem.setRoundingAmount(new RoundingAmountType());
-                taxTotalItem.getRoundingAmount().setValue(BigDecimal.valueOf(itemProduct.fairMarketValue.doubleValue()).multiply(currencyDetails.amount).setScale(new  Integer(getHardcodedValue(eInvCountry,"DecimalScale")), RoundingMode.HALF_DOWN));
-                taxTotalItem.getRoundingAmount().setCurrencyID( currencyDetails.currency_code);
+                taxTotalItem.getRoundingAmount().setValue(BigDecimal.valueOf(itemProduct.fairMarketValue.doubleValue()).multiply(currencyDetails.amount).setScale(new Integer(getHardcodedValue(eInvCountry, "DecimalScale")), RoundingMode.HALF_UP));
+                taxTotalItem.getRoundingAmount().setCurrencyID(currencyDetails.currency_code);
 
                 taxTotalItem.setTaxAmount(new TaxAmountType());
-                taxTotalItem.getTaxAmount().setValue(BigDecimal.valueOf(tax.calculatedTax).multiply(currencyDetails.amount).setScale(new  Integer(getHardcodedValue(eInvCountry,"DecimalScale")), RoundingMode.HALF_DOWN));
-                taxTotalItem.getTaxAmount().setCurrencyID( currencyDetails.currency_code);
+                taxTotalItem.getTaxAmount().setValue(taxableAmount.getValue().multiply(taxCategory.getPercent().getValue().divide(new BigDecimal(100))).setScale(new Integer(getHardcodedValue(eInvCountry, "DecimalScale")), RoundingMode.HALF_UP));
+                taxTotalItem.getTaxAmount().setCurrencyID(currencyDetails.currency_code);
+
                 taxTotalItem.getTaxSubtotal().add(taxSubtotal);
+                taxTotalHeader.getTaxSubtotal().add(taxSubtotal);
 
 
-                taxTotalHeader=addOrUpdateItem(taxTotalHeader,taxSubtotal);
-                taxAmountHeader.setValue(taxAmountHeader.getValue().add(taxSubtotal.getTaxAmount().getValue()));
+                //     taxTotalHeader.getTaxAmount().setValue(taxTotalHeader.getTaxAmount().getValue().add(taxSubtotal.getTaxAmount().getValue()));
 
             }
-           legalMonetaryTotal.getLineExtensionAmount().setValue( legalMonetaryTotal.getLineExtensionAmount().getValue().add(invoiceLine.getLineExtensionAmount().getValue()));
-           legalMonetaryTotal.getTaxExclusiveAmount().setValue( legalMonetaryTotal.getTaxExclusiveAmount().getValue().add(invoiceLine.getLineExtensionAmount().getValue()));
-        //   legalMonetaryTotal.getTaxInclusiveAmount().setValue( legalMonetaryTotal.getTaxInclusiveAmount().getValue().add( taxTotalItem.getRoundingAmount().getValue()));
-         //  legalMonetaryTotal.getPayableAmount().setValue( legalMonetaryTotal.getPayableAmount().getValue().add( taxTotalItem.getRoundingAmount().getValue()));
-            eInv.getInvoiceLine().add(invoiceLine);
+        legalMonetaryTotal.getLineExtensionAmount().setValue( legalMonetaryTotal.getLineExtensionAmount().getValue().add(invoiceLine.getLineExtensionAmount().getValue()));
+        legalMonetaryTotal.getTaxExclusiveAmount().setValue( legalMonetaryTotal.getTaxExclusiveAmount().getValue().add(invoiceLine.getLineExtensionAmount().getValue()));
 
-            invoiceLine.getTaxTotal().add(taxTotalItem);
+        invoiceLine.getTaxTotal().add(taxTotalItem);
+        eInv.getInvoiceLine().add(invoiceLine);
         }
 
-       // taxAmountHeader.setValue( taxAmountHeader.setValue.add(taxTotalItem);
+        taxTotalHeader = addOrUpdateItem(taxTotalHeader,eInvCountry);//merge duplicated values for taxsubtotals from the header
+        legalMonetaryTotal.getLineExtensionAmount().setValue( legalMonetaryTotal.getLineExtensionAmount().getValue().setScale(new  Integer(getHardcodedValue(eInvCountry,"DecimalScale")), RoundingMode.HALF_UP));
+        legalMonetaryTotal.getTaxExclusiveAmount().setValue( legalMonetaryTotal.getTaxExclusiveAmount().getValue().setScale(new  Integer(getHardcodedValue(eInvCountry,"DecimalScale")), RoundingMode.HALF_UP));
 
-       // legalMonetaryTotal.getLineExtensionAmount().setValue( new BigDecimal(vertexResponse.data.getSubTotal()).multiply(currencyDetails.amount).setScale(new  Integer(getHardcodedValue(eInvCountry,"DecimalScale")), RoundingMode.HALF_DOWN));
-       // legalMonetaryTotal.getTaxExclusiveAmount().setValue( new BigDecimal(vertexResponse.data.getSubTotal()).multiply(currencyDetails.amount).setScale(new  Integer(getHardcodedValue(eInvCountry,"DecimalScale")), RoundingMode.HALF_DOWN));
-       // legalMonetaryTotal.getTaxInclusiveAmount().setValue( new BigDecimal(vertexResponse.data.getTotal()).multiply(currencyDetails.amount).setScale(new  Integer(getHardcodedValue(eInvCountry,"DecimalScale")), RoundingMode.HALF_DOWN));
-       // legalMonetaryTotal.getPayableAmount().setValue( new BigDecimal(vertexResponse.data.getTotal()).multiply(currencyDetails.amount).setScale(new  Integer(getHardcodedValue(eInvCountry,"DecimalScale")), RoundingMode.HALF_DOWN));
-        legalMonetaryTotal.getLineExtensionAmount().setValue( legalMonetaryTotal.getLineExtensionAmount().getValue().setScale(new  Integer(getHardcodedValue(eInvCountry,"DecimalScale")), RoundingMode.HALF_DOWN));
-        legalMonetaryTotal.getTaxExclusiveAmount().setValue( legalMonetaryTotal.getTaxExclusiveAmount().getValue().setScale(new  Integer(getHardcodedValue(eInvCountry,"DecimalScale")), RoundingMode.HALF_DOWN));
+        legalMonetaryTotal.getTaxInclusiveAmount().setValue( legalMonetaryTotal.getTaxExclusiveAmount().getValue().add(  taxTotalHeader.getTaxAmount().getValue()));
+        legalMonetaryTotal.getPayableAmount().setValue( legalMonetaryTotal.getTaxExclusiveAmount().getValue().add( taxTotalHeader.getTaxAmount().getValue()));
 
-        legalMonetaryTotal.getTaxInclusiveAmount().setValue( legalMonetaryTotal.getTaxExclusiveAmount().getValue().add( taxAmountHeader.getValue()));
-        legalMonetaryTotal.getPayableAmount().setValue( legalMonetaryTotal.getTaxExclusiveAmount().getValue().add( taxAmountHeader.getValue()));
-
-       // legalMonetaryTotal.getTaxInclusiveAmount().setValue( legalMonetaryTotal.getTaxInclusiveAmount().getValue().setScale(new  Integer(getHardcodedValue(eInvCountry,"DecimalScale")), RoundingMode.HALF_DOWN));
-        //legalMonetaryTotal.getPayableAmount().setValue( legalMonetaryTotal.getPayableAmount().getValue().setScale(new  Integer(getHardcodedValue(eInvCountry,"DecimalScale")), RoundingMode.HALF_DOWN));
 
         eInv.setLegalMonetaryTotal(legalMonetaryTotal);
-        taxTotalHeader.setTaxAmount(taxAmountHeader);
+      //  taxTotalHeader.setTaxAmount(taxAmountHeader);
         eInv.getTaxTotal().add(taxTotalHeader);
 
 
@@ -1554,8 +1560,9 @@ OrderProductDownloadRepository orderProductDownloadRepository) {
 
         Request request = null;
 
-        try {
+      try {
             tokenInfo=this.getAuthentication(eInvoicing_client_Id,eInvoicing_client_secret,eInvoicing_auth_url,tokenInfo);
+          //  tokenInfo.setToken("eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6Ik1FUkJOelV6UmpORlFUTkRSa1ZDTURReE56TTVNRVZET1RoRU5EZ3pNRVpHTmpjM05VSXpNdyJ9.eyJpc3MiOiJodHRwczovL2F1dGgudmVydGV4Y2xvdWQuY29tLyIsInN1YiI6IjlQTm9XQkFna1VQTXJBeGZJalJoQzRjYTNteG5QNkU3QGNsaWVudHMiLCJhdWQiOiJ2ZXJ4Oi8vbWlncmF0aW9uLWFwaSIsImlhdCI6MTczODQ0MTU0MCwiZXhwIjoxNzM4NTI3OTQwLCJzY29wZSI6InZjZC1wbGF0Zm9ybS1hcGkgZWludm9pY2luZy1jdXN0b21lci1hcGkiLCJndHkiOiJjbGllbnQtY3JlZGVudGlhbHMiLCJhenAiOiI5UE5vV0JBZ2tVUE1yQXhmSWpSaEM0Y2EzbXhuUDZFNyJ9.D7H0Za7UXq34F9ewhONkErJt2RaGRnCiTLUidpG5VNZ1psMhz2Ob1lEpl7PW6bKhijDkCnv6p1dwV13R3J7EIGlwcw-PDvKaIN58_Q6TPokSyiTkJSDgNLLkHjBMe3-ZmmIE7X8nC8tZNxHd7gtffe8oFpA8TXgXloXlW0pSZYWvYrzfhOTDicahwoyYhrymQlFMS1QHddgFmBxW5nIu7h5Q7qUCM5sRd6iCSmJaeQBxpopV_xILMR4J3sbprfINPj1KzGH5y9n389Rf7Ltx8qkc1JePzFBGVC8S5a98pCJJ9SDCsfbp-ztCFbMV6Y7cQ98ssSwq5KM306YPOEyerA");
             request = new Request.Builder()
                    .url( eInvoicing_url)
                     .method("POST", requestBody)
@@ -1586,29 +1593,77 @@ OrderProductDownloadRepository orderProductDownloadRepository) {
         return jsonData;//TODO
     }
 
-    private static TaxTotalType  addOrUpdateItem(TaxTotalType taxTotalHeader, TaxSubtotalType newItem) {
-        boolean found = false;
-
+    private  TaxTotalType  addOrUpdateItem(TaxTotalType taxTotalHeader,String countryId) {
         // Search for an existing item with the same name
-        for (TaxSubtotalType item : taxTotalHeader.getTaxSubtotal()) {
-            if (item.getTaxCategory().getTaxScheme().getID().getValue().equals(newItem.getTaxCategory().getTaxScheme().getID().getValue())
-                    &&
-                    item.getTaxCategory().getID().getValue().equals(newItem.getTaxCategory().getID().getValue())
-                    &&
-                    item.getTaxCategory().getPercent().getValue().equals(newItem.getTaxCategory().getPercent().getValue())) {
-                // If found same Tax Rate , update the existing item's quantity and price
-                item.getTaxAmount().setValue( item.getTaxAmount().getValue().add(newItem.getTaxAmount().getValue()));
-                item.getTaxableAmount().setValue( item.getTaxableAmount().getValue().add(newItem.getTaxableAmount().getValue()));
-                found = true;
-                break;
+        if (taxTotalHeader == null || taxTotalHeader.getTaxSubtotal() == null) {
+            return taxTotalHeader;
+        }
+
+        Map<String, TaxSubtotalType> taxMap = new HashMap<>();
+        List<TaxSubtotalType> mergedList = new ArrayList<>();
+
+        for (TaxSubtotalType taxSubtotal : taxTotalHeader.getTaxSubtotal() ) {//Merge repeated values
+            TaxCategoryType category = taxSubtotal.getTaxCategory();
+            if (category == null || category.getID() == null || category.getPercent() == null) {
+                continue;
+            }
+
+            String key = category.getID().getValue() + "-" +category.getTaxScheme().getID().getValue() + "-" + category.getPercent().getValue();
+
+            if (taxMap.containsKey(key)) {
+                // Merge tax amounts
+                TaxSubtotalType existing = taxMap.get(key);
+                existing.getTaxableAmount().setValue(existing.getTaxableAmount().getValue().add( taxSubtotal.getTaxableAmount().getValue()));
+                existing.getTaxAmount().setValue( existing.getTaxableAmount().getValue().multiply(category.getPercent().getValue()).divide(new BigDecimal(100)).setScale(new  Integer(getHardcodedValue(countryId,"DecimalScale")), RoundingMode.HALF_UP));;
+
+            } else {
+                TaxSubtotalType newTaxSuTotal=new TaxSubtotalType();
+                newTaxSuTotal.setTaxAmount(new TaxAmountType());
+                newTaxSuTotal.setTaxableAmount(new TaxableAmountType());
+                newTaxSuTotal.getTaxAmount().setValue(taxSubtotal.getTaxAmount().getValue());
+                newTaxSuTotal.getTaxAmount().setCurrencyID(taxSubtotal.getTaxAmount().getCurrencyID());
+                newTaxSuTotal.getTaxableAmount().setValue(taxSubtotal.getTaxableAmount().getValue());
+                newTaxSuTotal.getTaxableAmount().setCurrencyID(taxSubtotal.getTaxableAmount().getCurrencyID());
+                newTaxSuTotal.setTaxCategory(taxSubtotal.getTaxCategory());
+                taxMap.put(key, newTaxSuTotal);
+                mergedList.add(newTaxSuTotal);
             }
         }
 
-        if (!found) {
-            taxTotalHeader.getTaxSubtotal().add(newItem);
+
+
+        taxTotalHeader.getTaxAmount().setValue(new BigDecimal(0));
+        for (TaxSubtotalType taxSubtotal : mergedList ) {//calculate tax total amount
+            taxTotalHeader.getTaxAmount().setValue(taxTotalHeader.getTaxAmount().getValue().add(taxSubtotal.getTaxAmount().getValue()));
         }
+
+
+        taxTotalHeader.getTaxSubtotal().clear();
+        taxTotalHeader.getTaxSubtotal().addAll( mergedList);
         return taxTotalHeader;
-    }
+    };
+
+/*
+
+
+        taxTotalHeader.getTaxAmount().setValue(taxTotalHeader.getTaxAmount().getValue().add(newItem.getTaxAmount().getValue()));
+
+        for (TaxSubtotalType item : taxTotalHeader.getTaxSubtotal()) {
+            if (item.getTaxCategory().getTaxScheme().getID().getValue().equals(newItem.getTaxCategory().getTaxScheme().getID().getValue())
+                    &&
+                    item.getTaxCategory().getPercent().getValue().equals(newItem.getTaxCategory().getPercent().getValue())) {
+                        // If found same Tax Rate , update the existing item's quantity and price
+                       item.getTaxAmount().setValue(item.getTaxAmount().getValue().add(newItem.getTaxAmount().getValue()));
+                       item.getTaxableAmount().setValue(item.getTaxableAmount().getValue().add(newItem.getTaxableAmount().getValue()));
+                        return taxTotalHeader;
+            }
+         };
+
+        taxTotalHeader.getTaxSubtotal().add(newItem);
+        return taxTotalHeader;
+
+    };*/
+
 
 
 
