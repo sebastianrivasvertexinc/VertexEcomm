@@ -1413,7 +1413,9 @@ OrderProductDownloadRepository orderProductDownloadRepository) {
             UBLExtensionType ublExtensionPrice=new UBLExtensionType();
             ExtensionContentType extensionContentPrice=new ExtensionContentType();
             com.salesmanager.core.business.services.tax.ecosio.vrbl.vertexinc.vrbl.extensioncomponent._1.PriceExtensionType priceExtention=new com.salesmanager.core.business.services.tax.ecosio.vrbl.vertexinc.vrbl.extensioncomponent._1.PriceExtensionType();
-            priceExtention.setPriceAmountBeforeAllowanceCharge(itemProduct.extendedPrice.multiply(currencyDetails.amount).divide(new BigDecimal(itemProduct.quantity.value)).setScale(new  Integer(getHardcodedValue(eInvCountry,"DecimalScale")), RoundingMode.HALF_UP));
+            priceExtention.setPriceAmountBeforeAllowanceCharge(new AmountType());
+            priceExtention.getPriceAmountBeforeAllowanceCharge().setValue(itemProduct.extendedPrice.multiply(currencyDetails.amount).divide(new BigDecimal(itemProduct.quantity.value)).setScale(new  Integer(getHardcodedValue(eInvCountry,"DecimalScale")), RoundingMode.HALF_UP));
+            priceExtention.getPriceAmountBeforeAllowanceCharge().setCurrencyID(currencyDetails.currency_code);
             extensionContentPrice.setAny(priceExtention);
             ublExtensionPrice.setExtensionContent(extensionContentPrice);
             ublExtensionsPrice.getUBLExtension().add(ublExtensionPrice);
