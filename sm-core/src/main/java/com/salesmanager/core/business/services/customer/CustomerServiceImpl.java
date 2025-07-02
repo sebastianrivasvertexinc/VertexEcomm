@@ -187,7 +187,7 @@ public class CustomerServiceImpl extends SalesManagerEntityServiceImpl<Long, Cus
 		taxAreaLookupReq.setAsOfDate(strDate);
 		AddressCleansingResp resp=new AddressCleansingResp();
 		try {
-			token=getAuthentication("bc525a9fce454a039a0346c258ecfed1","5bfdc36e670b4e0986e0d79ddae063eb");//TODO
+			token=getAuthentication("eRVI4dz5sQlrbvAN3cmV8J4NMiqzkH7P","xrVO0oopkFjCupaQlIGPUnJrLpLS78xzZrbyoNwFh6ih7b3VBxSG2S8cGB8QHrIM");//TODO
 			resp=doAddressCleansing(taxAreaLookupReq,
 					token,
 					"https://calcconnect.vertexsmb.com");//TODO
