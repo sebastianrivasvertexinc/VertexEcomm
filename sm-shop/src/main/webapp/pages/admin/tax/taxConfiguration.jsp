@@ -50,21 +50,21 @@
                                                     <form:input cssClass="input-large" path="taxAuthURL" />
                                     </div>
 	                        		<div class="control-group">
-                                        <h4><label class="required"><s:message code="label.tax.vertexadminurl" text="Admin URL"/></label></h>
+                                        <h4><label class="required"><s:message code="label.tax.vertexeinvurl" text="eInvoicing URL"/></label></h>
                                             <div class="controls">
-                                                    <form:input cssClass="input-large" path="taxAdminURL" />
+                                                    <form:input cssClass="input-large" path="taxEinvURL" />
                                     </div>
                                     </div>
                                     <div class="control-group">
-                                        <label class="required"><s:message code="label.tax.vertexadminclientid" text="Admin Client Id"/></label>
+                                        <label class="required"><s:message code="label.tax.vertexeinvclientid" text="eInvoicing Client Id"/></label>
                                             <div class="controls">
-                                                    <form:input cssClass="input-large" path="taxAdminClientId" />
+                                                    <form:input cssClass="input-large" path="taxEinvClientId" />
                                             </div>
                                     </div>
                                     <div class="control-group">
-                                        <label class="required"><s:message code="label.tax.vertexadminclientSecret" text="Admin Client Secret"/></label>
+                                        <label class="required"><s:message code="label.tax.vertexeinvclientSecret" text="eInvoicing Client Secret"/></label>
                                             <div class="controls">
-                                                    <form:input cssClass="input-large" path="taxAdminClientSecret" />
+                                                    <form:input cssClass="input-large" path="taxEinvClientSecret" />
                                             </div>
                                     </div>
                                     <div class="control-group">
