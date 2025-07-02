@@ -114,13 +114,7 @@ public class OrderServiceImpl  extends SalesManagerEntityServiceImpl<Long, Order
     private String eInvoicing_auth_url = "";
 
 
-    //End2End Vertex Inc Sales
-  //  private String eInvoicing_client_Id = "9PNoWBAgkUPMrAxfIjRhC4ca3mxnP6E7";//TODO Staging David to send this to the Admini UI
-    //private String eInvoicing_client_secret = "jev3o7T05TTheCQVCZXKWB-xK-r9BSLIP4QyhvllLhj83I5eCW92THu-LvF56y0l";//TODO Staging David to send this to the Admini UI
-  //  private String eInvoicing_url = "https://e-invoicing-service.vertexcloud.com/customers/v1/documents";//TODO David to send this to the Admini UI
-  //  private String eInvoicing_auth_url = "https://tokenguard.vertexcloud.com/cached/oauth/token";//TODO David to send this to the Admini UI
-
-    private TokenInfo tokenInfo;
+     private TokenInfo tokenInfo;
 
 
     @Inject
