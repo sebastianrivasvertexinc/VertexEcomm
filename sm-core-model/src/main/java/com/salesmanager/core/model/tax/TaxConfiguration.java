@@ -24,9 +24,9 @@ public class TaxConfiguration implements JSONAware {
 		data.put("taxCalcURL",this.taxCalcURL);
 		data.put("taxCalcClientId", this.taxCalcClientId);
 		data.put("taxCalcClientSecret", this.taxCalcClientSecret);
-		data.put("taxAdminURL",this.taxAdminURL);
-		data.put("taxAdminClientId",this.taxAdminClientId);
-		data.put("taxAdminClientSecret", this.taxAdminClientSecret);
+		data.put("taxEinvURL",this.taxEinvURL);
+		data.put("taxEinvClientId",this.taxEinvClientId);
+		data.put("taxEinvClientSecret", this.taxEinvClientSecret);
 		data.put("taxamoValidationURL", this.taxamoValidationURL);
 		data.put("taxamoAuthToken", this.taxamoAuthToken);
 		data.put("taxAuthURL", this.authenticationURL);
@@ -66,7 +66,6 @@ public class TaxConfiguration implements JSONAware {
 	// Will need to store values to communicate to Vertex and Taxamo URLs
 
 	public String taxCalcURL = "This value is the Calc Vertex O Series URL";
-	//public String taxCalcURL =  getTaxCalcURL(); // should have a function to read from DB or persistence file
 	public String getTaxCalcURL()
 	{
 		return this.taxCalcURL ;
@@ -76,7 +75,6 @@ public class TaxConfiguration implements JSONAware {
 	}
 
 	public String taxCalcClientId = "This value is the Calc Vertex O Series Client Id";
-	//public String taxCalcClientId =  getTaxCalcClientId(); // should have a function to read from DB or persistence file
 	public String getTaxCalcClientId()
 	{
 		return this.taxCalcClientId ;
@@ -86,7 +84,6 @@ public class TaxConfiguration implements JSONAware {
 	}
 
 	public String taxCalcClientSecret = "This value is the Calc Vertex O Series Client Secret";
-	//public String taxCalcClientSecret =  getTaxCalcClientSecret(); // should have a function to read from DB or persistence file
 	public String getTaxCalcClientSecret()
 	{
 		return this.taxCalcClientSecret;
@@ -94,39 +91,37 @@ public class TaxConfiguration implements JSONAware {
 	public void setTaxCalcClientSecret(String tccsec) {
 		this.taxCalcClientSecret  = tccsec;
 	}
-
-	public String taxAdminURL =  "This value is the Admin Vertex O Series URL";	// should have a function to read from DB or persistence file
-	//public String taxAdminURL = getTaxAdminURL();
-	public String getTaxAdminURL()
+	public String taxAdminURL =  "";
+	public String taxAdminClientId =  "";
+	public String taxAdminClientSecret =  "";
+	public String taxEinvURL =  "This value is the Envoicing Vertex O Series URL";	// should have a function to read from DB or persistence file
+	public String getTaxEinvURL()
 	{
-		return this.taxAdminURL ;
+		return this.taxEinvURL ;
 	}
-	public void setTaxAdminURL(String taxadminurl) {
-		this.taxAdminURL = taxadminurl;
-	}
-
-	public String taxAdminClientId =  "This value is the Admin Vertex O Series Client Id";	// should have a function to read from DB or persistence file
-	//public String taxAdminClientId = getTaxAdminClientId();
-	public String getTaxAdminClientId()
-	{
-		return this.taxAdminClientId ;
-	}
-	public void setTaxAdminClientId(String tacid) {
-		this.taxAdminClientId = tacid;
+	public void setTaxEinvURL(String taxadminurl) {
+		this.taxEinvURL = taxadminurl;
 	}
 
-	public String taxAdminClientSecret =  "This value is the Admin Vertex O Series Client Secret";	// should have a function to read from DB or persistence file
-	//public String taxAdminClientSecret = getTaxAdminClientSecret();
-	public String getTaxAdminClientSecret()
+	public String taxEinvClientId =  "This value is the Envoicing Vertex O Series Client Id";	// should have a function to read from DB or persistence file
+	public String getTaxEinvClientId()
 	{
-		return this.taxAdminClientSecret ;
+		return this.taxEinvClientId ;
 	}
-	public void setTaxAdminClientSecret(String tacsec) {
-		this.taxAdminClientSecret = tacsec;
+	public void setTaxEinvClientId(String tacid) {
+		this.taxEinvClientId = tacid;
+	}
+
+	public String taxEinvClientSecret =  "This value is the Envoicing Vertex O Series Client Secret";	// should have a function to read from DB or persistence file
+	public String getTaxEinvClientSecret()
+	{
+		return this.taxEinvClientSecret ;
+	}
+	public void setTaxEinvClientSecret(String tacsec) {
+		this.taxEinvClientSecret = tacsec;
 	}
 
 	public String taxamoValidationURL =  "This value is the Taxamo Validation URL";	// should have a function to read from DB or persistence file
-	//public String taxamoValidationURL = getTaxamoValidationURL();
 	public String getTaxamoValidationURL()
 	{
 		return this.taxamoValidationURL ;
@@ -136,7 +131,6 @@ public class TaxConfiguration implements JSONAware {
 	}
 
 	public String taxamoAuthToken =  "This value is the Taxamo Auth Token";	// should have a function to read from DB or persistence file
-	//public String taxamoAuthToken = getTaxamoAuthToken();
 	public String getTaxamoAuthToken()
 	{
 		return this.taxamoAuthToken ;
@@ -144,6 +138,7 @@ public class TaxConfiguration implements JSONAware {
 	public void setTaxamoAuthToken(String txat) {
 		this.taxamoAuthToken = txat;
 	}
+
 	public String authenticationURL =  "This value is the Auth URL for Vertex Solutions";
 	public String getTaxAuthURL()
 	{
