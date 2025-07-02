@@ -196,8 +196,8 @@ public class  TaxServiceVtxImpl
 				destination.country= customer.getBilling().getCountry().getIsoCode();
 			if 	(!StringUtils.isBlank(customer.getBilling().getPostalCode()))
 				destination.postalCode=customer.getBilling().getPostalCode();
-			if 	(!StringUtils.isBlank(customer.getBilling().getZone().getCode()))
-				destination.mainDivision=customer.getBilling().getZone().getCode();
+			if 	(!StringUtils.isBlank(customer.getBilling().getState()))
+				destination.mainDivision=customer.getBilling().getState();
 			cust.destination=destination;
 
 			cust.taxRegistrations = new ArrayList<TaxRegistration>();
@@ -542,7 +542,7 @@ public class  TaxServiceVtxImpl
 
 		OkHttpClient client = new OkHttpClient();
 		MediaType mediaType = MediaType.parse("application/x-www-form-urlencoded");
-		RequestBody body = RequestBody.create(mediaType, "client_id=" + client_Id + "&client_secret=" + client_secret +"&grant_type=client_credentials&scope=calc-rest-api");
+		RequestBody body = RequestBody.create(mediaType, "client_id=" + client_Id + "&client_secret=" + client_secret +"&grant_type=client_credentials");
 		Request request = new Request.Builder()
 				//.url("https://auth.vertexsmb.com/identity/connect/token")//TODO: david add this to tha admin console as "Vertex Autentication URL"
 				.url(auth_url)
