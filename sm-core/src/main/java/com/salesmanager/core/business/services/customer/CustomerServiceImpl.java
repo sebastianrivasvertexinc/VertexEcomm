@@ -153,7 +153,7 @@ public class CustomerServiceImpl extends SalesManagerEntityServiceImpl<Long, Cus
 		MediaType mediaType = MediaType.parse("application/x-www-form-urlencoded");
 		RequestBody body = RequestBody.create(mediaType, "client_id=" + client_Id + "&client_secret=" + client_secret +"&grant_type=client_credentials&scope=calc-rest-api");
 		Request request = new Request.Builder()
-				.url("https://auth.vertexsmb.com/identity/connect/token")//TODO: david add this to tha admin console as "Vertex Autentication URL"
+				.url("https://tokenguard.vertexcloud.com/cached/oauth/token")//TODO: david add this to tha admin console as "Vertex Autentication URL"
 				.method("POST", body)
 				.addHeader("Content-Type", "application/x-www-form-urlencoded")
 				.build();
@@ -187,7 +187,7 @@ public class CustomerServiceImpl extends SalesManagerEntityServiceImpl<Long, Cus
 		taxAreaLookupReq.setAsOfDate(strDate);
 		AddressCleansingResp resp=new AddressCleansingResp();
 		try {
-			token=getAuthentication("eRVI4dz5sQlrbvAN3cmV8J4NMiqzkH7P","xrVO0oopkFjCupaQlIGPUnJrLpLS78xzZrbyoNwFh6ih7b3VBxSG2S8cGB8QHrIM");//TODO
+			token=getAuthentication("sijFzhlX23c8qRm5hJYzhYY1RyTZyyeR","eeu1ORrwKEi9ID2LUVz90LV0EyiDjLKxQsA7HSvA1LbTisYJn3OR");//TODO
 			resp=doAddressCleansing(taxAreaLookupReq,
 					token,
 					"https://calcconnect.vertexsmb.com");//TODO
