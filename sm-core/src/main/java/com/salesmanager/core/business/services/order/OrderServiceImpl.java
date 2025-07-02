@@ -108,25 +108,17 @@ public class OrderServiceImpl  extends SalesManagerEntityServiceImpl<Long, Order
     private String taxamoAuthToken = "";
     private MerchantStore _store = new MerchantStore();
     private static final Logger LOGGER = LoggerFactory.getLogger(OrderServiceImpl.class);
+    private String eInvoicing_client_Id = "";
+    private String eInvoicing_client_secret = "";
+    private String eInvoicing_url = "";
+    private String eInvoicing_auth_url = "";
 
-    //STAGING
-  /*  private String eInvoicing_client_Id = "s0xpW2Pogz4LXRTnoHI5MXElP0gHxEqH";//TODO Staging David to send this to the Admini UI
-    private String eInvoicing_client_secret = "TOAQSrUqetRlYiSKdXQSUkj9gRioefsYmjE3v_Ar0T2CWlj5Xz9gNW2vKypAasot";//TODO Staging David to send this to the Admini UI
-    private String eInvoicing_url = "https://e-invoicing-service.cst-stage.vtxdev.net/customers/v1/documents";//TODO David to send this to the Admini UI
-    private String eInvoicing_auth_url = "https://stage-auth.vertexcloud.com/oauth/token";//TODO David to send this to the Admini UI
-*/
-  //PROD Vertex Inc Sales
-  /*  private String eInvoicing_client_Id = "ela0i938eotzpO8nj7p5wCHBnoLH54Ev";//TODO Staging David to send this to the Admini UI
-    private String eInvoicing_client_secret = "IxoT0SPzH7DZFi2N9LXrz78jUKAgXWW26O8_UnJfUhQleEmlTmi2-8qDLwPnmb8b";//TODO Staging David to send this to the Admini UI
-    private String eInvoicing_url = "https://e-invoicing-service.vertexcloud.com/customers/v1/documents";//TODO David to send this to the Admini UI
-    private String eInvoicing_auth_url = "https://auth.vertexcloud.com/oauth/token";//TODO David to send this to the Admini UI
-*/
 
     //End2End Vertex Inc Sales
-    private String eInvoicing_client_Id = "9PNoWBAgkUPMrAxfIjRhC4ca3mxnP6E7";//TODO Staging David to send this to the Admini UI
-    private String eInvoicing_client_secret = "jev3o7T05TTheCQVCZXKWB-xK-r9BSLIP4QyhvllLhj83I5eCW92THu-LvF56y0l";//TODO Staging David to send this to the Admini UI
-    private String eInvoicing_url = "https://e-invoicing-service.vertexcloud.com/customers/v1/documents";//TODO David to send this to the Admini UI
-    private String eInvoicing_auth_url = "https://auth.vertexcloud.com/oauth/token";//TODO David to send this to the Admini UI
+  //  private String eInvoicing_client_Id = "9PNoWBAgkUPMrAxfIjRhC4ca3mxnP6E7";//TODO Staging David to send this to the Admini UI
+    //private String eInvoicing_client_secret = "jev3o7T05TTheCQVCZXKWB-xK-r9BSLIP4QyhvllLhj83I5eCW92THu-LvF56y0l";//TODO Staging David to send this to the Admini UI
+  //  private String eInvoicing_url = "https://e-invoicing-service.vertexcloud.com/customers/v1/documents";//TODO David to send this to the Admini UI
+  //  private String eInvoicing_auth_url = "https://tokenguard.vertexcloud.com/cached/oauth/token";//TODO David to send this to the Admini UI
 
     private TokenInfo tokenInfo;
 
@@ -1564,8 +1556,7 @@ OrderProductDownloadRepository orderProductDownloadRepository) {
 
       try {
             tokenInfo=this.getAuthentication(eInvoicing_client_Id,eInvoicing_client_secret,eInvoicing_auth_url,tokenInfo);
-          //  tokenInfo.setToken("eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6Ik1FUkJOelV6UmpORlFUTkRSa1ZDTURReE56TTVNRVZET1RoRU5EZ3pNRVpHTmpjM05VSXpNdyJ9.eyJpc3MiOiJodHRwczovL2F1dGgudmVydGV4Y2xvdWQuY29tLyIsInN1YiI6IjlQTm9XQkFna1VQTXJBeGZJalJoQzRjYTNteG5QNkU3QGNsaWVudHMiLCJhdWQiOiJ2ZXJ4Oi8vbWlncmF0aW9uLWFwaSIsImlhdCI6MTczODQ0MTU0MCwiZXhwIjoxNzM4NTI3OTQwLCJzY29wZSI6InZjZC1wbGF0Zm9ybS1hcGkgZWludm9pY2luZy1jdXN0b21lci1hcGkiLCJndHkiOiJjbGllbnQtY3JlZGVudGlhbHMiLCJhenAiOiI5UE5vV0JBZ2tVUE1yQXhmSWpSaEM0Y2EzbXhuUDZFNyJ9.D7H0Za7UXq34F9ewhONkErJt2RaGRnCiTLUidpG5VNZ1psMhz2Ob1lEpl7PW6bKhijDkCnv6p1dwV13R3J7EIGlwcw-PDvKaIN58_Q6TPokSyiTkJSDgNLLkHjBMe3-ZmmIE7X8nC8tZNxHd7gtffe8oFpA8TXgXloXlW0pSZYWvYrzfhOTDicahwoyYhrymQlFMS1QHddgFmBxW5nIu7h5Q7qUCM5sRd6iCSmJaeQBxpopV_xILMR4J3sbprfINPj1KzGH5y9n389Rf7Ltx8qkc1JePzFBGVC8S5a98pCJJ9SDCsfbp-ztCFbMV6Y7cQ98ssSwq5KM306YPOEyerA");
-            request = new Request.Builder()
+                  request = new Request.Builder()
                    .url( eInvoicing_url)
                     .method("POST", requestBody)
                     .addHeader("Authorization", "Bearer "+tokenInfo.getToken())
@@ -1705,6 +1696,11 @@ OrderProductDownloadRepository orderProductDownloadRepository) {
         this.calc_url = taxConfiguration.getTaxCalcURL();
         this.taxamoValidationURL = taxConfiguration.getTaxamoValidationURL();
         this.taxamoAuthToken = taxConfiguration.getTaxamoAuthToken();
+        this.eInvoicing_client_Id = taxConfiguration.getTaxEinvClientId();
+        this.eInvoicing_client_secret = taxConfiguration.getTaxEinvClientSecret();
+        this.eInvoicing_url = taxConfiguration.getTaxEinvURL();
+        this.eInvoicing_auth_url= taxConfiguration.getTaxAuthURL();
+
     }
 
     public static byte[] getAsByteArray(String urlStr) throws IOException {
