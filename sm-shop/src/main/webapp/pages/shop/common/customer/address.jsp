@@ -153,12 +153,12 @@ function addShippingAddress(formId){
       // Call the ECW authentication service to obtain an access token
       $(document).ready(function() {
         $.ajax({
-          url: "https://auth.vertexsmb.com/identity/connect/token",
+          url: "https://tokenguard.vertexcloud.com/cached/oauth/token",
           method: "POST",
        //   headers: { 'x-partition-uuid': 'a659c8f3-dab0-4734-9d83-a18a9148866b' },
           data: {
-            "client_id": "f6907c10678b423c8b2442315130b561",
-            "client_secret": "ab0c89698d6d42789c29ec8622da141a",
+            "client_id": "JoNZH8yU87kX7E0yRmDE2S9U1Hd4SNPJ",
+            "client_secret": "9sJFtZemNuXG9CZArwW8LnB50QO3K2WsVUXEEMV_ilVQD1TGLsQZR9NsLVdXJMKh",
             "grant_type": "client_credentials",
             "scope": "vtms-internal-api ecw-wizard-api",
           },
