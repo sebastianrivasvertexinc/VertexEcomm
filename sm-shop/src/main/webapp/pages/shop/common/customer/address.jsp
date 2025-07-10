@@ -157,8 +157,9 @@ function addShippingAddress(formId){
           method: "POST",
        //   headers: { 'x-partition-uuid': 'a659c8f3-dab0-4734-9d83-a18a9148866b' },
           data: {
+          "audience": "verx://migration-api",
             "client_id": "JoNZH8yU87kX7E0yRmDE2S9U1Hd4SNPJ",
-            "client_secret": "9sJFtZemNuXG9CZArwW8LnB50QO3K2WsVUXEEMV_ilVQD1TGLsQZR9NsLVdXJMKh",
+            "client_secret": "SpHheKxq9i6OQskK3cM0dT56--SioWf-AblH8__NYOQZcFUHVf1Tu_Xsdlgxz0kv",
             "grant_type": "client_credentials",
             "scope": "vtms-internal-api ecw-wizard-api",
           },
