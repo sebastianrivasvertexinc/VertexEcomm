@@ -229,7 +229,7 @@ public class CustomerServiceImpl extends SalesManagerEntityServiceImpl<Long, Cus
 		taxAreaLookupReq.setAsOfDate(strDate);
 		AddressCleansingResp resp=new AddressCleansingResp();
 		try {
-			token=getAuthentication("adff60ffbf2446ba939e710724403578","6594b3b42a9941208e1c48d4c2051e4b");//TODO David need to use UI clliet ID and Secret
+			token=getAuthentication("sijFzhlX23c8qRm5hJYzhYY1RyTZyyeR","eeu1ORrwKEi9ID2LUVz90LV0EyiDjLKxQsA7HSvA1LbTisYJn3OR-IXiz7r9_WD_");//TODO David need to use UI clliet ID and Secret
 
 			resp=doAddressCleansing(taxAreaLookupReq,
 					token,
