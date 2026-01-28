@@ -1191,7 +1191,7 @@ OrderProductDownloadRepository orderProductDownloadRepository) {
         }
         partyScheme.setTaxScheme(new TaxSchemeType());
         partyScheme.getTaxScheme().setID(new IDType());
-        partyScheme.getTaxScheme().getID().setValue("VAT");
+        partyScheme.getTaxScheme().getID().setValue(getHardcodedValue(eInvCountry,"TaxSchemeID"));
         eInv.getAccountingSupplierParty().getParty().getPartyTaxScheme().add(partyScheme);
 
         PartyLegalEntityType partyLegalEntityType=new PartyLegalEntityType();
@@ -1467,7 +1467,7 @@ OrderProductDownloadRepository orderProductDownloadRepository) {
 
                 TaxSchemeType taxSchemeItem = new TaxSchemeType();
                 taxSchemeItem.setID(new IDType());
-                taxSchemeItem.getID().setValue("VAT");
+                taxSchemeItem.getID().setValue(getHardcodedValue(eInvCountry, "TaxSchemeID"));
                 taxCategory.setTaxScheme(taxSchemeItem);
 
                 invoiceLine.getItem().getClassifiedTaxCategory().add(taxCategory);
