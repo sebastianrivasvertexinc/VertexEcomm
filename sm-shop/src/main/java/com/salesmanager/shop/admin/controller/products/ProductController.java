@@ -1,5 +1,6 @@
 package com.salesmanager.shop.admin.controller.products;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.salesmanager.core.business.services.catalog.category.CategoryService;
 import com.salesmanager.core.business.services.catalog.product.ProductService;
 import com.salesmanager.core.business.services.catalog.product.image.ProductImageService;
@@ -31,7 +32,14 @@ import com.salesmanager.shop.constants.Constants;
 import com.salesmanager.shop.utils.CategoryUtils;
 import com.salesmanager.shop.utils.DateUtil;
 import com.salesmanager.shop.utils.LabelUtils;
+import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.Response;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.xmlbeans.impl.xb.xsdschema.Public;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
@@ -51,6 +59,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.*;
 
@@ -121,11 +130,15 @@ public class ProductController {
 	
 	
 	private String displayProduct(Long productId, Model model, HttpServletRequest request, HttpServletResponse response) throws Exception {
-		
+		///DJR - This method is the generic displayProduct attributes that get sent to the front end UI
+		///Need to make sure the tax class is displayed correctly if SmartCat has reviewed it
+		///This gets called first for both product display and new product - need logic to determine when reference system identifier is null
+		///to skip checking for updated Tax Category
+
 
 		//display menu
 		setMenu(model,request);
-		
+
 		
 		MerchantStore store = (MerchantStore)request.getAttribute(Constants.ADMIN_STORE);
 		Language language = (Language)request.getAttribute("LANGUAGE");
@@ -152,7 +165,10 @@ public class ProductController {
 			if(dbProduct==null || dbProduct.getMerchantStore().getId().intValue()!=store.getId().intValue()) {
 				return "redirect:/admin/products/products.html";
 			}
-			
+
+			//Check and see if tax data is presented
+
+
 			product.setProduct(dbProduct);
 			Set<ProductDescription> productDescriptions = dbProduct.getDescriptions();
 			
@@ -164,8 +180,16 @@ public class ProductController {
 					Language lang = desc.getLanguage();
 					if(lang.getCode().equals(l.getCode())) {
 						productDesc = desc;
+						if(productDesc.getMetatagDescription()!= null ||  !productDesc.getMetatagDescription().isEmpty())
+						{
+							if (product.getProduct().getRefSku() != null || !product.getProduct().getRefSku().isEmpty()) {
+								String taxData = getSmartCatString("update", product);
+								if (!taxData.contains("IN_PROGRESS")) {
+									productDesc.setMetatagDescription(taxData);
+								}
+							}
+						}
 					}
-
 				}
 				
 				if(productDesc==null) {
@@ -225,45 +249,159 @@ public class ProductController {
 		} else {
 
 
-			for(Language l : languages) {
-				
+			for (Language l : languages) {
+
 				ProductDescription desc = new ProductDescription();
 				desc.setLanguage(l);
 				descriptions.add(desc);
-				
+
 			}
-			
+
 			Product prod = new Product();
-			
+
 			prod.setAvailable(true);
-			
+
 			ProductAvailability productAvailability = new ProductAvailability();
 			ProductPrice price = new ProductPrice();
+
 			product.setPrice(price);
 			product.setAvailability(productAvailability);
 			product.setProduct(prod);
 			product.setDescriptions(descriptions);
 			product.setDateAvailable(DateUtil.formatDate(new Date()));
 
-
 		}
-		
-		
-		
-		
-		
 		model.addAttribute("product",product);
 		model.addAttribute("manufacturers", manufacturers);
 		model.addAttribute("productTypes", productTypes);
 		model.addAttribute("taxClasses", taxClasses);
 		return "admin-products-edit";
 	}
-	
+	/// Function to remove escape new line and richtext characters because it fails in processing in smartcat
+	public String cleanString(String desc)
+	{
+		String returnClean = desc.replace("\n","");
+		returnClean = returnClean.replace("<p>","");
+		returnClean = returnClean.replace("</p>","");
+		returnClean = returnClean.stripLeading();
+
+		return returnClean;
+	}
+
+	public String getSmartCatString(String identifier, com.salesmanager.shop.admin.model.catalog.Product product) throws IOException {
+		String test = "";
+
+			OkHttpClient client = new OkHttpClient();
+			com.squareup.okhttp.MediaType mediaType = com.squareup.okhttp.MediaType.parse("application/x-www-form-urlencoded");
+			com.squareup.okhttp.RequestBody body = com.squareup.okhttp.RequestBody.create(mediaType, "client_id=ILMHT1KD46DWVet98Y1Xxnjv2jBKAmFx" + "&client_secret=eGbuDygHJkDKqtWdYflqj6YMywmDYJR0U6kRfGK7DY20WoWwFgq32CcI7d_mjOxn&grant_type=client_credentials&audience=verx://migration-api&Scope=vcd-platform-api smart-categorization-persist");
+			Request requestAuth = new Request.Builder()
+					.url("https://tokenguard.vertexcloud.com/cached/oauth/token")
+					.method("POST", body)
+					.addHeader("Content-Type", "application/x-www-form-urlencoded")
+					//.addHeader("audience", "verx://migration-api")
+					//.addHeader("Scope","vcd-platform-api smart-categorization-persist")
+					.build();
+			Response response = client.newCall(requestAuth).execute();
+
+			Map<String, Object> responseMap = new ObjectMapper().readValue(response.body().byteStream(), HashMap.class);
+			// Read the value of the "access_token" key from the hashmap
+			String accessToken = (String) responseMap.get("access_token");
+
+			//returns the Ref Id for the SmartCat Product
+			if(identifier.contains("id"))
+			{
+				//Making call to SmartCat
+				String desc = product.getDescriptions().get(0).getDescription();
+				OkHttpClient clientSmartCat = new OkHttpClient();
+				com.squareup.okhttp.MediaType mediaTypeSmartCat = com.squareup.okhttp.MediaType.parse("application/json");
+				String descClean = cleanString(desc);
+				com.squareup.okhttp.RequestBody bodySmartCat = com.squareup.okhttp.RequestBody.create(mediaTypeSmartCat,
+						"{" +
+								"  \"products\": [" +
+								"    {" +
+								"\"productUniqueId\": \"" + product.getProduct().getSku().toString() + "\"," +
+								"      \"productTitle\": \"" + product.getDescriptions().get(0).getName().toString() + "\"," +
+								"      \"productDescription\": \"" + descClean + "\"," +
+								"      \"concatenatedExtraColumns\": {" +
+								"        \"key_0\": \"End-2-End Demo API\"," +
+								"        \"key_1\": \"" + product.getDateAvailable() + "\"" +
+								"      }" +
+								"    }]}");
+
+
+				Request requestSmartCat = new Request.Builder()
+						.url("https://smartcategorization.vertexcloud.com/public-api/categorize/persist")
+						.method("POST", bodySmartCat)
+						.addHeader("Content-Type", "application/json")
+						.addHeader("Authorization", "Bearer " + accessToken)
+						.build();
+				Response responseSmartCat = null;
+				try {
+
+					responseSmartCat = clientSmartCat.newCall(requestSmartCat).execute();
+
+
+				} catch (Exception e) {
+					String tests = e.getMessage();
+				}
+
+
+				// Read the value of the "UUID and Tax Cat key from the hashmap
+				Map<String, Object> responseMapSmartCat = new ObjectMapper().readValue(responseSmartCat.body().byteStream(), HashMap.class);
+				//test to read the UUID from SmartCat
+				return (String) responseMapSmartCat.get("id");
+			}
+			//Gets the updated SmartCat Tax Category
+			if(identifier.contains("update"))
+			{
+				//Making call to SmartCat
+
+				OkHttpClient clientSmartCat = new OkHttpClient();
+				Request requestSmartCat = new Request.Builder()
+						.url("https://smartcategorization.vertexcloud.com/public-api/categorize/status/"+ product.getProduct().getRefSku().toString())
+						.get()
+						.addHeader("Content-Type", "application/json")
+						.addHeader("Authorization", "Bearer " + accessToken)
+						.build();
+				Response responseSmartCat = null;
+				try {
+
+					responseSmartCat = clientSmartCat.newCall(requestSmartCat).execute();
+
+
+				} catch (Exception e) {
+					String tests = e.getMessage();
+				}
+
+
+				// Read the value of the "UUID and Tax Cat key from the hashmap
+				Map<String, Object> responseMapSmartCat = new ObjectMapper().readValue(responseSmartCat.body().byteStream(), HashMap.class);
+				//test to read the TaxCat from SmartCat
+				try {
+
+					JSONParser parser = new JSONParser();
+					JSONArray result = (JSONArray) parser.parse((String) responseMapSmartCat.get("result"));
+					JSONObject taxCat = (JSONObject) result.get(0); //check to see value before sending back
+					return (String) taxCat.get("category");
+
+				} catch (Exception  e)
+				{
+					return "IN_PROGRESS";//Do check for failure
+				}
+			}
+
+		//This will only get called if all else fails
+		return test;
+	}
+
+
 
 	@PreAuthorize("hasRole('PRODUCTS')")
 	@RequestMapping(value="/admin/products/save.html", method=RequestMethod.POST)
-	public String saveProduct(@Valid @ModelAttribute("product") com.salesmanager.shop.admin.model.catalog.Product  product, BindingResult result, Model model, HttpServletRequest request, Locale locale) throws Exception {
-		
+	public String saveProduct(@Valid @ModelAttribute("product") com.salesmanager.shop.admin.model.catalog.Product product, BindingResult result, Model model, HttpServletRequest request, Locale locale) throws Exception {
+		///DJR - Called when saving from the front page, this is where we will:
+		/// 1. Call TaxCat Auth call
+		/// 2. Store UUID from tax cat product back into reference
 
 		Language language = (Language)request.getAttribute("LANGUAGE");
 		
@@ -277,13 +415,24 @@ public class ProductController {
 		List<ProductType> productTypes = productTypeService.list();
 		
 		List<TaxClass> taxClasses = taxClassService.listByStore(store);
-		
+		//DJR Test
+		//Example works
+		//String taxCat = product.getDescription().getMetatagDescription().toString();
+		String test2 = product.getDescriptions().get(0).getMetatagDescription().toString();
+		String test3 = product.getProduct().getRefSku();
+
+		//;For UUID from Smartcat
+		String respUUID = getSmartCatString("id",product);
+
+
+
 		List<Language> languages = store.getLanguages();
 		
 		model.addAttribute("manufacturers", manufacturers);
 		model.addAttribute("productTypes", productTypes);
 		model.addAttribute("taxClasses", taxClasses);
-		
+
+		///	This call trys looking for product in SKU first - this should be filled out for existing products. Then does a 2nd check
 		boolean productAlreadyExists = false;
 		if (!StringUtils.isBlank(product.getProduct().getSku()) && (product.getProduct().getId() == null || product.getProduct().getId().longValue() == 0)) {
 			try {
@@ -386,8 +535,9 @@ public class ProductController {
 		//TaxClass taxClass = newProduct.getTaxClass();
 		//TaxClass dbTaxClass = taxClassService.getById(taxClass.getId());
 		Set<ProductPrice> prices = new HashSet<ProductPrice>();
-		Set<ProductAvailability> availabilities = new HashSet<ProductAvailability>();	
+		Set<ProductAvailability> availabilities = new HashSet<ProductAvailability>();
 
+// This will get product if the product exists
 		if(product.getProduct().getId()!=null && product.getProduct().getId().longValue()>0) {
 		
 		
@@ -399,7 +549,12 @@ public class ProductController {
 			
 			//copy properties
 			newProduct.setSku(product.getProduct().getSku());
-			newProduct.setRefSku(product.getProduct().getRefSku());
+
+			// Set Reference SKU to be UUID from Smart Cat
+
+			newProduct.setRefSku(respUUID);
+
+
 			newProduct.setAvailable(product.getProduct().isAvailable());
 			newProduct.setDateAvailable(date);
 			newProduct.setManufacturer(product.getProduct().getManufacturer());
