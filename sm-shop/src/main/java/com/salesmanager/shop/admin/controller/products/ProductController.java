@@ -180,11 +180,13 @@ public class ProductController {
 					Language lang = desc.getLanguage();
 					if(lang.getCode().equals(l.getCode())) {
 						productDesc = desc;
-						if(productDesc.getMetatagDescription()!= null ||  !productDesc.getMetatagDescription().isEmpty())
+						if(productDesc.getMetatagDescription()!= null ||  !productDesc.getMetatagDescription().isEmpty() || productDesc.getMetatagDescription().equals("IN_PROGRESS"))
 						{
 							if (product.getProduct().getRefSku() != null || !product.getProduct().getRefSku().isEmpty()) {
 								String taxData = getSmartCatString("update", product);
 								if (!taxData.contains("IN_PROGRESS")) {
+									productDesc.setMetatagDescription(taxData);
+								} else {
 									productDesc.setMetatagDescription(taxData);
 								}
 							}
@@ -375,10 +377,10 @@ public class ProductController {
 
 
 				// Read the value of the "UUID and Tax Cat key from the hashmap
-				Map<String, Object> responseMapSmartCat = new ObjectMapper().readValue(responseSmartCat.body().byteStream(), HashMap.class);
+				Map<String, Object> responseMapSmartCat = null;
 				//test to read the TaxCat from SmartCat
 				try {
-
+					responseMapSmartCat = new ObjectMapper().readValue(responseSmartCat.body().byteStream(), HashMap.class);
 					JSONParser parser = new JSONParser();
 					JSONArray result = (JSONArray) parser.parse((String) responseMapSmartCat.get("result"));
 					JSONObject taxCat = (JSONObject) result.get(0); //check to see value before sending back
@@ -421,9 +423,11 @@ public class ProductController {
 		String test2 = product.getDescriptions().get(0).getMetatagDescription().toString();
 		String test3 = product.getProduct().getRefSku();
 
-		//;For UUID from Smartcat
-		String respUUID = getSmartCatString("id",product);
-
+		//;For UUID from Smartcat if not already available
+		String respUUID = "";
+		if(product.getProduct().getRefSku() == null || product.getProduct().getRefSku() == "") {
+			respUUID = getSmartCatString("id", product);
+		}
 
 
 		List<Language> languages = store.getLanguages();
