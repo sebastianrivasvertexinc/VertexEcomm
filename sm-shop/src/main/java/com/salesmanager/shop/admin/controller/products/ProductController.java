@@ -424,8 +424,10 @@ public class ProductController {
 		String test3 = product.getProduct().getRefSku();
 
 		//;For UUID from Smartcat if not already available
+		// using is_blank in Java 11 - this is a beter string empty check
+		// DJR approves
 		String respUUID = "";
-		if(product.getProduct().getRefSku() == null || product.getProduct().getRefSku() == "") {
+		if(product.getProduct().getRefSku() == null || product.getProduct().getRefSku().isBlank()) {
 			respUUID = getSmartCatString("id", product);
 		}
 
