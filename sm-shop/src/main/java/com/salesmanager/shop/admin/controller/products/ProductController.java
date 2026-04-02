@@ -429,6 +429,8 @@ public class ProductController {
 		String respUUID = "";
 		if(product.getProduct().getRefSku() == null || product.getProduct().getRefSku().isBlank()) {
 			respUUID = getSmartCatString("id", product);
+		} else {
+			respUUID = product.getProduct().getRefSku().toString();
 		}
 
 
