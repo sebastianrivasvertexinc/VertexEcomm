@@ -424,8 +424,8 @@ public class ProductController {
 		String test3 = product.getProduct().getRefSku();
 
 		//;For UUID from Smartcat if not already available
-		// using is_blank in Java 11 - this is a beter string empty check
-		// DJR approves
+		// using is_blank in Java 11 - this is a better string empty check
+		// DJR approves...honestly need to refactor this module as open source contribution is a mess. 14/3/2026
 		String respUUID = "";
 		if(product.getProduct().getRefSku() == null || product.getProduct().getRefSku().isBlank()) {
 			respUUID = getSmartCatString("id", product);
@@ -545,7 +545,7 @@ public class ProductController {
 		Set<ProductPrice> prices = new HashSet<ProductPrice>();
 		Set<ProductAvailability> availabilities = new HashSet<ProductAvailability>();
 
-// This will get product if the product exists
+		// This will get product if the product exists
 		if(product.getProduct().getId()!=null && product.getProduct().getId().longValue()>0) {
 		
 		
