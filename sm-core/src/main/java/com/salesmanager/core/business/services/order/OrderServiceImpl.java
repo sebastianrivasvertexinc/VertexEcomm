@@ -1047,7 +1047,8 @@ OrderProductDownloadRepository orderProductDownloadRepository) {
         }
 
         eInv.setID(new IDType());
-        eInv.getID().setValue(eInvCountry+version.toString().length()+order.getId().toString());
+        //for inovice id we use Country + last 4 digits of UUID + inovice number
+        eInv.getID().setValue(eInvCountry+"-"+ eInv.getUUID().getValue().substring(eInv.getUUID().getValue().length() - 4)+"-"+order.getId().toString());
         eInv.setInvoiceTypeCode(new InvoiceTypeCodeType());
         eInv.getInvoiceTypeCode().setValue(getHardcodedValue(eInvCountry,"InvoiceTypeCode",version));
         eInv.setDocumentCurrencyCode(new DocumentCurrencyCodeType());
