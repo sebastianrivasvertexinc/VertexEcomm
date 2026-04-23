@@ -294,7 +294,7 @@ OrderProductDownloadRepository orderProductDownloadRepository) {
         String urlInvoice=createInvoice(order,customer,vtxEngineCalculation.data.getlineItems(),store);//TODO DJR Calling taxamo e-inv print results in the UI
         String InstanceName="";
         //Create the electronic invoice with ecosio eINV 2025
-       /* InstanceName="Vertex Inc - End2End";
+        InstanceName="Vertex Inc - End2End";
         if(!getHardcodedValue(order.getBilling().getCountry().getIsoCode(),"Sender",InstanceName).isEmpty())
 
         {
@@ -303,7 +303,7 @@ OrderProductDownloadRepository orderProductDownloadRepository) {
         }
         System.out.println(urlInvoice);
        order.setShippingModuleCode(urlInvoice);
-*/
+/*
        //Create the electronic invoice with ecosio eINV 2026 v2
         InstanceName="Vertex Sales V2 e-Invoicing Cloud Account (Main-Prod)";
         if(!getHardcodedValue(order.getBilling().getCountry().getIsoCode(),"Sender",InstanceName).isEmpty())
@@ -313,7 +313,7 @@ OrderProductDownloadRepository orderProductDownloadRepository) {
         }
         System.out.println(urlInvoice);
         order.setShippingModuleCode(urlInvoice);
-
+*/
         //Create the electronic invoice with ecosio eINV 2026 v2
         InstanceName="Vertex - Sales";
         if(!getHardcodedValue(order.getBilling().getCountry().getIsoCode(),"Sender",InstanceName).isEmpty())
@@ -1047,7 +1047,7 @@ OrderProductDownloadRepository orderProductDownloadRepository) {
         }
 
         eInv.setID(new IDType());
-        eInv.getID().setValue(order.getId().toString());
+        eInv.getID().setValue(eInvCountry+version.toString().length()+order.getId().toString());
         eInv.setInvoiceTypeCode(new InvoiceTypeCodeType());
         eInv.getInvoiceTypeCode().setValue(getHardcodedValue(eInvCountry,"InvoiceTypeCode",version));
         eInv.setDocumentCurrencyCode(new DocumentCurrencyCodeType());
