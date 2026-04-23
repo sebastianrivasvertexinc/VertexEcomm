@@ -5,6 +5,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.net.URL;
 import java.net.URLConnection;
+import java.nio.file.Files;
 import java.text.SimpleDateFormat;
 import java.time.*;
 import java.time.temporal.TemporalAmount;
@@ -112,9 +113,9 @@ public class OrderServiceImpl  extends SalesManagerEntityServiceImpl<Long, Order
     private String eInvoicing_client_secret = "";
     private String eInvoicing_url = "";
     private String eInvoicing_auth_url = "";
+    private String encodedString = "";
 
-
-     private TokenInfo tokenInfo;
+    private TokenInfo tokenInfo;
 
 
     @Inject
@@ -291,33 +292,38 @@ OrderProductDownloadRepository orderProductDownloadRepository) {
        // ArrayList<LineItem> vtxLineItems =vtxEngineCalculation.data.getlineItems();
         //create an invoice with Taxamo
         String urlInvoice=createInvoice(order,customer,vtxEngineCalculation.data.getlineItems(),store);//TODO DJR Calling taxamo e-inv print results in the UI
-        //Create the electronic invoice
-         if(!getHardcodedValue(order.getBilling().getCountry().getIsoCode(),"Sender").isEmpty())
-       /*          order.getBilling().getCountry().getIsoCode().equals("MY")||
-                order.getBilling().getCountry().getIsoCode().equals("RO")||
-                order.getBilling().getCountry().getIsoCode().equals("SA")||
-                order.getBilling().getCountry().getIsoCode().equals("ES")||
-                order.getBilling().getCountry().getIsoCode().equals("FR")||
-                order.getBilling().getCountry().getIsoCode().equals("DK")||
-                order.getBilling().getCountry().getIsoCode().equals("JP")||
-                order.getBilling().getCountry().getIsoCode().equals("BE")||
-                order.getBilling().getCountry().getIsoCode().equals("EE")||
-                order.getBilling().getCountry().getIsoCode().equals("FI")||
-                order.getBilling().getCountry().getIsoCode().equals("NL")||
-                order.getBilling().getCountry().getIsoCode().equals("LT")||
-                order.getBilling().getCountry().getIsoCode().equals("HR")||
-                order.getBilling().getCountry().getIsoCode().equals("SK")||
-                order.getBilling().getCountry().getIsoCode().equals("SI")||
-                order.getBilling().getCountry().getIsoCode().equals("GB")||
-                order.getBilling().getCountry().getIsoCode().equals("IT")||
-                order.getBilling().getCountry().getIsoCode().equals("DE")
-        )//*/
+        String InstanceName="";
+        //Create the electronic invoice with ecosio eINV 2025
+       /* InstanceName="Vertex Inc - End2End";
+        if(!getHardcodedValue(order.getBilling().getCountry().getIsoCode(),"Sender",InstanceName).isEmpty())
+
         {
             order.setEInvoiceId("n/a");
-            order.setEInvoiceId(createElectronicInvoice(order,customer,vtxEngineCalculation,store,urlInvoice)); //TODO DJR Calling Ecosio e-inv print results in the UI
+            order.setEInvoiceId(createElectronicInvoice(order,customer,vtxEngineCalculation,store,urlInvoice,InstanceName));
         }
         System.out.println(urlInvoice);
        order.setShippingModuleCode(urlInvoice);
+*/
+       //Create the electronic invoice with ecosio eINV 2026 v2
+        InstanceName="Vertex Sales V2 e-Invoicing Cloud Account (Main-Prod)";
+        if(!getHardcodedValue(order.getBilling().getCountry().getIsoCode(),"Sender",InstanceName).isEmpty())
+        {
+            order.setEInvoiceId("n/a");
+            order.setEInvoiceId( order.getEInvoiceId()+" v2:" +createElectronicInvoice(order,customer,vtxEngineCalculation,store,urlInvoice,InstanceName));
+        }
+        System.out.println(urlInvoice);
+        order.setShippingModuleCode(urlInvoice);
+
+        //Create the electronic invoice with ecosio eINV 2026 v2
+        InstanceName="Vertex - Sales";
+        if(!getHardcodedValue(order.getBilling().getCountry().getIsoCode(),"Sender",InstanceName).isEmpty())
+        {
+            order.setEInvoiceId("n/a");
+            order.setEInvoiceId( order.getEInvoiceId()+" v2:" +createElectronicInvoice(order,customer,vtxEngineCalculation,store,urlInvoice,InstanceName));
+        }
+        System.out.println(urlInvoice);
+        order.setShippingModuleCode(urlInvoice);
+
     	return order;
     }
 
@@ -961,11 +967,11 @@ OrderProductDownloadRepository orderProductDownloadRepository) {
     }
 
 
-    private static String getHardcodedValue(String country, String type) {
-       return HardcodedValueFetcher.getHardcodedValue(country,type);
+    private static String getHardcodedValue(String country, String type,String instanceName) {
+       return HardcodedValueFetcher.getHardcodedValue(country,type,instanceName);
 
     }
-    public String createElectronicInvoice(Order order, Customer customer, VtxTaxCalc vertexResponse, MerchantStore store, String TaxamoUrlInvoice)  {
+    public String createElectronicInvoice(Order order, Customer customer, VtxTaxCalc vertexResponse, MerchantStore store, String TaxamoUrlInvoice,String version)  {
         // Don't want to throw exception back since we're overriding createInvoice, so ignore exception
         try {
             GetConfigData(store);
@@ -990,23 +996,23 @@ OrderProductDownloadRepository orderProductDownloadRepository) {
         UBLExtensionType uBLExtension=new UBLExtensionType();
         ExtensionContentType extensionContentType=new ExtensionContentType();
         InvoiceExtensionType invoiceExtension=new InvoiceExtensionType();
-        if (!getHardcodedValue(eInvCountry,"InstallationSerialNumber").isEmpty())
-            invoiceExtension.setInstallationSerialNumber(getHardcodedValue(eInvCountry,"InstallationSerialNumber"));
-        if (!getHardcodedValue(eInvCountry,"InvoiceSeries").isEmpty())
-            invoiceExtension.setInvoiceSeries(getHardcodedValue(eInvCountry,"InvoiceSeries"));
-        if (!getHardcodedValue(eInvCountry,"InvoiceSubtypeCode").isEmpty())
-            invoiceExtension.setInvoiceSubtypeCode(getHardcodedValue(eInvCountry,"InvoiceSubtypeCode"));
+        if (!getHardcodedValue(eInvCountry,"InstallationSerialNumber",version).isEmpty())
+            invoiceExtension.setInstallationSerialNumber(getHardcodedValue(eInvCountry,"InstallationSerialNumber",version));
+        if (!getHardcodedValue(eInvCountry,"InvoiceSeries",version).isEmpty())
+            invoiceExtension.setInvoiceSeries(getHardcodedValue(eInvCountry,"InvoiceSeries",version));
+        if (!getHardcodedValue(eInvCountry,"InvoiceSubtypeCode",version).isEmpty())
+            invoiceExtension.setInvoiceSubtypeCode(getHardcodedValue(eInvCountry,"InvoiceSubtypeCode",version));
 
         invoiceExtension.setRoutingDetails(new RoutingDetailsType());
-        invoiceExtension.getRoutingDetails().setSender(getHardcodedValue(eInvCountry,"Sender"));
-        invoiceExtension.getRoutingDetails().setReceiver(getHardcodedValue(eInvCountry,"Receiver"));
-        if (!getHardcodedValue(eInvCountry,"ReceiverEndpointIDSchemeID").isEmpty()) {
-              invoiceExtension.getRoutingDetails().setReceiverDetails(getHardcodedValue(eInvCountry,"ReceiverEndpointIDSchemeID")+":"+getHardcodedValue(eInvCountry,"ReceiverEndpointID"));
+        invoiceExtension.getRoutingDetails().setSender(getHardcodedValue(eInvCountry,"Sender",version));
+        invoiceExtension.getRoutingDetails().setReceiver(getHardcodedValue(eInvCountry,"Receiver",version));
+        if (!getHardcodedValue(eInvCountry,"ReceiverEndpointIDSchemeID",version).isEmpty()) {
+              invoiceExtension.getRoutingDetails().setReceiverDetails(getHardcodedValue(eInvCountry,"ReceiverEndpointIDSchemeID",version)+":"+getHardcodedValue(eInvCountry,"ReceiverEndpointID",version));
         }
-        if (!getHardcodedValue(eInvCountry,"SdIReceiverCode").isEmpty())
-            invoiceExtension.setSdIReceiverCode((getHardcodedValue(eInvCountry,"SdIReceiverCode")));
-        if (!getHardcodedValue(eInvCountry,"TransmissionFormatCode").isEmpty())
-            invoiceExtension.setTransmissionFormatCode((getHardcodedValue(eInvCountry,"TransmissionFormatCode")));
+        if (!getHardcodedValue(eInvCountry,"SdIReceiverCode",version).isEmpty())
+            invoiceExtension.setSdIReceiverCode((getHardcodedValue(eInvCountry,"SdIReceiverCode",version)));
+        if (!getHardcodedValue(eInvCountry,"TransmissionFormatCode",version).isEmpty())
+            invoiceExtension.setTransmissionFormatCode((getHardcodedValue(eInvCountry,"TransmissionFormatCode",version)));
 
         invoiceExtension.setProcessDetails(new ProcessDetailsType());
         invoiceExtension.getProcessDetails().setCompanyCode(order.getMerchant().getStorename());
@@ -1025,7 +1031,7 @@ OrderProductDownloadRepository orderProductDownloadRepository) {
         eInv.getProfileID().setValue("urn:vertexinc:vrbl:billing:1");
 
         eInv.setUUID(new UUIDType());
-        eInv.getUUID().setValue(UUID.randomUUID().toString());
+        eInv.getUUID().setValue(getHardcodedValue("GENERIC","UUID",version));
 
         eInv.setIssueDate(new IssueDateType());
         eInv.setIssueTime(new IssueTimeType());
@@ -1043,12 +1049,12 @@ OrderProductDownloadRepository orderProductDownloadRepository) {
         eInv.setID(new IDType());
         eInv.getID().setValue(order.getId().toString());
         eInv.setInvoiceTypeCode(new InvoiceTypeCodeType());
-        eInv.getInvoiceTypeCode().setValue(getHardcodedValue(eInvCountry,"InvoiceTypeCode"));
+        eInv.getInvoiceTypeCode().setValue(getHardcodedValue(eInvCountry,"InvoiceTypeCode",version));
         eInv.setDocumentCurrencyCode(new DocumentCurrencyCodeType());
         eInv.getDocumentCurrencyCode().setValue(currencyDetails.currency_code);
 
         eInv.setBuyerReference(new BuyerReferenceType());
-        eInv.getBuyerReference().setValue(getHardcodedValue(eInvCountry,"BuyerReference"));
+        eInv.getBuyerReference().setValue(getHardcodedValue(eInvCountry,"BuyerReference",version));
 
         NoteType noteType=new NoteType();
         noteType.setValue("This is an invoice generated by the SE team using Shopizer");
@@ -1063,12 +1069,12 @@ OrderProductDownloadRepository orderProductDownloadRepository) {
 
 
 
-        if (!getHardcodedValue(eInvCountry,"DocumentDescription1").isEmpty()){//Add greece MARK
+        if (!getHardcodedValue(eInvCountry,"DocumentDescription1",version).isEmpty()){//Add greece MARK
             DocumentReferenceType documentReferenceType1=new DocumentReferenceType();
             documentReferenceType1.setID(new IDType());
             documentReferenceType1.getID().setValue(order.getId().toString());
             DocumentDescriptionType docDesc1=new DocumentDescriptionType();
-            docDesc1.setValue(getHardcodedValue(eInvCountry,"DocumentDescription1"));
+            docDesc1.setValue(getHardcodedValue(eInvCountry,"DocumentDescription1",version));
             documentReferenceType1.getDocumentDescription().add(docDesc1);
             eInv.getAdditionalDocumentReference().add(documentReferenceType1);
         }
@@ -1081,7 +1087,7 @@ OrderProductDownloadRepository orderProductDownloadRepository) {
         documentReferenceType.setID(new IDType());
         documentReferenceType.getID().setValue(order.getId().toString());
         DocumentDescriptionType docDesc=new DocumentDescriptionType();
-        docDesc.setValue(getHardcodedValue(eInvCountry,"DocumentDescription"));
+        docDesc.setValue(getHardcodedValue(eInvCountry,"DocumentDescription",version));
         documentReferenceType.getDocumentDescription().add(docDesc);
 
         TaxamoUrlInvoice=TaxamoUrlInvoice.replace("invoice.taxamo.com/api/v1/transactions","invoicestaxamo.s3.amazonaws.com")+".pdf";
@@ -1119,10 +1125,10 @@ OrderProductDownloadRepository orderProductDownloadRepository) {
         documentReferenceType.getAttachment().setExternalReference(externalReference);
 
         DocumentTypeType docType =new DocumentTypeType();
-        docType.setValue(getHardcodedValue(eInvCountry,"DocumentTypeCodeType"));
+        docType.setValue(getHardcodedValue(eInvCountry,"DocumentTypeCodeType",version));
         documentReferenceType.getDocumentType().add(docType);
-        if (!getHardcodedValue(eInvCountry,"documentReferenceSchemeId").isEmpty())
-            documentReferenceType.getID().setSchemeID(getHardcodedValue(eInvCountry,"documentReferenceSchemeId"));
+        if (!getHardcodedValue(eInvCountry,"documentReferenceSchemeId",version).isEmpty())
+            documentReferenceType.getID().setSchemeID(getHardcodedValue(eInvCountry,"documentReferenceSchemeId",version));
 
         eInv.getAdditionalDocumentReference().add(documentReferenceType);
 
@@ -1139,40 +1145,44 @@ OrderProductDownloadRepository orderProductDownloadRepository) {
         //AccountingSupplierParty
         eInv.getAccountingSupplierParty().getParty().getPartyName().add(partyName);
 
-        if (!getHardcodedValue(eInvCountry,"SenderEndpointID").isEmpty()){
+        if (!getHardcodedValue(eInvCountry,"SenderEndpointID",version).isEmpty()){
             eInv.getAccountingSupplierParty().getParty().setEndpointID(new EndpointIDType());
-            eInv.getAccountingSupplierParty().getParty().getEndpointID().setValue(getHardcodedValue(eInvCountry,"SenderEndpointID"));
-            eInv.getAccountingSupplierParty().getParty().getEndpointID().setSchemeID(getHardcodedValue(eInvCountry,"SenderEndpointIDSchemeID"));
+            eInv.getAccountingSupplierParty().getParty().getEndpointID().setValue(getHardcodedValue(eInvCountry,"SenderEndpointID",version));
+            eInv.getAccountingSupplierParty().getParty().getEndpointID().setSchemeID(getHardcodedValue(eInvCountry,"SenderEndpointIDSchemeID",version));
         }
 
         eInv.getAccountingSupplierParty().getParty().setPostalAddress(new AddressType());
         eInv.getAccountingSupplierParty().getParty().getPostalAddress().setStreetName(new StreetNameType());
         eInv.getAccountingSupplierParty().getParty().getPostalAddress().getStreetName().setValue(store.getStoreaddress());
 
-        if (!getHardcodedValue(eInvCountry,"BuildingNumber").isEmpty()) {
+        if (!getHardcodedValue(eInvCountry,"BuildingNumber",version).isEmpty()) {
             eInv.getAccountingSupplierParty().getParty().getPostalAddress().setBuildingNumber(new BuildingNumberType());
-            eInv.getAccountingSupplierParty().getParty().getPostalAddress().getBuildingNumber().setValue(getHardcodedValue(eInvCountry, "BuildingNumber"));//TODO: fix hardcoded
+            eInv.getAccountingSupplierParty().getParty().getPostalAddress().getBuildingNumber().setValue(getHardcodedValue(eInvCountry, "BuildingNumber",version));//TODO: fix hardcoded
         }
-        if (!getHardcodedValue(eInvCountry,"CitySubdivisionName").isEmpty()) {
+        if (!getHardcodedValue(eInvCountry,"CitySubdivisionName",version).isEmpty()) {
             eInv.getAccountingSupplierParty().getParty().getPostalAddress().setCitySubdivisionName(new CitySubdivisionNameType());
-            eInv.getAccountingSupplierParty().getParty().getPostalAddress().getCitySubdivisionName().setValue(getHardcodedValue(eInvCountry, "CitySubdivisionName"));//TODO: fix hardcoded
+            eInv.getAccountingSupplierParty().getParty().getPostalAddress().getCitySubdivisionName().setValue(getHardcodedValue(eInvCountry, "CitySubdivisionName",version));//TODO: fix hardcoded
         }
         eInv.getAccountingSupplierParty().getParty().getPostalAddress().setCityName(new CityNameType());
         eInv.getAccountingSupplierParty().getParty().getPostalAddress().getCityName().setValue(store.getStorecity());
         eInv.getAccountingSupplierParty().getParty().getPostalAddress().setPostalZone(new PostalZoneType());
         eInv.getAccountingSupplierParty().getParty().getPostalAddress().getPostalZone().setValue(store.getStorepostalcode());
 
-        eInv.getAccountingSupplierParty().getParty().getPostalAddress().setCountrySubentity(new CountrySubentityType());
-        eInv.getAccountingSupplierParty().getParty().getPostalAddress().getCountrySubentity().setValue(getHardcodedValue(eInvCountry,"CountrySubentity"));//TODO: fix hardcoded
+        if (!getHardcodedValue(eInvCountry,"CountrySubentity",version).isEmpty()) {
+            eInv.getAccountingSupplierParty().getParty().getPostalAddress().setCountrySubentity(new CountrySubentityType());
+            eInv.getAccountingSupplierParty().getParty().getPostalAddress().getCountrySubentity().setValue(getHardcodedValue(eInvCountry, "CountrySubentity", version));//TODO: fix hardcoded
 
+            eInv.getAccountingSupplierParty().getParty().getPostalAddress().setCountrySubentityCode(new CountrySubentityCodeType());
+            eInv.getAccountingSupplierParty().getParty().getPostalAddress().getCountrySubentityCode().setValue(getHardcodedValue(eInvCountry, "CountrySubentity", version));//TODO: fix hardcoded
+        }
         eInv.getAccountingSupplierParty().getParty().getPostalAddress().setCountry(new CountryType());
         eInv.getAccountingSupplierParty().getParty().getPostalAddress().getCountry().setIdentificationCode(new IdentificationCodeType());
         eInv.getAccountingSupplierParty().getParty().getPostalAddress().getCountry().getIdentificationCode().setValue(store.getCountry().getIsoCode());//TODO: testing country
 
-        if (!getHardcodedValue(eInvCountry,"IndustryClassificationCodeValue").isEmpty()) {
+        if (!getHardcodedValue(eInvCountry,"IndustryClassificationCodeValue",version).isEmpty()) {
             eInv.getAccountingSupplierParty().getParty().setIndustryClassificationCode(new IndustryClassificationCodeType());
-            eInv.getAccountingSupplierParty().getParty().getIndustryClassificationCode().setName(getHardcodedValue(eInvCountry, "IndustryClassificationCodeName"));
-            eInv.getAccountingSupplierParty().getParty().getIndustryClassificationCode().setValue(getHardcodedValue(eInvCountry, "IndustryClassificationCodeValue"));
+            eInv.getAccountingSupplierParty().getParty().getIndustryClassificationCode().setName(getHardcodedValue(eInvCountry, "IndustryClassificationCodeName",version));
+            eInv.getAccountingSupplierParty().getParty().getIndustryClassificationCode().setValue(getHardcodedValue(eInvCountry, "IndustryClassificationCodeValue",version));
         }
 
         PartyTaxSchemeType partyScheme=new PartyTaxSchemeType();
@@ -1181,26 +1191,26 @@ OrderProductDownloadRepository orderProductDownloadRepository) {
         partyScheme.setRegistrationName(new RegistrationNameType());
         partyScheme.getRegistrationName().setValue(store.getStorename());
         partyScheme.setCompanyID(new CompanyIDType());
-        partyScheme.getCompanyID().setValue(getHardcodedValue(eInvCountry,"AccountingSupplierPartyVAT"));
-        if(!getHardcodedValue(eInvCountry,"CompanyIDSchemeID").isEmpty())
-            partyScheme.getCompanyID().setSchemeID(getHardcodedValue(eInvCountry,"CompanyIDSchemeID"));
+        partyScheme.getCompanyID().setValue(getHardcodedValue(eInvCountry,"AccountingSupplierPartyVAT",version));
+        if(!getHardcodedValue(eInvCountry,"CompanyIDSchemeID",version).isEmpty())
+            partyScheme.getCompanyID().setSchemeID(getHardcodedValue(eInvCountry,"CompanyIDSchemeID",version));
 
-        if(!getHardcodedValue(eInvCountry,"TaxLevelCode").isEmpty()) {
+        if(!getHardcodedValue(eInvCountry,"TaxLevelCode",version).isEmpty()) {
             partyScheme.setTaxLevelCode(new TaxLevelCodeType());
-            partyScheme.getTaxLevelCode().setValue(getHardcodedValue(eInvCountry, "TaxLevelCode"));
+            partyScheme.getTaxLevelCode().setValue(getHardcodedValue(eInvCountry, "TaxLevelCode",version));
         }
         partyScheme.setTaxScheme(new TaxSchemeType());
         partyScheme.getTaxScheme().setID(new IDType());
-        partyScheme.getTaxScheme().getID().setValue(getHardcodedValue(eInvCountry,"TaxSchemeID"));
+        partyScheme.getTaxScheme().getID().setValue(getHardcodedValue(eInvCountry,"TaxSchemeID",version));
         eInv.getAccountingSupplierParty().getParty().getPartyTaxScheme().add(partyScheme);
 
         PartyLegalEntityType partyLegalEntityType=new PartyLegalEntityType();
         partyLegalEntityType.setRegistrationName(new RegistrationNameType());
         partyLegalEntityType.getRegistrationName().setValue(store.getStorename());
         partyLegalEntityType.setCompanyID(new CompanyIDType());
-        partyLegalEntityType.getCompanyID().setValue(getHardcodedValue(eInvCountry,"AccountingSupplierPartyVAT"));
-        if(!getHardcodedValue(eInvCountry,"CompanyIDSchemeID").isEmpty())
-            partyLegalEntityType.getCompanyID().setSchemeID(getHardcodedValue(eInvCountry,"CompanyIDSchemeID"));
+        partyLegalEntityType.getCompanyID().setValue(getHardcodedValue(eInvCountry,"AccountingSupplierPartyVAT",version));
+        if(!getHardcodedValue(eInvCountry,"CompanyIDSchemeID",version).isEmpty())
+            partyLegalEntityType.getCompanyID().setSchemeID(getHardcodedValue(eInvCountry,"CompanyIDSchemeID",version));
         eInv.getAccountingSupplierParty().getParty().getPartyLegalEntity().add(partyLegalEntityType);
 
         ContactType contact= new ContactType();
@@ -1228,28 +1238,28 @@ OrderProductDownloadRepository orderProductDownloadRepository) {
 
 
 
-        if (!getHardcodedValue(eInvCountry,"ReceiverEndpointID").isEmpty()) {
+        if (!getHardcodedValue(eInvCountry,"ReceiverEndpointID",version).isEmpty()) {
             eInv.getAccountingCustomerParty().getParty().setEndpointID(new EndpointIDType());
-            eInv.getAccountingCustomerParty().getParty().getEndpointID().setValue(getHardcodedValue(eInvCountry, "ReceiverEndpointID"));
-            eInv.getAccountingCustomerParty().getParty().getEndpointID().setSchemeID(getHardcodedValue(eInvCountry, "ReceiverEndpointIDSchemeID"));
+            eInv.getAccountingCustomerParty().getParty().getEndpointID().setValue(getHardcodedValue(eInvCountry, "ReceiverEndpointID",version));
+            eInv.getAccountingCustomerParty().getParty().getEndpointID().setSchemeID(getHardcodedValue(eInvCountry, "ReceiverEndpointIDSchemeID",version));
         }
         eInv.getAccountingCustomerParty().getParty().getPartyName().add(partyNameAc);
         eInv.getAccountingCustomerParty().getParty().setPostalAddress(new AddressType());
         eInv.getAccountingCustomerParty().getParty().getPostalAddress().setStreetName(new StreetNameType());
         eInv.getAccountingCustomerParty().getParty().getPostalAddress().getStreetName().setValue(order.getBilling().getAddress());
 
-        if (!getHardcodedValue(eInvCountry,"BuildingNumber").isEmpty()) {
+        if (!getHardcodedValue(eInvCountry,"BuildingNumber",version).isEmpty()) {
             eInv.getAccountingCustomerParty().getParty().getPostalAddress().setBuildingNumber(new BuildingNumberType());
-            eInv.getAccountingCustomerParty().getParty().getPostalAddress().getBuildingNumber().setValue(getHardcodedValue(eInvCountry, "BuildingNumber"));//TODO:fix hardcoded
+            eInv.getAccountingCustomerParty().getParty().getPostalAddress().getBuildingNumber().setValue(getHardcodedValue(eInvCountry, "BuildingNumber",version));//TODO:fix hardcoded
         }
-        if (!getHardcodedValue(eInvCountry,"CitySubdivisionName").isEmpty()) {
+        if (!getHardcodedValue(eInvCountry,"CitySubdivisionName",version).isEmpty()) {
             eInv.getAccountingCustomerParty().getParty().getPostalAddress().setCitySubdivisionName(new CitySubdivisionNameType());
-            eInv.getAccountingCustomerParty().getParty().getPostalAddress().getCitySubdivisionName().setValue(getHardcodedValue(eInvCountry, "CitySubdivisionName"));//TODO:fix hardcoded
+            eInv.getAccountingCustomerParty().getParty().getPostalAddress().getCitySubdivisionName().setValue(getHardcodedValue(eInvCountry, "CitySubdivisionName",version));//TODO:fix hardcoded
         }
         eInv.getAccountingCustomerParty().getParty().getPostalAddress().setPostalZone(new PostalZoneType());
         eInv.getAccountingCustomerParty().getParty().getPostalAddress().getPostalZone().setValue(order.getBilling().getPostalCode());
         eInv.getAccountingCustomerParty().getParty().getPostalAddress().setCountrySubentity(new CountrySubentityType());
-        eInv.getAccountingCustomerParty().getParty().getPostalAddress().getCountrySubentity().setValue(getHardcodedValue(eInvCountry,"CountrySubentity"));//TODO:fix hardcoded
+        eInv.getAccountingCustomerParty().getParty().getPostalAddress().getCountrySubentity().setValue(getHardcodedValue(eInvCountry,"CountrySubentity",version));//TODO:fix hardcoded
         eInv.getAccountingCustomerParty().getParty().getPostalAddress().setCityName(new CityNameType());
         eInv.getAccountingCustomerParty().getParty().getPostalAddress().getCityName().setValue(order.getBilling().getCity());
         eInv.getAccountingCustomerParty().getParty().getPostalAddress().setCountry(new CountryType());
@@ -1269,7 +1279,7 @@ OrderProductDownloadRepository orderProductDownloadRepository) {
 
         if (order.getBilling().getVatNumber().isEmpty()||order.getBilling().getVatNumber().equals("N/A")||order.getBilling().getVatNumber().equals("n/a")) {
            // Random random = new Random();
-            partyTaxScheme.getCompanyID().setValue( String.format(getHardcodedValue(eInvCountry,"AccountingCustomerPartyVAT")));
+            partyTaxScheme.getCompanyID().setValue( String.format(getHardcodedValue(eInvCountry,"AccountingCustomerPartyVAT",version)));
         }
         else
             partyTaxScheme.getCompanyID().setValue(order.getBilling().getVatNumber());
@@ -1277,8 +1287,8 @@ OrderProductDownloadRepository orderProductDownloadRepository) {
         partyTaxScheme.setTaxScheme(new TaxSchemeType());
         partyTaxScheme.getTaxScheme().setID(new IDType());
         partyTaxScheme.getTaxScheme().getID().setValue("VAT");
-        if(!getHardcodedValue(eInvCountry,"CompanyIDSchemeID").isEmpty())
-            partyTaxScheme.getTaxScheme().getID().setSchemeID(getHardcodedValue(eInvCountry,"CompanyIDSchemeID"));
+        if(!getHardcodedValue(eInvCountry,"CompanyIDSchemeID",version).isEmpty())
+            partyTaxScheme.getTaxScheme().getID().setSchemeID(getHardcodedValue(eInvCountry,"CompanyIDSchemeID",version));
         eInv.getAccountingCustomerParty().getParty().getPartyTaxScheme().add(partyTaxScheme);
 
         PartyLegalEntityType partyLegalEntityType1=new PartyLegalEntityType();
@@ -1286,8 +1296,8 @@ OrderProductDownloadRepository orderProductDownloadRepository) {
         partyLegalEntityType1.getRegistrationName().setValue(store.getStorename());
         partyLegalEntityType1.setCompanyID(new CompanyIDType());
         partyLegalEntityType1.getCompanyID().setValue( partyTaxScheme.getCompanyID().getValue());
-        if(!getHardcodedValue(eInvCountry,"CompanyIDSchemeID").isEmpty())
-            partyLegalEntityType1.getCompanyID().setSchemeID(getHardcodedValue(eInvCountry,"CompanyIDSchemeID"));
+        if(!getHardcodedValue(eInvCountry,"CompanyIDSchemeID",version).isEmpty())
+            partyLegalEntityType1.getCompanyID().setSchemeID(getHardcodedValue(eInvCountry,"CompanyIDSchemeID",version));
         eInv.getAccountingCustomerParty().getParty().getPartyLegalEntity().add(partyLegalEntityType1);
 
         PartyTaxSchemeType partyTaxSchemeType= new PartyTaxSchemeType();
@@ -1306,10 +1316,10 @@ OrderProductDownloadRepository orderProductDownloadRepository) {
 
         PaymentMeansType paymentMean=new PaymentMeansType();
         paymentMean.setPaymentMeansCode(new PaymentMeansCodeType());
-        paymentMean.getPaymentMeansCode().setName(getHardcodedValue(eInvCountry,"PaymentMeansCode"));
-        paymentMean.getPaymentMeansCode().setValue(getHardcodedValue(eInvCountry,"PaymentMeansValue"));
+        paymentMean.getPaymentMeansCode().setName(getHardcodedValue(eInvCountry,"PaymentMeansCode",version));
+        paymentMean.getPaymentMeansCode().setValue(getHardcodedValue(eInvCountry,"PaymentMeansValue",version));
         PaymentIDType paymentId = new PaymentIDType();
-        paymentId.setValue(getHardcodedValue(eInvCountry,"PaymentId"));
+        paymentId.setValue(getHardcodedValue(eInvCountry,"PaymentId",version));
         paymentMean.getPaymentID().add(paymentId);
         paymentMean.setPayeeFinancialAccount(new FinancialAccountType());
         paymentMean.getPayeeFinancialAccount().setID(new IDType());
@@ -1318,14 +1328,14 @@ OrderProductDownloadRepository orderProductDownloadRepository) {
         paymentMean.getPayeeFinancialAccount().getName().setValue("[Payment account name]");
         paymentMean.getPayeeFinancialAccount().setFinancialInstitutionBranch(new BranchType());
         paymentMean.getPayeeFinancialAccount().getFinancialInstitutionBranch().setID(new IDType());
-        paymentMean.getPayeeFinancialAccount().getFinancialInstitutionBranch().getID().setValue(getHardcodedValue(eInvCountry,"FinancialInstitutionBranch"));
+        paymentMean.getPayeeFinancialAccount().getFinancialInstitutionBranch().getID().setValue(getHardcodedValue(eInvCountry,"FinancialInstitutionBranch",version));
         eInv.getPaymentMeans().add(paymentMean);
 
 
         UBLExtensionsType ublextensionspaymentTerm=new UBLExtensionsType();
         UBLExtensionType ublExtensionpaymentTerm=new UBLExtensionType();
         PaymentTermsExtensionType paymentTermsExtensionType=new PaymentTermsExtensionType();
-        paymentTermsExtensionType.setPaymentTermsCode(getHardcodedValue(eInvCountry,"PaymentTermsCode"));
+        paymentTermsExtensionType.setPaymentTermsCode(getHardcodedValue(eInvCountry,"PaymentTermsCode",version));
         ublExtensionpaymentTerm.setExtensionContent(new ExtensionContentType());
         ublExtensionpaymentTerm.getExtensionContent().setAny(paymentTermsExtensionType);
 
@@ -1335,7 +1345,7 @@ OrderProductDownloadRepository orderProductDownloadRepository) {
         paymentTermsType.setUBLExtensions(ublextensionspaymentTerm);
 
         NoteType note=new NoteType();
-        note.setValue(getHardcodedValue(eInvCountry,"PaymentTermsNote"));
+        note.setValue(getHardcodedValue(eInvCountry,"PaymentTermsNote",version));
         paymentTermsType.getNote().add(note);
         eInv.getPaymentTerms().add(paymentTermsType);
 
@@ -1367,7 +1377,7 @@ OrderProductDownloadRepository orderProductDownloadRepository) {
         taxTotalHeader.getTaxAmount().setCurrencyID(currencyDetails.currency_code);
         taxTotalHeader.getTaxAmount().setValue(BigDecimal.valueOf(0));
 
-        Integer cont=0;
+        Integer cont=1;
         for (LineItem itemProduct :vertexResponse.data.getlineItems()) {
             TaxTotalType taxTotalItem=new TaxTotalType();
 
@@ -1376,16 +1386,23 @@ OrderProductDownloadRepository orderProductDownloadRepository) {
             invoiceLine.setID(new IDType());
             invoiceLine.getID().setValue(String.valueOf(cont++));
             invoiceLine.setInvoicedQuantity(new InvoicedQuantityType());
-            invoiceLine.getInvoicedQuantity().setValue(BigDecimal.valueOf(itemProduct.quantity.value).setScale(new  Integer(getHardcodedValue(eInvCountry,"DecimalScale")), RoundingMode.HALF_UP));
+            invoiceLine.getInvoicedQuantity().setValue(BigDecimal.valueOf(itemProduct.quantity.value).setScale(new  Integer(getHardcodedValue(eInvCountry,"DecimalScale",version)), RoundingMode.HALF_UP));
             if (itemProduct.quantity.unitOfMeasure==null)
                 invoiceLine.getInvoicedQuantity().setUnitCode("MTK");
             else
                 invoiceLine.getInvoicedQuantity().setUnitCode(itemProduct.quantity.unitOfMeasure);
             invoiceLine.setLineExtensionAmount(new LineExtensionAmountType());
             invoiceLine.getLineExtensionAmount().setCurrencyID(currencyDetails.currency_code);
-            invoiceLine.getLineExtensionAmount().setValue(itemProduct.extendedPrice.multiply(currencyDetails.amount).setScale(new  Integer(getHardcodedValue(eInvCountry,"DecimalScale")), RoundingMode.HALF_UP));
+            invoiceLine.getLineExtensionAmount().setValue(itemProduct.extendedPrice.multiply(currencyDetails.amount).setScale(new  Integer(getHardcodedValue(eInvCountry,"DecimalScale",version)), RoundingMode.HALF_UP));
 
-
+            PeriodType invoicePeriod=new PeriodType();
+            StartDateType startDateType=new StartDateType();
+            startDateType.setValue(eInv.getDueDate().getValue());
+            EndDateType endDateType=new EndDateType();
+            endDateType.setValue(eInv.getDueDate().getValue());
+            invoicePeriod.setStartDate(startDateType);
+            invoicePeriod.setEndDate(endDateType);
+            invoiceLine.getInvoicePeriod().add(invoicePeriod);
 
             invoiceLine.setItem(new ItemType());
             invoiceLine.getItem().setName(new NameType());
@@ -1400,7 +1417,7 @@ OrderProductDownloadRepository orderProductDownloadRepository) {
             ExtensionContentType extensionContentPrice=new ExtensionContentType();
             com.salesmanager.core.business.services.tax.ecosio.vrbl.vertexinc.vrbl.extensioncomponent._1.PriceExtensionType priceExtention=new com.salesmanager.core.business.services.tax.ecosio.vrbl.vertexinc.vrbl.extensioncomponent._1.PriceExtensionType();
             priceExtention.setPriceAmountBeforeAllowanceCharge(new AmountType());
-            priceExtention.getPriceAmountBeforeAllowanceCharge().setValue(itemProduct.extendedPrice.multiply(currencyDetails.amount).divide(new BigDecimal(itemProduct.quantity.value)).setScale(new  Integer(getHardcodedValue(eInvCountry,"DecimalScale")), RoundingMode.HALF_UP));
+            priceExtention.getPriceAmountBeforeAllowanceCharge().setValue(itemProduct.extendedPrice.multiply(currencyDetails.amount).divide(new BigDecimal(itemProduct.quantity.value)).setScale(new  Integer(getHardcodedValue(eInvCountry,"DecimalScale",version)), RoundingMode.HALF_UP));
             priceExtention.getPriceAmountBeforeAllowanceCharge().setCurrencyID(currencyDetails.currency_code);
             extensionContentPrice.setAny(priceExtention);
             ublExtensionPrice.setExtensionContent(extensionContentPrice);
@@ -1408,20 +1425,20 @@ OrderProductDownloadRepository orderProductDownloadRepository) {
             invoiceLine.getPrice().setUBLExtensions(ublExtensionsPrice);
 
             invoiceLine.getPrice().setPriceAmount(new PriceAmountType());
-            invoiceLine.getPrice().getPriceAmount().setValue(itemProduct.extendedPrice.multiply(currencyDetails.amount).divide(new BigDecimal(itemProduct.quantity.value)).setScale(new  Integer(getHardcodedValue(eInvCountry,"DecimalScale")), RoundingMode.HALF_UP));
+            invoiceLine.getPrice().getPriceAmount().setValue(itemProduct.extendedPrice.multiply(currencyDetails.amount).divide(new BigDecimal(itemProduct.quantity.value)).setScale(new  Integer(getHardcodedValue(eInvCountry,"DecimalScale",version)), RoundingMode.HALF_UP));
             invoiceLine.getPrice().getPriceAmount().setCurrencyID(currencyDetails.currency_code);
 
 
             CommodityClassificationType commodityClassificationType= new CommodityClassificationType();
             commodityClassificationType.setItemClassificationCode(new ItemClassificationCodeType());
-            commodityClassificationType.getItemClassificationCode().setValue(getHardcodedValue(eInvCountry,"ItemClassificationCode"));
-            commodityClassificationType.getItemClassificationCode().setListID(getHardcodedValue(eInvCountry,"ItemClassificationListID"));
+            commodityClassificationType.getItemClassificationCode().setValue(getHardcodedValue(eInvCountry,"ItemClassificationCode",version));
+            commodityClassificationType.getItemClassificationCode().setListID(getHardcodedValue(eInvCountry,"ItemClassificationListID",version));
             if (! commodityClassificationType.getItemClassificationCode().getValue().isEmpty())
                 invoiceLine.getItem().getCommodityClassification().add(commodityClassificationType);
 
             invoiceLine.setItemPriceExtension(new PriceExtensionType());
             invoiceLine.getItemPriceExtension().setAmount(new AmountType());
-            invoiceLine.getItemPriceExtension().getAmount().setValue(itemProduct.extendedPrice.multiply(currencyDetails.amount).setScale(new  Integer(getHardcodedValue(eInvCountry,"DecimalScale")), RoundingMode.HALF_UP));
+            invoiceLine.getItemPriceExtension().getAmount().setValue(itemProduct.extendedPrice.multiply(currencyDetails.amount).setScale(new  Integer(getHardcodedValue(eInvCountry,"DecimalScale",version)), RoundingMode.HALF_UP));
             invoiceLine.getItemPriceExtension().getAmount().setCurrencyID(currencyDetails.currency_code);
 
 
@@ -1431,16 +1448,16 @@ OrderProductDownloadRepository orderProductDownloadRepository) {
 
                 TaxCategoryType taxCategory = new TaxCategoryType();
                 taxCategory.setPercent(new PercentType());
-                taxCategory.getPercent().setValue(BigDecimal.valueOf(tax.getNominalRate()).multiply(BigDecimal.valueOf(100)).setScale(new Integer(getHardcodedValue(eInvCountry, "DecimalScalePercent")), RoundingMode.HALF_UP));
+                taxCategory.getPercent().setValue(BigDecimal.valueOf(tax.getNominalRate()).multiply(BigDecimal.valueOf(100)).setScale(new Integer(getHardcodedValue(eInvCountry, "DecimalScalePercent",version)), RoundingMode.HALF_UP));
 
                 TaxableAmountType taxableAmount = new TaxableAmountType();
                 taxableAmount.setCurrencyID(currencyDetails.currency_code);
-                taxableAmount.setValue(BigDecimal.valueOf(tax.taxable).multiply(currencyDetails.amount).setScale(new Integer(getHardcodedValue(eInvCountry, "DecimalScale")), RoundingMode.HALF_UP));
+                taxableAmount.setValue(BigDecimal.valueOf(tax.taxable).multiply(currencyDetails.amount).setScale(new Integer(getHardcodedValue(eInvCountry, "DecimalScale",version)), RoundingMode.HALF_UP));
                 taxSubtotal.setTaxableAmount(taxableAmount);
 
                 TaxAmountType taxAmountItem = new TaxAmountType();
                 taxAmountItem.setCurrencyID(currencyDetails.currency_code);
-                taxAmountItem.setValue(taxableAmount.getValue().multiply(taxCategory.getPercent().getValue().divide(new BigDecimal(100))).setScale(new Integer(getHardcodedValue(eInvCountry, "DecimalScale")), RoundingMode.HALF_UP));
+                taxAmountItem.setValue(taxableAmount.getValue().multiply(taxCategory.getPercent().getValue().divide(new BigDecimal(100))).setScale(new Integer(getHardcodedValue(eInvCountry, "DecimalScale",version)), RoundingMode.HALF_UP));
                 taxSubtotal.setTaxAmount(taxAmountItem);
 
                 TaxInclusiveAmountType taxInclusiveAmountItem = new TaxInclusiveAmountType();
@@ -1451,34 +1468,34 @@ OrderProductDownloadRepository orderProductDownloadRepository) {
 
 
                 taxCategory.setID(new IDType());
-                taxCategory.getID().setValue(getHardcodedValue(eInvCountry, "TaxCategoryId"));
+                taxCategory.getID().setValue(getHardcodedValue(eInvCountry, "TaxCategoryId",version));
 
                 if (BigDecimal.valueOf(tax.getNominalRate()).equals(BigDecimal.valueOf(0.0))) {
-                    taxCategory.getID().setValue(getHardcodedValue(eInvCountry, "TaxCategoryId_E"));
+                    taxCategory.getID().setValue(getHardcodedValue(eInvCountry, "TaxCategoryId_E",version));
                     TaxExemptionReasonType taxExemptionReasonType = new TaxExemptionReasonType();
                     taxExemptionReasonType.setValue(tax.rateClassification);
                     taxCategory.getTaxExemptionReason().add(taxExemptionReasonType);
 
                     TaxExemptionReasonCodeType taxExemptionReasonCodeType = new TaxExemptionReasonCodeType();
-                    taxExemptionReasonCodeType.setValue(getHardcodedValue(eInvCountry, "TaxExemptionReasonCode"));
+                    taxExemptionReasonCodeType.setValue(getHardcodedValue(eInvCountry, "TaxExemptionReasonCode",version));
                     taxCategory.setTaxExemptionReasonCode(taxExemptionReasonCodeType);
 
                 }
 
                 TaxSchemeType taxSchemeItem = new TaxSchemeType();
                 taxSchemeItem.setID(new IDType());
-                taxSchemeItem.getID().setValue(getHardcodedValue(eInvCountry, "TaxSchemeID"));
+                taxSchemeItem.getID().setValue(getHardcodedValue(eInvCountry, "TaxSchemeID",version));
                 taxCategory.setTaxScheme(taxSchemeItem);
 
                 invoiceLine.getItem().getClassifiedTaxCategory().add(taxCategory);
                 taxSubtotal.setTaxCategory(taxCategory);
 
                 taxTotalItem.setRoundingAmount(new RoundingAmountType());
-                taxTotalItem.getRoundingAmount().setValue(BigDecimal.valueOf(itemProduct.fairMarketValue.doubleValue()).multiply(currencyDetails.amount).setScale(new Integer(getHardcodedValue(eInvCountry, "DecimalScale")), RoundingMode.HALF_UP));
+                taxTotalItem.getRoundingAmount().setValue(BigDecimal.valueOf(itemProduct.fairMarketValue.doubleValue()).multiply(currencyDetails.amount).setScale(new Integer(getHardcodedValue(eInvCountry, "DecimalScale",version)), RoundingMode.HALF_UP));
                 taxTotalItem.getRoundingAmount().setCurrencyID(currencyDetails.currency_code);
 
                 taxTotalItem.setTaxAmount(new TaxAmountType());
-                taxTotalItem.getTaxAmount().setValue(taxableAmount.getValue().multiply(taxCategory.getPercent().getValue().divide(new BigDecimal(100))).setScale(new Integer(getHardcodedValue(eInvCountry, "DecimalScale")), RoundingMode.HALF_UP));
+                taxTotalItem.getTaxAmount().setValue(taxableAmount.getValue().multiply(taxCategory.getPercent().getValue().divide(new BigDecimal(100))).setScale(new Integer(getHardcodedValue(eInvCountry, "DecimalScale",version)), RoundingMode.HALF_UP));
                 taxTotalItem.getTaxAmount().setCurrencyID(currencyDetails.currency_code);
 
                 taxTotalItem.getTaxSubtotal().add(taxSubtotal);
@@ -1495,9 +1512,9 @@ OrderProductDownloadRepository orderProductDownloadRepository) {
         eInv.getInvoiceLine().add(invoiceLine);
         }
 
-        taxTotalHeader = addOrUpdateItem(taxTotalHeader,eInvCountry);//merge duplicated values for taxsubtotals from the header
-        legalMonetaryTotal.getLineExtensionAmount().setValue( legalMonetaryTotal.getLineExtensionAmount().getValue().setScale(new  Integer(getHardcodedValue(eInvCountry,"DecimalScale")), RoundingMode.HALF_UP));
-        legalMonetaryTotal.getTaxExclusiveAmount().setValue( legalMonetaryTotal.getTaxExclusiveAmount().getValue().setScale(new  Integer(getHardcodedValue(eInvCountry,"DecimalScale")), RoundingMode.HALF_UP));
+        taxTotalHeader = addOrUpdateItem(taxTotalHeader,eInvCountry,version);//merge duplicated values for taxsubtotals from the header
+        legalMonetaryTotal.getLineExtensionAmount().setValue( legalMonetaryTotal.getLineExtensionAmount().getValue().setScale(new  Integer(getHardcodedValue(eInvCountry,"DecimalScale",version)), RoundingMode.HALF_UP));
+        legalMonetaryTotal.getTaxExclusiveAmount().setValue( legalMonetaryTotal.getTaxExclusiveAmount().getValue().setScale(new  Integer(getHardcodedValue(eInvCountry,"DecimalScale",version)), RoundingMode.HALF_UP));
 
         legalMonetaryTotal.getTaxInclusiveAmount().setValue( legalMonetaryTotal.getTaxExclusiveAmount().getValue().add(  taxTotalHeader.getTaxAmount().getValue()));
         legalMonetaryTotal.getPayableAmount().setValue( legalMonetaryTotal.getTaxExclusiveAmount().getValue().add( taxTotalHeader.getTaxAmount().getValue()));
@@ -1530,29 +1547,43 @@ OrderProductDownloadRepository orderProductDownloadRepository) {
 
             jaxbMarshaller.marshal(root, file);
             jaxbMarshaller.marshal(root, System.out);
+            byte[] fileContent = Files.readAllBytes(file.toPath());
+            encodedString = Base64.getEncoder().encodeToString(fileContent);
 
-
-        } catch (JAXBException e) {
+        } catch (JAXBException | IOException e) {
             throw new RuntimeException(e);
         }
 
 
-/* Send the XML to Vertex eInvoicing */
-        MediaType MEDIA_TYPE = MediaType.parse("application/xml");
-        RequestBody requestBody = new MultipartBuilder()
-                .type(MultipartBuilder.FORM)
-                .addPart(
-                        Headers.of("Content-Disposition", "form-data; name=\"payload\"; filename=\""+file.getName()+"\""),
-                        RequestBody.create(MEDIA_TYPE, file))
-                .build();
+/* Send the XML to Vertex eInvoicing or base64 for the new version */
+        MediaType MEDIA_TYPE = MediaType.parse(getHardcodedValue("GENERIC","mediaType",version));
+        RequestBody requestBody=null;
+        if (getHardcodedValue("GENERIC","mediaType",version).equals("application/xml")) {
+            requestBody = new MultipartBuilder()
+                    .type(MultipartBuilder.FORM)
+                    .addPart(
+                            Headers.of("Content-Disposition", "form-data; name=\"payload\"; filename=\"" + file.getName() + "\""),
+                            RequestBody.create(MEDIA_TYPE, file))
+                    .build();
+        }
+        else {
+             requestBody = RequestBody.create(MEDIA_TYPE, "{\"message\": \""+encodedString+"\"}");
 
+        }
         Request request = null;
 
       try {
+
+          //Replacing credentails from UI into the hardcoded file
+          eInvoicing_client_Id =getHardcodedValue("GENERIC","eInvoicing_client_Id",version);
+          eInvoicing_client_secret=getHardcodedValue("GENERIC","eInvoicing_client_secret",version);
+          eInvoicing_auth_url=getHardcodedValue("GENERIC","eInvoicing_auth_url",version);
+          eInvoicing_url=getHardcodedValue("GENERIC","eInvoicing_url",version);
+          tokenInfo=null;
             tokenInfo=this.getAuthentication(eInvoicing_client_Id,eInvoicing_client_secret,eInvoicing_auth_url,tokenInfo);
                   request = new Request.Builder()
                    .url( eInvoicing_url)
-                    .method("POST", requestBody)
+                    .method("POST", requestBody).addHeader("Content-Type", getHardcodedValue("GENERIC","mediaType",version))
                     .addHeader("Authorization", "Bearer "+tokenInfo.getToken())
                     .build();
         } catch (IOException e) {
@@ -1580,7 +1611,7 @@ OrderProductDownloadRepository orderProductDownloadRepository) {
         return jsonData;//TODO
     }
 
-    private  TaxTotalType  addOrUpdateItem(TaxTotalType taxTotalHeader,String countryId) {
+    private  TaxTotalType  addOrUpdateItem(TaxTotalType taxTotalHeader,String countryId,String version) {
         // Search for an existing item with the same name
         if (taxTotalHeader == null || taxTotalHeader.getTaxSubtotal() == null) {
             return taxTotalHeader;
@@ -1601,7 +1632,7 @@ OrderProductDownloadRepository orderProductDownloadRepository) {
                 // Merge tax amounts
                 TaxSubtotalType existing = taxMap.get(key);
                 existing.getTaxableAmount().setValue(existing.getTaxableAmount().getValue().add( taxSubtotal.getTaxableAmount().getValue()));
-                existing.getTaxAmount().setValue( existing.getTaxableAmount().getValue().multiply(category.getPercent().getValue()).divide(new BigDecimal(100)).setScale(new  Integer(getHardcodedValue(countryId,"DecimalScale")), RoundingMode.HALF_UP));;
+                existing.getTaxAmount().setValue( existing.getTaxableAmount().getValue().multiply(category.getPercent().getValue()).divide(new BigDecimal(100)).setScale(new  Integer(getHardcodedValue(countryId,"DecimalScale",version)), RoundingMode.HALF_UP));;
 
             } else {
                 TaxSubtotalType newTaxSuTotal=new TaxSubtotalType();

@@ -32,11 +32,15 @@ public class HardcodedValueFetcher {
      * @param type The type to look up.
      * @return The corresponding value as a String, or a default message if not found.
      */
-    public static String getHardcodedValue(String code, String type) {
-        if (data.has(code)) {
-            JSONObject codeData = data.getJSONObject(code);
-            if (codeData.has(type)) {
-                return codeData.getString(type); // Return the matched value
+    public static String getHardcodedValue(String code, String type,String version) {
+
+        if (data.has(version)) {
+            JSONObject codeDataVersion = data.getJSONObject(version);
+            if (codeDataVersion.has(code)) {
+                JSONObject codeDataConf = codeDataVersion.getJSONObject(code);
+                if (codeDataConf.has(type)) {
+                    return codeDataConf.getString(type); // Return the matched value
+                }
             }
         }
         return "";
