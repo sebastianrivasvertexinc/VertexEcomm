@@ -298,8 +298,8 @@ OrderProductDownloadRepository orderProductDownloadRepository) {
         if(!getHardcodedValue(order.getBilling().getCountry().getIsoCode(),"Sender",InstanceName).isEmpty())
 
         {
-            order.setEInvoiceId("n/a");
-            order.setEInvoiceId(createElectronicInvoice(order,customer,vtxEngineCalculation,store,urlInvoice,InstanceName));
+
+            order.setEInvoiceId(" v1:" +createElectronicInvoice(order,customer,vtxEngineCalculation,store,urlInvoice,InstanceName));
         }
         System.out.println(urlInvoice);
        order.setShippingModuleCode(urlInvoice);
@@ -308,7 +308,7 @@ OrderProductDownloadRepository orderProductDownloadRepository) {
         InstanceName="Vertex Sales V2 e-Invoicing Cloud Account (Main-Prod)";
         if(!getHardcodedValue(order.getBilling().getCountry().getIsoCode(),"Sender",InstanceName).isEmpty())
         {
-            order.setEInvoiceId("n/a");
+
             order.setEInvoiceId( order.getEInvoiceId()+" v2:" +createElectronicInvoice(order,customer,vtxEngineCalculation,store,urlInvoice,InstanceName));
         }
         System.out.println(urlInvoice);
@@ -318,7 +318,7 @@ OrderProductDownloadRepository orderProductDownloadRepository) {
         InstanceName="Vertex - Sales";
         if(!getHardcodedValue(order.getBilling().getCountry().getIsoCode(),"Sender",InstanceName).isEmpty())
         {
-            order.setEInvoiceId("n/a");
+
             order.setEInvoiceId( order.getEInvoiceId()+" v2:" +createElectronicInvoice(order,customer,vtxEngineCalculation,store,urlInvoice,InstanceName));
         }
         System.out.println(urlInvoice);
