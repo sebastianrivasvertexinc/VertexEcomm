@@ -495,7 +495,7 @@ OrderProductDownloadRepository orderProductDownloadRepository) {
                             taxLine.setSortOrder(taxCount);
                             taxCount++;
 
-                            taxLine.setOrderTotalCode((vtxItemtax.imposition.value + " in the xxx" + vtxItemtax.jurisdiction.jurisdictionType + " of " + vtxItemtax.jurisdiction.value + "(" + BigDecimal.valueOf(vtxItemtax.getNominalRate()).multiply(BigDecimal.valueOf(100)) + "%)"));
+                            taxLine.setOrderTotalCode((vtxItemtax.imposition.value + " in the " + vtxItemtax.jurisdiction.jurisdictionType + " of " + vtxItemtax.jurisdiction.value + "(" + BigDecimal.valueOf(vtxItemtax.getNominalRate()).multiply(BigDecimal.valueOf(100)) + "%)"));
 
                            // Gson gson = new Gson();
                          //   taxLine.setOrderTotalCode(gson.toJson(vtxTaxCalc, VtxTaxCalc.class));
