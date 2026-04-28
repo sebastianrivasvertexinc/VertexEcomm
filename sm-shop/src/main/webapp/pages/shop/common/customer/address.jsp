@@ -139,7 +139,7 @@ function addShippingAddress(formId){
              						</p>
              					</span>
                              <!-- Create a button to launch the wizard -->
-                                    <button id="wizard-btn" type="button" class="btn btn-large template-btn">Upload Exception Certificate</button>
+                                    <button id="wizard-btn" type="button" class="btn btn-large template-btn">Upload Exemption Certificate</button>
               </div>
 			 </div>
 			 <div class="span4 col-md-4">
