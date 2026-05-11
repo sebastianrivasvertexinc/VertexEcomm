@@ -11,6 +11,10 @@ public class VtxTaxItem {
         return nominalRate;
     }
 
+    public double getTaxAmount() {
+        return calculatedTax;
+    }
+
     public void setEffectiveRate(double effectiveRate) {
         this.effectiveRate = effectiveRate;
     }

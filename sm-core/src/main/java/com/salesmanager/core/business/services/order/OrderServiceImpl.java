@@ -922,9 +922,18 @@ OrderProductDownloadRepository orderProductDownloadRepository) {
             tLine.setQuantity( itemProduct.quantity.value);
             tLine.setAmount((itemProduct.extendedPrice).multiply(new BigDecimal(itemProduct.quantity.value)));
             double rate=0;
+
+            // DJR - made modification 4/28/26 - instead of getting the nominal rate and using this, calculating rate based on tax amounts collected
+            // May have to change back if errors found.
+
+
             for (VtxTaxItem tax :itemProduct.getTaxes()){
-                rate+=tax.getNominalRate();
+                // previous calc = tax.getNominalrate();
+                rate+=tax.getTaxAmount();
             }
+
+            rate = rate / (itemProduct.extendedPrice.doubleValue());
+
             tLine.setTax_rate(rate*100);
             tLine.setInformative("true");//TODO
             tLine.setCustom_id(cont.toString());//TODO
