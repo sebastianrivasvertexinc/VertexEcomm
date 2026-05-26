@@ -1178,7 +1178,7 @@ OrderProductDownloadRepository orderProductDownloadRepository) {
         }
         eInv.getAccountingSupplierParty().getParty().getPostalAddress().setCountry(new CountryType());
         eInv.getAccountingSupplierParty().getParty().getPostalAddress().getCountry().setIdentificationCode(new IdentificationCodeType());
-        eInv.getAccountingSupplierParty().getParty().getPostalAddress().getCountry().getIdentificationCode().setValue(store.getCountry().getIsoCode());//TODO: testing country
+        eInv.getAccountingSupplierParty().getParty().getPostalAddress().getCountry().getIdentificationCode().setValue(eInvCountry);//TODO: testing country
 
         if (!getHardcodedValue(eInvCountry,"IndustryClassificationCodeValue",version).isEmpty()) {
             eInv.getAccountingSupplierParty().getParty().setIndustryClassificationCode(new IndustryClassificationCodeType());
