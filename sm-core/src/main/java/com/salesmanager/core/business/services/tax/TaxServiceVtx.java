@@ -2,7 +2,6 @@ package com.salesmanager.core.business.services.tax;
 
 import com.salesmanager.core.business.exception.ServiceException;
 import com.salesmanager.core.business.services.tax.taxamo.Invoice;
-import com.salesmanager.core.business.services.tax.vertex.LineItem;
 import com.salesmanager.core.business.services.tax.vertex.VtxTaxCalc;
 import com.salesmanager.core.model.customer.Customer;
 import com.salesmanager.core.model.merchant.MerchantStore;
@@ -13,7 +12,6 @@ import com.salesmanager.core.model.reference.language.Language;
 import com.salesmanager.core.model.tax.TaxConfiguration;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 
 
 public interface TaxServiceVtx {
@@ -49,7 +47,7 @@ public interface TaxServiceVtx {
 	VtxTaxCalc calculateTax(OrderSummary orderSummary, Customer customer,
 							MerchantStore store, Language language) throws ServiceException;
 
-	ArrayList<LineItem> commitTax(Order order, Customer customer, MerchantStore store, OrderTotalSummary summary) throws ServiceException;
+	VtxTaxCalc commitTax(Order order, Customer customer, MerchantStore store, OrderTotalSummary summary) throws ServiceException;
 
 
 	Invoice currencyConversion(MerchantStore store, String destCurrency,String zone, BigDecimal grandTotal) throws ServiceException;

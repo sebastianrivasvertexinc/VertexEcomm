@@ -196,6 +196,8 @@ public class  TaxServiceVtxImpl
 				destination.country= customer.getBilling().getCountry().getIsoCode();
 			if 	(!StringUtils.isBlank(customer.getBilling().getPostalCode()))
 				destination.postalCode=customer.getBilling().getPostalCode();
+			if 	(!StringUtils.isBlank(customer.getBilling().getState()))
+				destination.mainDivision=customer.getBilling().getState();
 			cust.destination=destination;
 
 			cust.taxRegistrations = new ArrayList<TaxRegistration>();
@@ -204,8 +206,9 @@ public class  TaxServiceVtxImpl
 				tr.setTaxRegistrationNumber(customer.getBilling().getVatNumber()); //modified to get VAT number from front page
 				tr.setIsoCountryCode(customer.getBilling().getCountry().getIsoCode());
 				cust.customerCode.isBusinessIndicator=true;
+				cust.taxRegistrations.add(tr)		;
 			}
-			cust.taxRegistrations.add(tr)		;
+
 
 			calcRequest.setCustomer(cust);
 
@@ -284,7 +287,7 @@ public class  TaxServiceVtxImpl
 
 
 	}
-	public ArrayList<LineItem> commitTax(Order order, Customer customer, MerchantStore store, OrderTotalSummary summary)throws ServiceException {
+	public VtxTaxCalc commitTax(Order order, Customer customer, MerchantStore store, OrderTotalSummary summary)throws ServiceException {
 
 		//set all the config information
 		TaxConfiguration taxConfiguration = taxService.getTaxConfiguration(store);
@@ -340,6 +343,7 @@ public class  TaxServiceVtxImpl
 			if	(!StringUtils.isBlank(store.getStorepostalcode()))
 				physicalOrigin.postalCode=store.getStorepostalcode();
 
+
 		//	seller.physicalOrigin=physicalOrigin; //TODO need to add a logic for ship from, now the value is null.
 			calcRequest.setSeller(seller);
 
@@ -373,6 +377,8 @@ public class  TaxServiceVtxImpl
 				destination.country= customer.getBilling().getCountry().getIsoCode();
 			if 	(!StringUtils.isBlank(customer.getBilling().getPostalCode()))
 				destination.postalCode=customer.getBilling().getPostalCode();
+			if 	(!StringUtils.isBlank(customer.getBilling().getZone().getCode()))
+				destination.mainDivision=customer.getBilling().getZone().getCode();
 			cust.destination=destination;
 
 			cust.taxRegistrations = new ArrayList<TaxRegistration>();
@@ -381,8 +387,9 @@ public class  TaxServiceVtxImpl
 				tr.setTaxRegistrationNumber(customer.getBilling().getVatNumber()); //modified to get VAT number from front page
 				tr.setIsoCountryCode(customer.getBilling().getCountry().getIsoCode());
 				cust.customerCode.isBusinessIndicator=true;
+				cust.taxRegistrations.add(tr);
 			}
-			cust.taxRegistrations.add(tr)		;
+
 			calcRequest.setCustomer(cust);
 
 			ArrayList<LineItem> itemsVtx=new ArrayList<LineItem>();
@@ -433,7 +440,7 @@ public class  TaxServiceVtxImpl
 			return null;
 		}
 
-		return vtxEngineCalculation.data.getlineItems();
+		return vtxEngineCalculation;
 	}
 
 	@Override
@@ -535,7 +542,7 @@ public class  TaxServiceVtxImpl
 
 		OkHttpClient client = new OkHttpClient();
 		MediaType mediaType = MediaType.parse("application/x-www-form-urlencoded");
-		RequestBody body = RequestBody.create(mediaType, "client_id=" + client_Id + "&client_secret=" + client_secret +"&grant_type=client_credentials&scope=calc-rest-api");
+		RequestBody body = RequestBody.create(mediaType, "client_id=" + client_Id + "&client_secret=" + client_secret +"&grant_type=client_credentials");
 		Request request = new Request.Builder()
 				//.url("https://auth.vertexsmb.com/identity/connect/token")//TODO: david add this to tha admin console as "Vertex Autentication URL"
 				.url(auth_url)
@@ -569,6 +576,9 @@ public class  TaxServiceVtxImpl
 		String jsonData = response.body().string();
 
 		VtxTaxCalc vtx = gson.fromJson(jsonData,VtxTaxCalc.class);
+		System.out.println("Vertex O Series Request:" +jsonDataReq);
+		System.out.println("Vertex O Series Response:" +jsonData);
+
 		return vtx;
 	}
 
